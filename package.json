@@ -1,24 +1,31 @@
 {
-  "name": "read-and-write-xml",
-  "version": "1.0.0",
-  "description": "App  xml",
-  "main": "main.js",
-   "repository": {
-    "type": "git",
-    "url": "https://github.com/JoseCarlos00/read-and-write-xml"
-  },
-  "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Jose Carlos",
-  "license": "ISC",
-  "devDependencies": {
-    "electron": "^32.2.0",
-    "standard": "^17.1.2"
-  },
-  "dependencies": {
-    "xml2js": "^0.6.2"
-  }
+	"name": "read-and-write-xml",
+	"version": "1.0.0",
+	"description": "App  xml",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron .",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoseCarlos00/read-and-write-xml"
+	},
+	"author": "Jose Carlos",
+	"keywords": [
+		"Electron",
+		"electron-app",
+		"XML",
+		"nodejs",
+		"javascript",
+		"xml2js"
+	],
+	"license": "ISC",
+	"devDependencies": {
+		"electron": "^32.2.0",
+		"standard": "^17.1.2"
+	},
+	"dependencies": {
+		"xml2js": "^0.6.2"
+	}
 }
