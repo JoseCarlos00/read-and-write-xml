@@ -85,6 +85,25 @@ export class GetPanelInfo {
 		return row;
 	}
 
+	#getRowIcon({ title, value, iconCLass, dataSetIsElement }) {
+		const row = document.createElement("div");
+		row.classList.add("row");
+
+		row.innerHTML = /*html*/ `
+			<strong class="position-relative">
+				<label>${title}:</label>
+				<span class="icon ${iconCLass}" data-is-elemet=${dataSetIsElement}></span
+			>
+			</strong>
+      <div>
+				<span class="text-for-editing">${value}</span>
+				<input type="text">
+			</div>
+   `;
+
+		return row;
+	}
+
 	#insertRow({ element, container }) {
 		if (container && element) {
 			container.appendChild(element);
@@ -93,6 +112,10 @@ export class GetPanelInfo {
 		}
 	}
 
+	/**
+	 * Retorna un elemeto con la informacion del `shiptment` actual
+	 * @returns {HTMLDivElement}
+	 */
 	async createPanelInfoDetail() {
 		if (!this.Shipment) {
 			console.error("No se encontro el elemento Shipment ");
@@ -100,17 +123,27 @@ export class GetPanelInfo {
 		}
 
 		const container = document.createElement("div");
-		container.className = "container";
+		container.className = "container container-info";
 
 		const shipmentId = this.Shipment?.ShipmentId?.[0] ?? "";
 		this.#insertRow({
-			element: this.#getRow({ title: "Shipment Id", value: shipmentId }),
+			element: this.#getRowIcon({
+				title: "Shipment Id",
+				value: shipmentId,
+				iconCLass: "edit",
+				dataSetIsElement: "shipmentId",
+			}),
 			container,
 		});
 
 		const erpOrder = this.Shipment?.ErpOrder?.[0] ?? "";
 		this.#insertRow({
-			element: this.#getRow({ title: "Erp Order", value: erpOrder }),
+			element: this.#getRowIcon({
+				title: "Erp Order",
+				value: erpOrder,
+				iconCLass: "edit",
+				dataSetIsElement: "erpOrder",
+			}),
 			container,
 		});
 

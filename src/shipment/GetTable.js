@@ -64,7 +64,7 @@ export class GetTable {
 			tdEmpty.textContent = index + 1;
 			tdItem.textContent = Item;
 
-			tdQuantity.innerHTML = `<label>${Quantity}</label><input class="edit-qty" type="text" value="">`;
+			tdQuantity.innerHTML = `<label>${Quantity}</label><input class="edit-qty" type="number" value="">`;
 			tdQuantity.setAttribute("align", "center");
 			tdQuantity.dataset["index"] = index;
 			tdQuantity.classList.add("quantity");

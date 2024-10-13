@@ -34,25 +34,41 @@ export class Shipment {
 		return infoPanelDetail;
 	}
 
-	setEventListener() {
+	setEventListeners() {
 		const table = document.querySelector("table tbody");
+		const containerInfo = document.querySelector(".container-info");
 
 		if (table) {
 			table.addEventListener("click", (e) => {
 				const { target } = e;
-				this.handleEvetClick(target);
+				this.handleEventClickInTable(target);
 			});
 		} else {
 			this.logError("[setEventListener]: table is not defined");
 		}
+
+		if (containerInfo) {
+			containerInfo.addEventListener("click", (e) => {
+				const { target } = e;
+				this.handleEventClickInPanelInfo(target);
+			});
+		} else {
+			this.logError("[setEventListener]: containerInfo is not defined");
+		}
 	}
 
-	handleEvetClick(target) {
+	handleEventClickInPanelInfo(target) {
+		const { classList, dataset, nodeName } = target;
+
+		if (nodeName === "SPAN" && classList.contains("edit")) {
+			this.editShipment(target, dataset?.isElemet);
+		}
+	}
+
+	handleEventClickInTable(target) {
 		const { classList, dataset, nodeName } = target;
 
 		if (classList.contains("edit")) {
-			const tr = target.closest("tr");
-			tr?.classList?.add("editing");
 			this.editCell(target, dataset?.index);
 			return;
 		}
@@ -66,7 +82,25 @@ export class Shipment {
 	editCell(td, index) {
 		const currentValue = td.textContent;
 		const trCurrent = td.closest("tr");
-		const label = trCurrent.querySelector("label");
+
+		// Alerta de deshacer
+		if (!trCurrent) {
+			alert("Ha ocurrido un error al eliminar la fila");
+			return;
+		}
+
+		const currentLabel = trCurrent.querySelector("label");
+
+		if (!currentLabel) {
+			alert(
+				"Mostrar error al usuario\nHa ocurrido un problema al editar el contenido"
+			);
+
+			return;
+		}
+
+		trCurrent.classList.add("editing");
+
 		const input = trCurrent.querySelector("input.edit-qty");
 
 		if (!input) {
@@ -111,10 +145,7 @@ export class Shipment {
 				}
 			}
 
-			console.log("New vaule:", newValue);
-			console.log(ShipmentDetails?.[numericIndex]);
-
-			label.innerHTML = newValue;
+			currentLabel.innerHTML = newValue;
 
 			closeInput();
 		};
@@ -188,6 +219,99 @@ export class Shipment {
 		console.dir(this.Shipment?.Details?.[0]);
 
 		tr.remove();
+	}
+
+	editShipment(span, isElemet) {
+		const row = span.closest(".row");
+
+		// Alerta de deshacer
+		if (!row) {
+			alert("Ha ocurrido un error al eliminar la fila");
+			return;
+		}
+
+		const currentLabel = row.querySelector(".text-for-editing");
+
+		if (!currentLabel) {
+			alert(
+				"Mostrar error al usuario\nHa ocurrido un problema al editar el contenido"
+			);
+
+			return;
+		}
+
+		row.classList.add("editing");
+
+		const currentValue = currentLabel.textContent;
+		const input = row.querySelector("input");
+
+		input.value = currentValue;
+
+		const closeInput = () => {
+			input.value = "";
+
+			row?.classList?.remove("editing");
+
+			input.removeEventListener("keydown", handleKeyDown);
+			input.removeEventListener("blur", handleBlur);
+		};
+
+		const editConten = (newValue) => {
+			const Shipment =
+				this.ShipmentOriginal.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
+					?.Shipment?.[0];
+
+			if (isElemet === "shipmentId") {
+				if (Shipment?.ShipmentId?.[0]) {
+					Shipment.ShipmentId[0] = newValue;
+				} else {
+					Shipment.ShipmentId = [newValue];
+				}
+			} else if (isElemet === "erpOrder") {
+				if (Shipment?.ErpOrder?.[0]) {
+					Shipment.ErpOrder[0] = newValue;
+				} else {
+					Shipment.ErpOrder = [newValue];
+				}
+			}
+
+			console.log("New vaule:", newValue);
+			console.log({ Shipment });
+
+			currentLabel.innerHTML = newValue;
+			closeInput();
+		};
+
+		const handleBlur = () => {
+			const newValue = input.value;
+
+			if (newValue === currentValue) {
+				return;
+			}
+
+			editConten(newValue);
+		};
+
+		const handleKeyDown = ({ key }) => {
+			if (key === "Enter") {
+				const newValue = input.value;
+
+				if (newValue === currentValue) {
+					return;
+				}
+
+				editConten(newValue);
+			}
+
+			if (key === "Escape") {
+				closeInput();
+			}
+		};
+
+		input.addEventListener("blur", handleBlur);
+		input.addEventListener("keydown", handleKeyDown);
+
+		input.focus(); // Foco en el input
 	}
 
 	setEventForSave() {

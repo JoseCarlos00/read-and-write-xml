@@ -9,7 +9,8 @@ async function handleOpenFile() {
 	const fileContent = await window.fileApi.selectFile();
 
 	console.log({ fileContent });
-	if (!fileContent) {
+
+	if (!fileContent?.shipment || !fileContent) {
 		console.log("No se pudo obtener el contenido del archivo.");
 		return;
 	}
@@ -31,7 +32,7 @@ async function handleOpenFile() {
 
 	if (table) {
 		xmlContentContainer.appendChild(table);
-		shipment.setEventListener();
+		shipment.setEventListeners();
 	}
 }
 
