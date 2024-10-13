@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			http-equiv="Content-Security-Policy"
+			content="default-src 'self'; script-src 'self'"
+		/>
+		<meta
+			http-equiv="X-Content-Security-Policy"
+			content="default-src 'self'; script-src 'self'"
+		/>
+
+		<title>Visor de XML</title>
+
+		<link rel="stylesheet" href="./src/shipment/style.css" />
+	</head>
+
+	<body>
+		<h1>Visor de Archivos XML</h1>
+		<button id="open-file-btn">Abrir Archivo XML</button>
+		<button id="save-file-btn">Guardar Archivo XML</button>
+		<div id="xml-content"></div>
+
+		<script type="module" src="renderer.js"></script>
+	</body>
+</html>

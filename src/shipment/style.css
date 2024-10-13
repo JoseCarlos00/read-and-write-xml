@@ -1,0 +1,122 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+p {
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+tbody tr:nth-child(odd) {
+	background-color: #bababa;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #fff;
+}
+
+th,
+td {
+	padding: 4px 6px;
+}
+
+th {
+	background-color: #1d1d1d;
+	color: #fff;
+}
+
+tbody tr {
+	color: #000;
+
+	& td input {
+		width: 54px;
+	}
+
+	&:not(.editing) td input {
+		display: none;
+	}
+
+	&.editing td label {
+		display: none;
+	}
+}
+
+/* Panel info detail */
+.container {
+	width: 500px;
+	height: auto;
+	border: 1px solid #1d1d1d;
+	margin-bottom: 20px;
+	padding: 8px;
+
+	.row {
+		padding: 8px;
+		display: grid;
+		grid-template-columns: 130px 1fr;
+
+		border: 1px solid #1d1d1d;
+		strong {
+			border-right: 1px solid #000;
+			margin-right: 8px;
+		}
+	}
+
+	.info-title {
+		margin: 12px 0 0;
+		text-align: center;
+	}
+
+	.mt1 {
+		margin-top: 12px;
+	}
+}
+
+/* Iconos */
+.edit {
+	background: url("../icon/edit.png");
+}
+
+.delete {
+	background: url("../icon/delete.png");
+}
+
+.lock {
+	background: url("../icon/lock-close.png");
+}
+
+.lock.open {
+	background: url("../icon/lock-open.png");
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 18px;
+	cursor: pointer;
+}
+
+.edit,
+.delete,
+.lock {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 18px;
+	cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background: #333;
+		color: white;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	body {
+		background: #ddd;
+		color: black;
+	}
+}
