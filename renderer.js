@@ -6,7 +6,6 @@ const xmlContentContainer = document.getElementById("xml-content");
 openFileButton.addEventListener("click", handleOpenFile);
 
 async function handleOpenFile() {
-	console.log("Se hizo click:", window.fileApi);
 	const fileContent = await window.fileApi.selectFile();
 
 	console.log({ fileContent });
@@ -15,7 +14,6 @@ async function handleOpenFile() {
 		return;
 	}
 
-	console.log({ fileContent });
 	xmlContentContainer.innerHTML = "";
 
 	const shipment = new Shipment({
@@ -36,3 +34,6 @@ async function handleOpenFile() {
 		shipment.setEventListener();
 	}
 }
+
+// Escuchar el evento desde el menú para abrir el archivo
+window.ipcRenderer.openFileEvent(handleOpenFile);

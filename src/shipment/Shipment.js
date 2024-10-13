@@ -197,26 +197,42 @@ export class Shipment {
 			return this.logError("No se encontró el botón de #guardar");
 		}
 
-		saveBtn.addEventListener("click", async () => {
-			console.log("Guardando archivo");
+		// Configurar el evento del botón en el DOM
+		saveBtn.addEventListener("click", () => this.saveFile("save"));
 
-			// Crea el contenido XML que deseas guardar
-			const xmlContent = await window.fileApi.createXMLFile(
-				this.ShipmentOriginal
-			);
+		// Configurar el evento de guardar archivo en el menú
+		window.ipcRenderer.saveFileAsEvent(() => this.saveFile("save-as"));
+		window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
+	}
 
-			// Guarda el archivo
-			const result = await window.fileApi.saveFile({
-				content: xmlContent,
-				fileName: this.FileName,
-			});
+	async saveFile(type) {
+		console.log("Guardando archivo");
 
-			if (result?.success) {
-				console.log("Archivo guardado en:", result?.filePath);
-			} else {
-				console.error("Error al guardar el archivo:", result?.error);
-			}
-		});
+		// Crea el contenido XML que deseas guardar
+		const xmlContent = await window.fileApi.createXMLFile(
+			this.ShipmentOriginal
+		);
+
+		// Guarda el archivo
+		let result = null;
+		const objConfiguration = {
+			content: xmlContent,
+			fileName: this.FileName,
+		};
+
+		if (type === "save-as") {
+			result = await window.fileApi.saveFileAs(objConfiguration);
+		} else {
+			result = await window.fileApi.saveFile(objConfiguration);
+		}
+
+		console.log({ result });
+
+		if (result?.success) {
+			console.log("Archivo guardado en:", result?.filePath);
+		} else {
+			console.error("Error al guardar el archivo:", result?.error);
+		}
 	}
 
 	logError(message) {

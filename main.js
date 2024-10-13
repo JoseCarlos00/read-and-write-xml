@@ -7,6 +7,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
 let mainWindow = null;
+let currentFilePath = null;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -28,11 +29,9 @@ function createMainWindow() {
 }
 
 app.whenReady().then(() => {
-	// Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
-	ipcMain.handle("dialog:select-file", selectFile);
-	ipcMain.handle("dialog:save-file", saveFile);
-
 	createMainWindow();
+
+	Menu.setApplicationMenu(template);
 
 	app.on("activate", function () {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
@@ -45,6 +44,7 @@ app.on("window-all-closed", () => {
 
 const parser = new xml2js.Parser();
 
+// Funcion para abrir un archivo y retornarlo
 async function selectFile() {
 	try {
 		const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -62,6 +62,9 @@ async function selectFile() {
 		const fileContent = fs.readFileSync(filePath, "utf-8");
 
 		if (!fileContent) return null;
+
+		// Actualizar la ruta actual después de guardar como
+		currentFilePath = filePath;
 
 		// Extraer el nombre del archivo
 		const fileName = path.basename(filePath);
@@ -83,23 +86,26 @@ async function selectFile() {
 	}
 }
 
-// Función para guardar archivo
-async function saveFile(event, { content, fileName = "archivo.xml" }) {
+// Función para guardar archivo como
+async function saveFileAs(event, { content, fileName = "archivo.xml" }) {
 	try {
 		if (!content) {
 			throw new Error("No existe el  contenido para guardar");
 		}
 
 		const result = await dialog.showSaveDialog({
-			title: "Guardar archivo",
+			title: "Guardar archivo como",
 			defaultPath: fileName,
 		});
 
-		console.log("path:", result.filePath);
-
 		if (!result.canceled && result.filePath) {
+			console.log("in:", result);
 			try {
-				fs.writeFileSync(result.filePath, content);
+				fs.writeFileSync(result.filePath, content, "utf-8");
+
+				// Actualizar la ruta actual después de guardar como
+				currentFilePath = result.filePath;
+
 				return { success: true, filePath: result.filePath };
 			} catch (error) {
 				console.error("Error al guardar el archivo:", error);
@@ -113,3 +119,113 @@ async function saveFile(event, { content, fileName = "archivo.xml" }) {
 		return { success: false, error: "Error al  guardar el archivo" };
 	}
 }
+
+// Funcion para guardar remplazando el archivo actual
+async function saveFile(event, { content, fileName = "archivo.xml" }) {
+	try {
+		if (!content) {
+			throw new Error("No hay contenido para guardar");
+		}
+
+		if (!currentFilePath) {
+			// Si no hay ruta actual, llama a "Guardar como" en su lugar
+			return saveFileAs(event, { content });
+		}
+
+		// Sobrescribir el archivo en la ruta actual
+		fs.writeFileSync(currentFilePath, content, "utf-8");
+		return { success: true, filePath: currentFilePath };
+	} catch (error) {
+		console.error("Error al guardar el archivo:", error);
+		return { success: false, error: error.message };
+	}
+}
+
+// Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
+ipcMain.handle("dialog:select-file", selectFile);
+ipcMain.handle("dialog:save-file", saveFile);
+ipcMain.handle("dialog:save-file-as", saveFileAs);
+
+// Crear el menú de la aplicación
+const template = Menu.buildFromTemplate([
+	{
+		label: "Archivo",
+		submenu: [
+			{
+				label: "Abrir archivo",
+				accelerator: "CmdOrCtrl+O",
+				click: () => {
+					mainWindow.webContents.send("menu-open-file");
+				},
+			},
+			{
+				label: "Guardar archivo",
+				accelerator: "CmdOrCtrl+S",
+				click: () => {
+					mainWindow.webContents.send("menu-save-file");
+				},
+			},
+			{
+				label: "Guardar Archivo Como",
+				accelerator: "CmdOrCtrl+Shift+S",
+				click: () => {
+					mainWindow.webContents.send("menu-save-file-as");
+				},
+			},
+			{ type: "separator" },
+			isMac ? { role: "close" } : { role: "quit" },
+		],
+	},
+	{
+		label: "Configuracion",
+		submenu: [
+			{
+				label: "Selecionar carpeta de destino",
+			},
+		],
+	},
+	{
+		label: "Edit",
+		submenu: [
+			{ role: "undo" },
+			{ role: "redo" },
+			{ type: "separator" },
+			{ role: "cut" },
+			{ role: "copy" },
+			{ role: "paste" },
+		],
+	},
+	// { role: 'windowMenu' }
+	{
+		label: "Window",
+		submenu: [
+			{ role: "minimize" },
+			{ role: "zoom" },
+			...(isMac
+				? [
+						{ type: "separator" },
+						{ role: "front" },
+						{ type: "separator" },
+						{ role: "window" },
+				  ]
+				: [{ role: "close" }]),
+		],
+	},
+	// { role: 'viewMenu' }
+	isDev
+		? {
+				label: "View",
+				submenu: [
+					{ role: "reload" },
+					{ role: "forceReload" },
+					{ role: "toggleDevTools" },
+					{ type: "separator" },
+					{ role: "resetZoom" },
+					{ role: "zoomIn" },
+					{ role: "zoomOut" },
+					{ type: "separator" },
+					{ role: "togglefullscreen" },
+				],
+		  }
+		: "",
+]);
