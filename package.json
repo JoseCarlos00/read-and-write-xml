@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "App  xml",
   "main": "main.js",
+   "repository": {
+    "type": "git",
+    "url": "https://github.com/JoseCarlos00/read-and-write-xml"
+  },
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
