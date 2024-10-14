@@ -1,10 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-const path = require("node:path");
-const fs = require("node:fs");
-const xml2js = require("xml2js");
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron/main');
+const path = require('node:path');
+const fs = require('node:fs');
+const xml2js = require('xml2js');
 
-const isDev = process.env.NODE_ENV !== "production";
-const isMac = process.platform === "darwin";
+const isDev = process.env.NODE_ENV !== 'production';
+const isMac = process.platform === 'darwin';
 
 let mainWindow = null;
 let currentFilePath = null;
@@ -16,11 +16,11 @@ function createMainWindow() {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: true,
-			preload: path.join(__dirname, "preload.js"),
+			preload: path.join(__dirname, 'preload.js'),
 		},
 	});
 
-	mainWindow.loadFile("index.html");
+	mainWindow.loadFile('index.html');
 
 	// Show devtools automatically if in development
 	if (isDev) {
@@ -33,12 +33,12 @@ app.whenReady().then(() => {
 
 	Menu.setApplicationMenu(template);
 
-	app.on("activate", function () {
+	app.on('activate', function () {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
 });
 
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
 	if (!isMac) app.quit();
 });
 
@@ -48,10 +48,10 @@ const parser = new xml2js.Parser();
 async function selectFile() {
 	try {
 		const { canceled, filePaths } = await dialog.showOpenDialog({
-			properties: ["openFile"],
-			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP"] }],
-			title: "Selecione un  archivo XML",
-			buttonLabel: "Abrir",
+			properties: ['openFile'],
+			filters: [{ name: 'Archivos XML', extensions: ['xml', 'shxmlP'] }],
+			title: 'Selecione un  archivo XML',
+			buttonLabel: 'Abrir',
 		});
 
 		if (canceled || filePaths.length === 0) {
@@ -59,7 +59,7 @@ async function selectFile() {
 		}
 
 		const filePath = filePaths[0];
-		const fileContent = fs.readFileSync(filePath, "utf-8");
+		const fileContent = fs.readFileSync(filePath, 'utf-8');
 
 		if (!fileContent) return null;
 
@@ -82,49 +82,49 @@ async function selectFile() {
 			});
 		});
 	} catch (error) {
-		console.error("Error:", error);
+		console.error('Error:', error);
 	}
 }
 
 // Función para guardar archivo como
-async function saveFileAs(event, { content, fileName = "archivo.xml" }) {
+async function saveFileAs(event, { content, fileName = 'archivo.xml' }) {
 	try {
 		if (!content) {
-			throw new Error("No existe el  contenido para guardar");
+			throw new Error('No existe el  contenido para guardar');
 		}
 
 		const result = await dialog.showSaveDialog({
-			title: "Guardar archivo como",
+			title: 'Guardar archivo como',
 			defaultPath: fileName,
 		});
 
 		if (!result.canceled && result.filePath) {
-			console.log("in:", result);
+			console.log('in:', result);
 			try {
-				fs.writeFileSync(result.filePath, content, "utf-8");
+				fs.writeFileSync(result.filePath, content, 'utf-8');
 
 				// Actualizar la ruta actual después de guardar como
 				currentFilePath = result.filePath;
 
 				return { success: true, filePath: result.filePath };
 			} catch (error) {
-				console.error("Error al guardar el archivo:", error);
+				console.error('Error al guardar el archivo:', error);
 				return { success: false, error: error.message };
 			}
 		}
 
-		return { success: false, error: "El usuario canceló la acción" };
+		return { success: false, error: 'El usuario canceló la acción' };
 	} catch (error) {
-		console.error("Error en el diálogo de guardar:", error);
-		return { success: false, error: "Error al  guardar el archivo" };
+		console.error('Error en el diálogo de guardar:', error);
+		return { success: false, error: 'Error al  guardar el archivo' };
 	}
 }
 
 // Funcion para guardar remplazando el archivo actual
-async function saveFile(event, { content, fileName = "archivo.xml" }) {
+async function saveFile(event, { content, fileName = 'archivo.xml' }) {
 	try {
 		if (!content) {
-			throw new Error("No hay contenido para guardar");
+			throw new Error('No hay contenido para guardar');
 		}
 
 		if (!currentFilePath) {
@@ -133,99 +133,99 @@ async function saveFile(event, { content, fileName = "archivo.xml" }) {
 		}
 
 		// Sobrescribir el archivo en la ruta actual
-		fs.writeFileSync(currentFilePath, content, "utf-8");
+		fs.writeFileSync(currentFilePath, content, 'utf-8');
 		return { success: true, filePath: currentFilePath };
 	} catch (error) {
-		console.error("Error al guardar el archivo:", error);
+		console.error('Error al guardar el archivo:', error);
 		return { success: false, error: error.message };
 	}
 }
 
 // Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
-ipcMain.handle("dialog:select-file", selectFile);
-ipcMain.handle("dialog:save-file", saveFile);
-ipcMain.handle("dialog:save-file-as", saveFileAs);
+ipcMain.handle('dialog:select-file', selectFile);
+ipcMain.handle('dialog:save-file', saveFile);
+ipcMain.handle('dialog:save-file-as', saveFileAs);
 
 // Crear el menú de la aplicación
 const template = Menu.buildFromTemplate([
 	{
-		label: "Archivo",
+		label: 'Archivo',
 		submenu: [
 			{
-				label: "Abrir archivo",
-				accelerator: "CmdOrCtrl+O",
+				label: 'Abrir archivo',
+				accelerator: 'CmdOrCtrl+O',
 				click: () => {
-					mainWindow.webContents.send("menu-open-file");
+					mainWindow.webContents.send('menu-open-file');
 				},
 			},
 			{
-				label: "Guardar archivo",
-				accelerator: "CmdOrCtrl+S",
+				label: 'Guardar archivo',
+				accelerator: 'CmdOrCtrl+S',
 				click: () => {
-					mainWindow.webContents.send("menu-save-file");
+					mainWindow.webContents.send('menu-save-file');
 				},
 			},
 			{
-				label: "Guardar Archivo Como",
-				accelerator: "CmdOrCtrl+Shift+S",
+				label: 'Guardar Archivo Como',
+				accelerator: 'CmdOrCtrl+Shift+S',
 				click: () => {
-					mainWindow.webContents.send("menu-save-file-as");
+					mainWindow.webContents.send('menu-save-file-as');
 				},
 			},
-			{ type: "separator" },
-			isMac ? { role: "close" } : { role: "quit" },
+			{ type: 'separator' },
+			isMac ? { role: 'close' } : { role: 'quit' },
 		],
 	},
 	{
-		label: "Configuracion",
+		label: 'Configuracion',
 		submenu: [
 			{
-				label: "Selecionar carpeta de destino",
+				label: 'Selecionar carpeta de destino',
 			},
 		],
 	},
 	{
-		label: "Edit",
+		label: 'Edit',
 		submenu: [
-			{ role: "undo" },
-			{ role: "redo" },
-			{ type: "separator" },
-			{ role: "cut" },
-			{ role: "copy" },
-			{ role: "paste" },
+			{ role: 'undo' },
+			{ role: 'redo' },
+			{ type: 'separator' },
+			{ role: 'cut' },
+			{ role: 'copy' },
+			{ role: 'paste' },
 		],
 	},
 	// { role: 'windowMenu' }
 	{
-		label: "Window",
+		label: 'Window',
 		submenu: [
-			{ role: "minimize" },
-			{ role: "zoom" },
+			{ role: 'minimize' },
+			{ role: 'zoom' },
 			...(isMac
 				? [
-						{ type: "separator" },
-						{ role: "front" },
-						{ type: "separator" },
-						{ role: "window" },
+						{ type: 'separator' },
+						{ role: 'front' },
+						{ type: 'separator' },
+						{ role: 'window' },
 				  ]
-				: [{ role: "close" }]),
+				: [{ role: 'close' }]),
 		],
 	},
 	// { role: 'viewMenu' }
 	isDev
 		? {
-				label: "View",
+				label: 'View',
 				submenu: [
-					{ role: "reload" },
-					{ role: "forceReload" },
-					{ role: "toggleDevTools" },
-					{ type: "separator" },
-					{ role: "resetZoom" },
-					{ role: "zoomIn" },
-					{ role: "zoomOut" },
-					{ type: "separator" },
-					{ role: "togglefullscreen" },
+					{ role: 'reload' },
+					{ role: 'forceReload' },
+					{ role: 'toggleDevTools' },
+					{ type: 'separator' },
+					{ role: 'resetZoom' },
+					{ role: 'zoomIn' },
+					{ role: 'zoomOut' },
+					{ type: 'separator' },
+					{ role: 'togglefullscreen' },
 				],
 		  }
-		: "",
+		: '',
 ]);
