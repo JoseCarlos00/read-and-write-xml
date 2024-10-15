@@ -23,17 +23,7 @@ async function handleOpenFile() {
 		FileName: fileContent.fileName,
 	});
 
-	const table = await shipment.createTable();
-	const panelInfo = await shipment.createPanelInfo();
-
-	if (panelInfo) {
-		xmlContentContainer.appendChild(panelInfo);
-	}
-
-	if (table) {
-		xmlContentContainer.appendChild(table);
-		shipment.setEventListeners();
-	}
+	shipment.render();
 }
 
 // Escuchar el evento desde el menú para abrir el archivo

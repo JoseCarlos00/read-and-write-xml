@@ -304,12 +304,6 @@ table {
 	scale: 0.9;
 }
 
-/* Footer */
-.footer {
-	width: 100%;
-	height: 50px;
-}
-
 .container-info-x {
 	width: 80%;
 	max-width: 800px;
@@ -412,6 +406,12 @@ table {
 	.card-footer {
 		position: relative;
 	}
+}
+
+/* Footer */
+.footer {
+	width: 100%;
+	height: 50px;
 }
 
 /* Utils */
