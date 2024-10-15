@@ -11,13 +11,15 @@ export class GetTable {
 		const thead = document.createElement("thead");
 		thead.innerHTML = /*html*/ `
 				<tr>
-					<th>No</th>
+					<th class="select-all">
+						<input-checkbox my-id="selectAll"></input-checkbox>
+						<span>All</span>
+					</th>
 					<th>Item</th>
 					<th>Quantity</th>
 					<th>Line Number</th>
 					<th>Edit</th>
 					<th>Delete</th>
-					<th>Lock</th>
 				</tr>
     `;
 
@@ -50,40 +52,45 @@ export class GetTable {
 				return;
 			}
 
-			const { Item, Quantity } = SKU?.[0];
+			const { Item, Quantity } = SKU[0];
 			const tr = document.createElement("tr");
 
-			const tdEmpty = document.createElement("td");
+			const tdCheckbox = document.createElement("td");
 			const tdItem = document.createElement("td");
 			const tdQuantity = document.createElement("td");
 			const tdErpOrderLineNum = document.createElement("td");
 			const tdEditRow = document.createElement("td");
 			const tdDeleteRow = document.createElement("td");
-			const tdLock = document.createElement("td");
 
-			tdEmpty.textContent = index + 1;
+			tdCheckbox.innerHTML = `<input-checkbox></input-checkbox>`;
 			tdItem.textContent = Item;
 
 			tdQuantity.innerHTML = `<label>${Quantity}</label><input class="edit-qty" type="number" min="1" value="">`;
-			tdQuantity.setAttribute("align", "center");
-			tdQuantity.dataset["index"] = index;
+			tdQuantity.dataset["lineNumber"] = ErpOrderLineNum;
 			tdQuantity.classList.add("quantity");
 
 			tdErpOrderLineNum.textContent = ErpOrderLineNum;
-			tdEditRow.classList.add("edit");
-			tdEditRow.dataset["index"] = index;
-			tdDeleteRow.classList.add("delete");
-			tdDeleteRow.dataset["index"] = index;
-			tdLock.className = "lock open";
-			tdLock.dataset["index"] = index;
 
-			tr.appendChild(tdEmpty);
+			tdEditRow.classList.add("position-relative");
+			tdEditRow.dataset["lineNumber"] = ErpOrderLineNum;
+			tdEditRow.innerHTML = `
+				<svg class="icon icon-table" data-is-element="erpOrder">
+					<use href="src/icon/icons.svg#pencil"></use>
+				</svg>`;
+
+			tdDeleteRow.classList.add("position-relative");
+			tdDeleteRow.dataset["lineNumber"] = ErpOrderLineNum;
+			tdDeleteRow.innerHTML = `
+					<svg class="icon icon-table" data-is-element="erpOrder">
+						<use href="src/icon/icons.svg#delete-fill"></use>
+					</svg>`;
+
+			tr.appendChild(tdCheckbox);
 			tr.appendChild(tdItem);
 			tr.appendChild(tdQuantity);
 			tr.appendChild(tdErpOrderLineNum);
 			tr.appendChild(tdEditRow);
 			tr.appendChild(tdDeleteRow);
-			tr.appendChild(tdLock);
 
 			tbody.appendChild(tr);
 		});

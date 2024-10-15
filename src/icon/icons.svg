@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="edit" viewBox="0 0 24 24">
+      <path d="M4 5L15 5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 8H15" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 11H11" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M18.4563 13.5423L13.9268 18.0719C13.6476 18.3511 13.292 18.5414 12.9048 18.6188L10.8153 19.0367L11.2332 16.9472C11.3106 16.5601 11.5009 16.2045 11.7801 15.9253L16.3096 11.3957M18.4563 13.5423L19.585 12.4135C19.9755 12.023 19.9755 11.3898 19.585 10.9993L18.8526 10.2669C18.4621 9.8764 17.8289 9.8764 17.4384 10.2669L16.3096 11.3957M18.4563 13.5423L16.3096 11.3957"
+        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="pencil" viewBox="0 0 32 32">
+      <g fill="none">
+        <path fill="#FF822D" d="m16.635 7.585l4.51 2.535l2.561 4.537L9.37 28.992l-4.862-2.57l-2.21-4.5L16.635 7.584Z" />
+        <path fill="#FFCE7C" d="m1.39 28.065l.582 1.312l1.255.525l6.13-.925l-7.042-7.042l-.925 6.13Z" />
+        <path fill="#402A32" d="m1.063 30.229l.326-2.164l1.838 1.837l-2.164.327Z" />
+        <path fill="#F92F60"
+          d="M22.276 1.944a2 2 0 0 1 2.829 0l4.242 4.243a2 2 0 0 1 0 2.828l-3.535 3.536l-4.527-2.264L18.74 5.48l3.535-3.536Z" />
+        <path fill="#D3D3D3" d="m18.74 5.48l7.072 7.071l-2.122 2.121l-7.07-7.07l2.12-2.122Z" />
+      </g>
+    </symbol>
+
+    <symbol id="delete" viewBox="0 0 2048 2048">
+      <path fill="#750000"
+        d="M1792 384h-128v1472q0 40-15 75t-41 61t-61 41t-75 15H448q-40 0-75-15t-61-41t-41-61t-15-75V384H128V256h512V128q0-27 10-50t27-40t41-28t50-10h384q27 0 50 10t40 27t28 41t10 50v128h512v128zM768 256h384V128H768v128zm768 128H384v1472q0 26 19 45t45 19h1024q26 0 45-19t19-45V384zM768 1664H640V640h128v1024zm256 0H896V640h128v1024zm256 0h-128V640h128v1024z" />
+    </symbol>
+
+    <symbol id="delete-fill" viewBox="0 0 48 48">
+      <g fill="none" stroke-linejoin="round" stroke-width="4">
+        <path fill="#750000" stroke="#000" d="M9 10V44H39V10H9Z" />
+        <path stroke="#7970a3" stroke-linecap="round" d="M20 20V33" />
+        <path stroke="#7970a3" stroke-linecap="round" d="M28 20V33" />
+        <path stroke="#000" stroke-linecap="round" d="M4 10H44" />
+        <path fill="#750000" stroke="#000" d="M16 10L19.289 4H28.7771L32 10H16Z" />
+      </g>
+    </symbol>
+
+  </defs>
+</svg>
