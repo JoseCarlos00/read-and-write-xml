@@ -136,7 +136,35 @@ table {
 		color: var(--bs-table-color);
 
 		& td input {
+			&[type="number"]::-webkit-inner-spin-button,
+			&[type="number"]::-webkit-outer-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+
 			width: 54px;
+			height: 24px;
+			border-radius: 5px;
+			outline: none;
+			border: 1px solid #303030;
+			border-bottom: 2px solid #9a9a9a;
+			padding-left: 10px;
+			padding-right: 10px;
+			background-color: #2d2d2d;
+			color: white;
+			transition: all 0.3s ease;
+
+			&:active {
+				background-color: #1e1f20;
+				border: 1px solid #2d2d2d;
+				border-bottom: 2px solid #4cc2ff;
+			}
+
+			&:focus {
+				background-color: #1e1f20;
+				border: 1px solid #2d2d2d;
+				border-bottom: 2px solid #4cc2ff;
+			}
 		}
 
 		&:not(.editing) td input {
@@ -327,8 +355,30 @@ table {
 		align-items: flex-start;
 		flex-direction: column;
 
-		input {
-			width: 100%;
+		& input {
+			width: 120%;
+			height: 35px;
+			border-radius: 5px;
+			outline: none;
+			border: 1px solid #303030;
+			border-bottom: 2px solid #9a9a9a;
+			padding-left: 10px;
+			padding-right: 10px;
+			background-color: #2d2d2d;
+			color: white;
+			transition: all 0.3s ease;
+
+			&:active {
+				background-color: #1e1f20;
+				border: 1px solid #2d2d2d;
+				border-bottom: 2px solid #4cc2ff;
+			}
+
+			&:focus {
+				background-color: #1e1f20;
+				border: 1px solid #2d2d2d;
+				border-bottom: 2px solid #4cc2ff;
+			}
 		}
 
 		.info-title {
