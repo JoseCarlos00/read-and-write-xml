@@ -54,8 +54,12 @@ export class Shipment {
 		}
 	}
 
-	handleEventClickInPanelInfo(target) {
-		const { classList, dataset, nodeName } = target;
+	handleEventClickInPanelInfo({ classList, dataset, nodeName }) {
+		// const { classList, dataset, nodeName } = target;
+
+		console.log("classList:", classList);
+		console.log("dataset:", dataset);
+		console.log("nodeName:", nodeName);
 
 		if (nodeName === "SPAN" && classList.contains("edit")) {
 			this.editShipment(target, dataset?.isElemet);

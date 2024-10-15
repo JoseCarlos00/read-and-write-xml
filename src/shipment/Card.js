@@ -100,9 +100,11 @@ export class CardEditData extends Card {
 		const footer = document.createElement("footer");
 		footer.className = "card-footer";
 		footer.innerHTML = `
-				<svg class="icon" data-is-element="erpOrder">
+			<button class="icon" data-is-element="erpOrder">
+				<svg >
 						<use href="src/icon/icons.svg#pencil"></use>
-				</svg>		
+				</svg>	
+			</button>	
 		`;
 
 		return footer;
