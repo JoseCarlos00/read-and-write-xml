@@ -7,7 +7,7 @@ export class Shipment {
 		this.Shipment = Shipment;
 		this.FileName = FileName;
 
-		this.setEventForSave();
+		this.xmlContentContainer = document.getElementById("xml-content");
 	}
 
 	async createTable() {
@@ -28,15 +28,12 @@ export class Shipment {
 			);
 		}
 
-		const infoPanelDetail = await GetPanelInfo.getPanelInfoDetail(
-			this.Shipment
-		);
-		return infoPanelDetail;
+		await GetPanelInfo.setPanelInfoDetail(this.Shipment);
 	}
 
 	setEventListeners() {
 		const table = document.querySelector("table tbody");
-		const containerInfo = document.querySelector(".container-info");
+		const containerInfo = document.querySelector("#container-info");
 
 		if (table) {
 			table.addEventListener("click", (e) => {
@@ -356,6 +353,18 @@ export class Shipment {
 			console.log("Archivo guardado en:", result?.filePath);
 		} else {
 			console.error("Error al guardar el archivo:", result?.error);
+		}
+	}
+
+	async render() {
+		const table = await this.createTable();
+		await this.createPanelInfo();
+
+		if (table) {
+			this.xmlContentContainer.appendChild(table);
+
+			this.setEventListeners();
+			this.setEventForSave();
 		}
 	}
 

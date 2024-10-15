@@ -106,9 +106,9 @@ export class GetTable {
 		const getTable = new GetTable(shipment);
 
 		const caption = document.createElement("caption");
-		caption.innerHTML = `Total: <strong>${
+		caption.innerHTML = `Total lines: <strong>${
 			getTable.totalLines ?? ""
-		}</strong>, <small>Ordenada por Item</small>`;
+		}</strong>, <small>Order By Item</small>`;
 
 		const table = document.createElement("table");
 
