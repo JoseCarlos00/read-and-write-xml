@@ -381,19 +381,19 @@ table {
 			}
 		}
 
-		.info-title {
+		& .info-title {
 			font-weight: 600;
 			display: block;
 		}
 
-		.value-of {
+		& .value-of {
 			text-transform: capitalize;
 			font-style: italic;
 			font-size: 0.85rem;
 		}
 	}
 
-	.title {
+	& .card-title {
 		font-size: var(--body-font-size, 14px);
 		font-weight: 700;
 		margin-top: 0;

@@ -185,3 +185,89 @@ export class GetPanelInfo {
 		return await panelInfo.createPanelInfoDetail();
 	}
 }
+
+class Card {
+	constructor({ titleHeader = "No disponible", bodyContent = [] }) {
+		this.titleHeader = titleHeader;
+		this.bodyContent = bodyContent;
+
+		this.cardContainer = document.createElement("div");
+		this.cardContainer.classList.add("card-container");
+	}
+
+	createHeader() {
+		const header = document.createElement("header");
+
+		const title = document.createElement("h3");
+		title.className = "card-title mb-02";
+		title.textContent = this.titleHeader + ":";
+
+		header.appendChild(title);
+		return header;
+	}
+
+	createFooter() {
+		const footer = document.createElement("footer");
+		footer.className = "card-footer";
+
+		return footer;
+	}
+
+	createBodyChild(title, content) {
+		const child = document.createElement("div");
+		child.className = "mb-3";
+
+		const childContent = document.createElement("p");
+		childContent.className = "pr-6 mb-0";
+		childContent.innerHTML = `
+			<spam class="info-title">${title}:</spam>
+			<span class="value-of">${content}</span>
+			`;
+
+		child.appendChild(childContent);
+		return child;
+	}
+
+	createBody() {
+		const body = document.createElement("div");
+		body.classList.add("card-body");
+
+		if (this.bodyContent.length === 0) {
+			const emptyMessage = this.createBodyChild(
+				"",
+				"No information available."
+			);
+			body.appendChild(emptyMessage);
+
+			return body;
+		}
+
+		this.bodyContent.forEach(({ title, value }) => {
+			const child = this.createBodyChild(title, value);
+			body.appendChild(child);
+		});
+
+		return body;
+	}
+
+	render() {
+		const card = this.cardContainer;
+
+		const header = this.createHeader();
+		const body = this.createBody();
+		const footer = this.createFooter();
+
+		card.appendChild(header);
+		card.appendChild(body);
+		card.appendChild(footer);
+
+		const cardContainer = document.querySelector("#container-info");
+
+		if (!cardContainer) {
+			alert("Ha ocurido un error al crear el panel de informacion");
+			return;
+		}
+
+		cardContainer.appendChild(card);
+	}
+}
