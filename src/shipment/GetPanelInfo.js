@@ -117,6 +117,7 @@ export class GetPanelInfo {
 					title: shipmentId,
 				},
 			],
+			updateField: "shipmentId",
 		});
 
 		const cardErpOrder = new CardEditData({
@@ -126,6 +127,7 @@ export class GetPanelInfo {
 					title: erpOrder,
 				},
 			],
+			updateField: "erpOrder",
 		});
 
 		// Comentarios Card

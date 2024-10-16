@@ -11,7 +11,7 @@ let currentFilePath = null;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
-		width: isDev ? 1500 : 500,
+		width: isDev ? 1250 : 500,
 
 		webPreferences: {
 			nodeIntegration: true,

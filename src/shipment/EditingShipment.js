@@ -4,9 +4,7 @@ export class EditingShipment {
 		this.FileName = FileName;
 	}
 
-	handleEventClickInPanelInfo({ classList, dataset, nodeName }) {
-		// const { classList, dataset, nodeName } = target;
-
+	handleEventEditPanelInfoDetail({ classList, dataset, nodeName }) {
 		console.log("classList:", classList);
 		console.log("dataset:", dataset);
 		console.log("nodeName:", nodeName);
@@ -294,6 +292,7 @@ export class EditingShipment {
 			console.error("Error al guardar el archivo:", result?.error);
 		}
 	}
+
 	setEventForSave() {
 		const saveBtn = document.querySelector("#save-file-btn");
 
@@ -309,9 +308,8 @@ export class EditingShipment {
 		window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
 	}
 
-	setEventListeners() {
+	setEventClickInTable() {
 		const table = document.querySelector("table tbody");
-		const containerInfo = document.querySelector("#container-info");
 
 		if (table) {
 			table.addEventListener("click", (e) => {
@@ -321,19 +319,39 @@ export class EditingShipment {
 		} else {
 			this.logError("[setEventListener]: table is not defined");
 		}
+	}
 
-		if (containerInfo) {
-			containerInfo.addEventListener("click", (e) => {
-				const { target } = e;
-				this.handleEventClickInPanelInfo(target);
-			});
-		} else {
+	setEvetEditPanelInfoDetail() {
+		const buttonsEditContent = [
+			...document.querySelectorAll(
+				"#container-info .card-container button.icon"
+			),
+		];
+
+		if (!buttonsEditContent) {
 			this.logError("[setEventListener]: containerInfo is not defined");
 		}
+
+		if (buttonsEditContent.length === 0) {
+			return this.logError(
+				"[setEventListener]: buttonsEditContent is not defined"
+			);
+		}
+
+		buttonsEditContent.forEach((button) => {
+			button.addEventListener("click", () =>
+				this.handleEventEditPanelInfoDetail(button)
+			);
+		});
+	}
+
+	logError(message) {
+		console.error(`Error: ${message}`);
 	}
 
 	initEvents() {
 		this.setEventForSave();
-		this.setEventListeners();
+		this.setEventClickInTable();
+		this.setEvetEditPanelInfoDetail();
 	}
 }

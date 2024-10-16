@@ -88,19 +88,21 @@ export class Card {
 }
 
 export class CardEditData extends Card {
-	constructor(configuration) {
-		super(configuration);
+	constructor({ titleHeader, bodyContent, updateField }) {
+		super({ titleHeader, bodyContent });
 
 		this.emptyMessage = {
 			title: "No hay información disponible",
 		};
+
+		this.updateField = updateField;
 	}
 
 	createFooter() {
 		const footer = document.createElement("footer");
 		footer.className = "card-footer";
 		footer.innerHTML = `
-			<button class="icon" data-is-element="erpOrder">
+			<button class="icon" data-update-field="${this.updateField}">
 				<svg >
 						<use href="src/icon/icons.svg#pencil"></use>
 				</svg>	
