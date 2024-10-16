@@ -1,15 +1,21 @@
 import { Card, CardEditData } from "./Card.js";
 
+/**
+ * Clase para gestionar la creación y renderización de paneles de información de `Shipment`.
+ */
 export class GetPanelInfo {
 	constructor(Shipment) {
 		this.Shipment = Shipment ?? [];
 		this.cardContainer = document.querySelector("#container-info");
 	}
 
+	/**
+	 * Crea y renderiza un panel con la información del cliente.
+	 */
 	#createPanelCustomer() {
 		const objCustomer = this.Shipment?.Customer?.[0];
 		if (!objCustomer) {
-			return null;
+			return;
 		}
 
 		const customerValue = objCustomer?.Customer?.[0] ?? "";
@@ -38,10 +44,13 @@ export class GetPanelInfo {
 		cardCustomer.render();
 	}
 
+	/**
+	 * Crea y renderiza un panel con la dirección de envío.
+	 */
 	#createPanelShipTo() {
 		const objCustomer = this.Shipment?.Customer?.[0];
 		if (!objCustomer) {
-			return null;
+			return;
 		}
 
 		const shipTo = objCustomer?.ShipTo?.[0] ?? "";
@@ -95,6 +104,9 @@ export class GetPanelInfo {
 		cardOrder.render();
 	}
 
+	/**
+	 * Crea y renderiza un panel con los detalles del `Shipment`.
+	 */
 	async createPanelInfoDetail() {
 		if (!this.cardContainer) {
 			alert("Alerta usuario");
@@ -157,9 +169,14 @@ export class GetPanelInfo {
 		this.#createPanelOrderDetail();
 	}
 
+	/**
+	 * Método estático para inicializar el panel de información detallada del `Shipment`.
+	 * @param {Object} Shipment - Objeto de `Shipment`.
+	 */
 	static async setPanelInfoDetail(Shipment) {
 		if (!Shipment) {
 			alert("No se pudo inicializar el panel info detail");
+			return;
 		}
 
 		const panelInfo = new GetPanelInfo(Shipment);
