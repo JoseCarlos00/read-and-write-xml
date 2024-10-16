@@ -1,12 +1,24 @@
+/**
+ * Clase para gestionar la creación y renderización
+ * de una tabla basada en los detalles del `Shipment`.
+ */
 export class GetTable {
 	constructor(Shipment) {
 		this.ShipmentDetails = Shipment.Details?.[0]?.ShipmentDetail ?? [];
 	}
 
+	/**
+	 * Obtiene el total de líneas del `Shipment`.
+	 * @return {number} Número total de líneas en ShipmentDetails.
+	 */
 	get totalLines() {
 		return this.ShipmentDetails.length;
 	}
 
+	/**
+	 * Genera y retorna el elemento `<thead>` de la tabla.
+	 * @return {HTMLElement} El elemento thead para la tabla.
+	 */
 	getThead() {
 		const thead = document.createElement("thead");
 		thead.innerHTML = /*html*/ `
@@ -26,10 +38,10 @@ export class GetTable {
 		return thead;
 	}
 
-	async insertDataSetIndexOriginal() {
-		tdQuantity.dataset["index"] = index;
-	}
-
+	/**
+	 * Genera y retorna el elemento `<tbody>` de la tabla con filas basadas en los detalles del `Shipment`.
+	 * @return {HTMLElement} El elemento tbody para la tabla.
+	 */
 	async getTbody() {
 		if (this.ShipmentDetails.length === 0) {
 			console.error("No se encontró el elemento ShipmentDetails");
@@ -115,6 +127,11 @@ export class GetTable {
 		return tbody;
 	}
 
+	/**
+	 * Crea una instancia de GetTable, construye el elemento de la tabla y lo retorna.
+	 * @param {Object} shipment - Objeto de envío con detalles de `Shipment`.
+	 * @return {HTMLElement|null} La tabla generada o null si no hay datos de envío.
+	 */
 	static async getTableElement(shipment) {
 		if (!shipment) {
 			return null;
@@ -131,7 +148,7 @@ export class GetTable {
 
 		table.appendChild(caption);
 		table.appendChild(getTable.getThead());
-		table.appendChild(await getTable.getTbody());
+		table.appendChild(getTable.getTbody());
 
 		return table;
 	}
