@@ -307,11 +307,11 @@ table {
 			}
 		}
 
-		&:not(.editing) td input {
+		& td:not(.editing) input {
 			display: none;
 		}
 
-		&.editing td label {
+		& td.editing label {
 			display: none;
 		}
 	}

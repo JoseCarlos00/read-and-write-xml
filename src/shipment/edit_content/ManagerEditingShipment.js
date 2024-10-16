@@ -1,4 +1,4 @@
-import { HandleEventManagerEditShipment } from "./EditShipment.js";
+import { HandleEventManagerEditShipmentDetail } from "./EditShipmentDetail.js";
 import { HandleEventManagerEditIDetailItem } from "./EditDetailItem.js";
 
 export class ManagerEditingShipment {
@@ -95,7 +95,9 @@ export class ManagerEditingShipment {
 			);
 		}
 
-		const eventManager = new HandleEventManagerEditShipment(this.Shipment);
+		const eventManager = new HandleEventManagerEditShipmentDetail(
+			this.Shipment
+		);
 
 		buttonsEditContent.forEach((button) => {
 			button.addEventListener("click", () =>

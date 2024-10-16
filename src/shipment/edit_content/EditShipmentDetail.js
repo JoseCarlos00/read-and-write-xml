@@ -1,4 +1,13 @@
-export class HandleEventManagerEditShipment {
+/**
+ * Clase manejadora de los eventos en el panel de detalles para editar el contenido de un envío.
+ * Proporciona métodos para habilitar la edición, gestionar eventos de entrada, y actualizar
+ * el objeto `Shipment` con los cambios realizados.
+ */
+export class HandleEventManagerEditShipmentDetail {
+	/**
+	 * Crea una instancia de la clase HandleEventManagerEditShipmentDetail.
+	 * @param {Object} Shipment - Objeto que contiene los detalles del envío a editar.
+	 */
 	constructor(Shipment) {
 		this.Shipment = Shipment;
 
@@ -9,7 +18,11 @@ export class HandleEventManagerEditShipment {
 		this.currentValue = "";
 	}
 
-	// Maneja el evento de edición en el panel de información
+	/**
+	 * Maneja el evento de edición en el panel de información, identifica el campo a editar
+	 * y ejecuta la función correspondiente según el campo seleccionado.
+	 * @param {Button} target - Elemento button que ejecuta el evento del click.
+	 */
 	handleEventEditPanelInfoDetail(target) {
 		const { updateField } = target.dataset;
 		const currentCardContainer = target.closest(".card-container");
@@ -37,7 +50,10 @@ export class HandleEventManagerEditShipment {
 		}
 	}
 
-	// Método principal para editar un campo de Shipment
+	/**
+	 * Inicia el proceso de edición del campo seleccionado en el panel de detalles.
+	 * Prepara el input para recibir el nuevo valor y lo enfoca para editar.
+	 */
 	editShipment() {
 		this.currentLabel =
 			this.currentCardContainer.querySelector(".text-for-editing");
@@ -60,9 +76,12 @@ export class HandleEventManagerEditShipment {
 
 		this.insertEvent();
 		this.input.focus();
+		this.input.select();
 	}
 
-	// Cierra el input y remueve el modo edición
+	/**
+	 * Cierra el input de edición y limpia el estado de edición del campo actual.
+	 */
 	closeInput = () => {
 		this.input.value = "";
 		this.currentCardContainer.classList.remove("editing");
@@ -70,7 +89,11 @@ export class HandleEventManagerEditShipment {
 		this.input.removeEventListener("blur", this.handleInputEvents);
 	};
 
-	// Edita el contenido de Shipment
+	/**
+	 * Actualiza el contenido de `Shipment` con el nuevo valor ingresado, si es diferente
+	 * al valor actual. Si el campo a editar es válido, actualiza el objeto `Shipment`.
+	 * @param {string} newValue - Nuevo valor ingresado por el usuario.
+	 */
 	editContent = (newValue) => {
 		const { Shipment, updateField } = this;
 
@@ -96,7 +119,12 @@ export class HandleEventManagerEditShipment {
 		this.closeInput();
 	};
 
-	// Maneja eventos de blur y keydown
+	/**
+	 * Maneja eventos de teclado y pérdida de foco en el input de edición.
+	 * Si el usuario presiona Enter o pierde el foco, guarda el nuevo valor.
+	 * Si presiona Escape, cancela la edición.
+	 * @param {Event} event -Objeto Event de teclado o de pérdida de foco.
+	 */
 	handleInputEvents = (event) => {
 		if (event.type === "blur" || event.key === "Enter") {
 			const newValue = this.input.value.trim();
@@ -114,13 +142,20 @@ export class HandleEventManagerEditShipment {
 		}
 	};
 
-	// Inserta eventos en el input de edición
+	/**
+	 * Asigna los eventos necesarios al input para manejar la edición (blur y keydown).
+	 */
 	insertEvent() {
 		this.input.addEventListener("blur", this.handleInputEvents);
 		this.input.addEventListener("keydown", this.handleInputEvents);
 	}
 
-	// Muestra mensajes de error al usuario
+	/**
+	 * TODO: Quitar alert y  mostrar mensaje de error personalizado.
+	 * Muestra un mensaje de error al usuario en caso de que ocurra un problema durante
+	 * el proceso de edición.
+	 * @param {string} message - Mensaje de error a mostrar.
+	 */
 	showUserError(message) {
 		alert(message);
 		console.error(message);
