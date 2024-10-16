@@ -148,7 +148,7 @@ export class GetTable {
 
 		table.appendChild(caption);
 		table.appendChild(getTable.getThead());
-		table.appendChild(getTable.getTbody());
+		table.appendChild(await getTable.getTbody());
 
 		return table;
 	}
