@@ -1,4 +1,4 @@
-import { Shipment } from "./src/shipment/Shipment.js";
+import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
 
 const openFileButton = document.getElementById("open-file-btn");
 const xmlContentContainer = document.getElementById("xml-content");
@@ -17,7 +17,7 @@ async function handleOpenFile() {
 
 	xmlContentContainer.innerHTML = "";
 
-	const shipment = new Shipment({
+	const shipment = new ShipmentManager({
 		Shipment: fileContent.shipment,
 		Original: fileContent.original,
 		FileName: fileContent.fileName,

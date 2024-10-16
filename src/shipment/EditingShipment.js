@@ -1,57 +1,7 @@
-import { GetTable } from "./GetTable.js";
-import { GetPanelInfo } from "./GetPanelInfo.js";
-
-export class Shipment {
-	constructor({ Shipment, Original, FileName }) {
-		this.ShipmentOriginal = Original;
-		this.Shipment = Shipment;
+export class EditingShipment {
+	constructor({ ShipmentOriginal, FileName }) {
+		this.ShipmentOriginal = ShipmentOriginal;
 		this.FileName = FileName;
-
-		this.xmlContentContainer = document.getElementById("xml-content");
-	}
-
-	async createTable() {
-		if (!this.Shipment) {
-			return this.logError(
-				"[createTable]: no se encontró el elemento [Shipment]"
-			);
-		}
-
-		const table = await GetTable.getTableElement(this.Shipment);
-		return table;
-	}
-
-	async createPanelInfo() {
-		if (!this.Shipment) {
-			return this.logError(
-				"[createPanelInfo]: no se encontró el elemento [Shipment]"
-			);
-		}
-
-		await GetPanelInfo.setPanelInfoDetail(this.Shipment);
-	}
-
-	setEventListeners() {
-		const table = document.querySelector("table tbody");
-		const containerInfo = document.querySelector("#container-info");
-
-		if (table) {
-			table.addEventListener("click", (e) => {
-				const { target } = e;
-				this.handleEventClickInTable(target);
-			});
-		} else {
-			this.logError("[setEventListener]: table is not defined");
-		}
-
-		if (containerInfo) {
-			containerInfo.addEventListener("click", (e) => {
-				const { target } = e;
-				this.handleEventClickInPanelInfo(target);
-			});
-		} else {
-			this.logError("[setEventListener]: containerInfo is not defined");
-		}
 	}
 
 	handleEventClickInPanelInfo({ classList, dataset, nodeName }) {
@@ -315,21 +265,6 @@ export class Shipment {
 		input.focus(); // Foco en el input
 	}
 
-	setEventForSave() {
-		const saveBtn = document.querySelector("#save-file-btn");
-
-		if (!saveBtn) {
-			return this.logError("No se encontró el botón de #guardar");
-		}
-
-		// Configurar el evento del botón en el DOM
-		saveBtn.addEventListener("click", () => this.saveFile("save"));
-
-		// Configurar el evento de guardar archivo en el menú
-		window.ipcRenderer.saveFileAsEvent(() => this.saveFile("save-as"));
-		window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
-	}
-
 	async saveFile(type) {
 		console.log("Guardando archivo");
 
@@ -359,20 +294,46 @@ export class Shipment {
 			console.error("Error al guardar el archivo:", result?.error);
 		}
 	}
+	setEventForSave() {
+		const saveBtn = document.querySelector("#save-file-btn");
 
-	async render() {
-		const table = await this.createTable();
-		await this.createPanelInfo();
+		if (!saveBtn) {
+			return this.logError("No se encontró el botón de #guardar");
+		}
+
+		// Configurar el evento del botón en el DOM
+		saveBtn.addEventListener("click", () => this.saveFile("save"));
+
+		// Configurar el evento de guardar archivo en el menú
+		window.ipcRenderer.saveFileAsEvent(() => this.saveFile("save-as"));
+		window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
+	}
+
+	setEventListeners() {
+		const table = document.querySelector("table tbody");
+		const containerInfo = document.querySelector("#container-info");
 
 		if (table) {
-			this.xmlContentContainer.appendChild(table);
+			table.addEventListener("click", (e) => {
+				const { target } = e;
+				this.handleEventClickInTable(target);
+			});
+		} else {
+			this.logError("[setEventListener]: table is not defined");
+		}
 
-			this.setEventListeners();
-			this.setEventForSave();
+		if (containerInfo) {
+			containerInfo.addEventListener("click", (e) => {
+				const { target } = e;
+				this.handleEventClickInPanelInfo(target);
+			});
+		} else {
+			this.logError("[setEventListener]: containerInfo is not defined");
 		}
 	}
 
-	logError(message) {
-		console.error(`Error: ${message}`);
+	initEvents() {
+		this.setEventForSave();
+		this.setEventListeners();
 	}
 }

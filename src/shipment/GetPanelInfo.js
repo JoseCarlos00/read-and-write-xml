@@ -146,6 +146,7 @@ export class GetPanelInfo {
 			bodyContent,
 		});
 
+		// Renderizar  cards
 		cardShipment.render();
 		cardErpOrder.render();
 		this.#createPanelCustomer();
