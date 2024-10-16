@@ -2,6 +2,9 @@ import { GetTable } from "./GetTable.js";
 import { GetPanelInfo } from "./GetPanelInfo.js";
 import { ManagerEditingShipment } from "./edit_content/ManagerEditingShipment.js";
 
+/**
+ * Clase para gestionar la creación y renderización de tablas y paneles de información de envíos.
+ */
 export class ShipmentManager {
 	constructor({ Shipment, ShipmentOriginal, FileName }) {
 		this.Shipment = Shipment;
@@ -15,6 +18,10 @@ export class ShipmentManager {
 		this.xmlContentContainer = document.getElementById("xml-content");
 	}
 
+	/**
+	 * Crea una tabla basada en los datos del envío.
+	 * @return {HTMLElement|null} Retorna el elemento de la tabla si se crea con éxito, o null si no se encuentra el envío.
+	 */
 	async createTable() {
 		if (!this.Shipment) {
 			return this.logError(
@@ -26,6 +33,10 @@ export class ShipmentManager {
 		return table;
 	}
 
+	/**
+	 * Crea un panel de información basado en los datos del envío.
+	 * @return {Promise<void>} Retorna una promesa que se resuelve cuando se completa la creación del panel.
+	 */
 	async createPanelInfo() {
 		if (!this.Shipment) {
 			return this.logError(
@@ -33,9 +44,13 @@ export class ShipmentManager {
 			);
 		}
 
-		await GetPanelInfo.setPanelInfoDetail(this.Shipment);
+		GetPanelInfo.setPanelInfoDetail(this.Shipment);
 	}
 
+	/**
+	 * Renderiza la tabla y el panel de información en el contenedor correspondiente.
+	 * Inicializa eventos de edición después de la renderización.
+	 */
 	async render() {
 		const table = await this.createTable();
 		await this.createPanelInfo();
@@ -47,6 +62,10 @@ export class ShipmentManager {
 		}
 	}
 
+	/**
+	 * Registra un mensaje de error en la consola.
+	 * @param {string} message - Mensaje de error a registrar.
+	 */
 	logError(message) {
 		console.error(`Error: ${message}`);
 	}
