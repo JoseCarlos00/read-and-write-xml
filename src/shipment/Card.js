@@ -1,4 +1,13 @@
+/**
+ * Clase que representa una tarjeta de información.
+ */
 export class Card {
+	/**
+	 * Crea una instancia de la tarjeta.
+	 * @param {Object} options - Opciones para la tarjeta.
+	 * @param {string} options.titleHeader - Título de la tarjeta.
+	 * @param {Array} options.bodyContent - Contenido del cuerpo de la tarjeta.
+	 */
 	constructor({ titleHeader = "No disponible", bodyContent = [] }) {
 		this.titleHeader = titleHeader;
 		this.bodyContent = bodyContent;
@@ -12,6 +21,10 @@ export class Card {
 		};
 	}
 
+	/**
+	 * Crea el encabezado de la tarjeta.
+	 * @return {HTMLElement} El elemento del encabezado de la tarjeta.
+	 */
 	createHeader() {
 		const header = document.createElement("header");
 
@@ -23,6 +36,10 @@ export class Card {
 		return header;
 	}
 
+	/**
+	 * Crea el pie de la tarjeta.
+	 * @return {HTMLElement} El elemento del pie de la tarjeta.
+	 */
 	createFooter() {
 		const footer = document.createElement("footer");
 		footer.className = "card-footer";
@@ -30,6 +47,13 @@ export class Card {
 		return footer;
 	}
 
+	/**
+	 * Crea un hijo del cuerpo de la tarjeta.
+	 * @param {Object} param0 - Objeto con título y contenido.
+	 * @param {string} param0.title - Título del contenido.
+	 * @param {string} param0.content - Contenido del hijo.
+	 * @return {HTMLElement} El elemento del hijo creado.
+	 */
 	createBodyChild({ title, content }) {
 		const child = document.createElement("div");
 		child.className = "mb-3";
@@ -46,6 +70,10 @@ export class Card {
 		return child;
 	}
 
+	/**
+	 * Crea el cuerpo de la tarjeta.
+	 * @return {HTMLElement} El elemento del cuerpo de la tarjeta.
+	 */
 	createBody() {
 		const body = document.createElement("div");
 		body.classList.add("card-body");
@@ -65,6 +93,9 @@ export class Card {
 		return body;
 	}
 
+	/**
+	 * Renderiza la tarjeta en el contenedor designado.
+	 */
 	render() {
 		const card = this.cardContainer;
 
@@ -87,7 +118,17 @@ export class Card {
 	}
 }
 
+/**
+ * Clase que extiende la funcionalidad de la clase Card para tarjetas editables.
+ */
 export class CardEditData extends Card {
+	/**
+	 * Crea una instancia de la tarjeta editable.
+	 * @param {Object} options - Opciones para la tarjeta editable.
+	 * @param {string} options.titleHeader - Título de la tarjeta.
+	 * @param {Array} options.bodyContent - Contenido del cuerpo de la tarjeta.
+	 * @param {string} options.updateField - Campo que se va a actualizar.
+	 */
 	constructor({ titleHeader, bodyContent, updateField }) {
 		super({ titleHeader, bodyContent });
 
@@ -98,6 +139,10 @@ export class CardEditData extends Card {
 		this.updateField = updateField;
 	}
 
+	/**
+	 * Crea el pie de la tarjeta editable.
+	 * @return {HTMLElement} El elemento del pie de la tarjeta editable.
+	 */
 	createFooter() {
 		const footer = document.createElement("footer");
 		footer.className = "card-footer";
@@ -112,6 +157,12 @@ export class CardEditData extends Card {
 		return footer;
 	}
 
+	/**
+	 * Crea un hijo del cuerpo de la tarjeta editable.
+	 * @param {Object} param0 - Objeto con título.
+	 * @param {string} param0.title - Título del contenido.
+	 * @return {HTMLElement} El elemento del hijo creado.
+	 */
 	createBodyChild({ title }) {
 		const child = document.createElement("div");
 		child.className = "mb-3";
