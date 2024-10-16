@@ -101,7 +101,10 @@ export class HandleEventManagerEditShipment {
 		if (event.type === "blur" || event.key === "Enter") {
 			const newValue = this.input.value.trim();
 
-			if (newValue === this.currentValue) this.closeInput();
+			if (newValue === this.currentValue) {
+				this.closeInput();
+				return;
+			}
 
 			this.editContent(newValue);
 		}
