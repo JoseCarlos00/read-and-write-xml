@@ -19,7 +19,7 @@ async function handleOpenFile() {
 
 	const shipment = new ShipmentManager({
 		Shipment: fileContent.shipment,
-		Original: fileContent.original,
+		ShipmentOriginal: fileContent.ShipmentOriginal,
 		FileName: fileContent.fileName,
 	});
 

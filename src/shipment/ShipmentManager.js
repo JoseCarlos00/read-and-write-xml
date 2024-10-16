@@ -3,11 +3,11 @@ import { GetPanelInfo } from "./GetPanelInfo.js";
 import { EditingShipment } from "./EditingShipment.js";
 
 export class ShipmentManager {
-	constructor({ Shipment, Original, FileName }) {
+	constructor({ Shipment, ShipmentOriginal, FileName }) {
 		this.Shipment = Shipment;
 
 		this.EditingShipment = new EditingShipment({
-			ShipmentOriginal: Original,
+			ShipmentOriginal,
 			FileName,
 		});
 

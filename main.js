@@ -11,7 +11,7 @@ let currentFilePath = null;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
-		width: isDev ? 1000 : 500,
+		width: isDev ? 1500 : 500,
 
 		webPreferences: {
 			nodeIntegration: true,
@@ -77,7 +77,7 @@ async function selectFile() {
 				} else {
 					const data =
 						result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
-					resolve({ original: result, shipment: data, fileName });
+					resolve({ ShipmentOriginal: result, shipment: data, fileName });
 				}
 			});
 		});

@@ -352,6 +352,8 @@ table {
 	/* Iconos */
 	& .icon-table {
 		position: absolute;
+		width: 26px;
+		height: 24px;
 		left: 20%;
 		bottom: 50%;
 		top: 50%;
