@@ -8,6 +8,7 @@ export class ShipmentManager {
 
 		this.ManagerEditingShipment = new ManagerEditingShipment({
 			ShipmentOriginal,
+			Shipment,
 			FileName,
 		});
 

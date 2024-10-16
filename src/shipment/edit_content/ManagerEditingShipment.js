@@ -2,9 +2,10 @@ import { HandleEventManagerEditShipment } from "./EditShipmnet.js";
 import { HandleEventManagerEditIDetailItem } from "./EditDetailItem.js";
 
 export class ManagerEditingShipment {
-	constructor({ ShipmentOriginal, FileName }) {
+	constructor({ ShipmentOriginal, FileName, Shipment }) {
 		this.ShipmentOriginal = ShipmentOriginal;
 		this.FileName = FileName;
+		this.Shipment = Shipment;
 	}
 
 	showUserError(message) {
@@ -63,7 +64,19 @@ export class ManagerEditingShipment {
 		if (table) {
 			table.addEventListener("click", (e) => {
 				const { target } = e;
-				// this.handleEventClickInTable(target);
+				console.log(
+					"[Manager] : Original:",
+					this.ShipmentOriginal?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
+						?.Shipment?.[0]
+				);
+
+				const eventManager = new HandleEventManagerEditIDetailItem(
+					this.Shipment
+				);
+
+				console.log("[Manager] : Shipment:", this.Shipment);
+
+				eventManager.handleEventClickInTable(target);
 			});
 		} else {
 			this.logError("[setEventListener]: table is not defined");
@@ -81,9 +94,7 @@ export class ManagerEditingShipment {
 			);
 		}
 
-		const eventManager = new HandleEventManagerEditShipment(
-			this.ShipmentOriginal
-		);
+		const eventManager = new HandleEventManagerEditShipment(this.Shipment);
 
 		buttonsEditContent.forEach((button) => {
 			button.addEventListener("click", () =>

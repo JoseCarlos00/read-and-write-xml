@@ -1,6 +1,6 @@
 export class HandleEventManagerEditShipment {
-	constructor(ShipmentOriginal) {
-		this.ShipmentOriginal = ShipmentOriginal;
+	constructor(Shipment) {
+		this.Shipment = Shipment;
 
 		this.currentCardContainer = null;
 		this.currentLabel = null;
@@ -71,9 +71,7 @@ export class HandleEventManagerEditShipment {
 
 	// Edita el contenido de Shipment
 	editContent = (newValue) => {
-		const Shipment =
-			this.ShipmentOriginal?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
-				?.Shipment?.[0];
+		const { Shipment } = this;
 
 		if (!Shipment) return this.showUserError("Error en datos de Shipment");
 
@@ -91,7 +89,7 @@ export class HandleEventManagerEditShipment {
 		}
 
 		console.log("New value:", newValue);
-		console.log({ Shipment });
+		console.log("Modificado desde [Editshioment]:", Shipment);
 
 		this.currentLabel.textContent = newValue;
 		this.closeInput();
