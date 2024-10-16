@@ -5,6 +5,7 @@ export class HandleEventManagerEditIDetailItem {
 		this.currentRow = null;
 		this.currentLineNumber = null;
 		this.currentLabelQty = null;
+		this.totalLines = document.querySelector("#totalLines");
 	}
 
 	handleEventClickInTable(target) {
@@ -43,34 +44,89 @@ export class HandleEventManagerEditIDetailItem {
 		this.handleActionTable(currentButton);
 	}
 
+	/**
+	 * Se obtine el dataset `actionType`  del elemento :
+	 * para decir si es acion `deleteRow` o  `editRow`
+	 * @param {*} ElementSVG
+	 */
 	handleActionTable({ dataset }) {
 		const { actionType, lineNumber } = dataset;
 
-		console.log(dataset);
-
 		const actions = {
-			editRow: () => this.editRow(),
-			deleteRow: () => console.log("ELIMINAR FILA"),
+			editRow: () => this.updateRowFields(),
+			deleteRow: () => this.deleteRow(),
 		};
 
 		const action = actions[actionType];
 
 		if (!action) {
 			this.showUserError(`No se puede editar el campo: ${actionType}`);
+			return;
 		}
 
-		action();
 		this.currentLineNumber = lineNumber;
+		action();
 	}
 
-	// Método principal para editar los capoos de la tabla
-	editRow() {
-		// const tdItem = this.currentRow.querySelector(".td-item");
+	/**
+	 * Método principal para actualizar o modificar los campos de una fila en la tabla.
+	 * Aplica modificaciones específicas a las celdas según el tipo de dato.
+	 */
+	updateRowFields() {
+		const tdItem = this.currentRow.querySelector(".td-item");
 		const tdQuantity = this.currentRow.querySelector(".td-quantity");
 
 		if (tdQuantity) {
 			this.editCell(tdQuantity);
 		}
+	}
+
+	/**
+	 * Método principal para eliminar una fila
+	 * Con button action de cada fila
+	 */
+	deleteRow() {
+		// Elimina la fila actual
+
+		/**
+		 * TODO : Mensaje de cancelar borrado al  Eliminar la fila actual
+		 */
+
+		if (!this.currentRow) {
+			this.showUserError("No hay fila seleccionada para eliminar");
+		}
+
+		this.currentRow.remove();
+		this.deleteInShipmet();
+		this.updateLineNumber();
+	}
+
+	updateLineNumber() {
+		console.log("updateLineNumber", this.totalLines);
+
+		if (this.totalLines) {
+			this.totalLines.textContent = this.ShipmentDetails.length;
+		}
+	}
+
+	deleteInShipmet() {
+		const { ShipmentDetails, currentLineNumber } = this;
+		const index = this.getIndex(currentLineNumber);
+
+		console.log("Delete:", index, "LINE:", currentLineNumber);
+
+		// Si se encuentra, actualiza el campo RequestedQty
+		if (index === -1) {
+			console.warn(
+				"No se encontró un objeto con el ErpOrderLineNum especificado."
+			);
+
+			return;
+		}
+
+		// Eliminar el elemento del array `ShipmentDetails`
+		ShipmentDetails.splice(index, 1);
+		console.log("Delete:", ShipmentDetails);
 	}
 
 	/**
@@ -104,35 +160,7 @@ export class HandleEventManagerEditIDetailItem {
 
 		this.insertEvent(input);
 		input.focus();
-	}
-
-	deleteCell(target, index) {
-		const tr = target.closest("tr");
-
-		// Alerta de deshacer
-		if (!tr) {
-			alert("Ha ocurrido un error al eliminar la fila");
-			return;
-		}
-
-		const numericIndex = parseInt(index, 10);
-
-		if (typeof numericIndex === "string" || isNaN(numericIndex)) {
-			return this.logError("Índice inválido proporcionado a deleteCell");
-		}
-
-		const Shipment =
-			this.ShipmentOriginal.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
-				?.Shipment?.[0];
-
-		const ShipmentDetails = Shipment?.Details?.[0]?.ShipmentDetail ?? [];
-
-		// Eliminar el elemento del array
-		ShipmentDetails.splice(numericIndex, 1);
-
-		console.dir(this.Shipment?.Details?.[0]);
-
-		tr.remove();
+		input.select();
 	}
 
 	/**
@@ -149,6 +177,8 @@ export class HandleEventManagerEditIDetailItem {
 	handleEditQuantity(newValue, clearEventInput) {
 		const { currentLineNumber, ShipmentDetails } = this;
 		const index = this.getIndex(currentLineNumber);
+
+		console.log("Update:", index, "LINE:", currentLineNumber);
 
 		// Si se encuentra, actualiza el campo RequestedQty
 		if (index !== -1) {
