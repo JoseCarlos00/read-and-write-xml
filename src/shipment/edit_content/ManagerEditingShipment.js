@@ -1,6 +1,9 @@
 import { HandleEventManagerEditShipmentDetail } from "./EditShipmentDetail.js";
 import { HandleEventManagerEditIDetailItem } from "./EditDetailItem.js";
 
+/**
+ * Clase principal para gestionar la edición y guardado de detalles de `Shipment`.
+ */
 export class ManagerEditingShipment {
 	constructor({ ShipmentOriginal, FileName, Shipment }) {
 		this.ShipmentOriginal = ShipmentOriginal;
@@ -8,11 +11,19 @@ export class ManagerEditingShipment {
 		this.Shipment = Shipment;
 	}
 
+	/**
+	 * Muestra un mensaje de error al usuario.
+	 * @param {string} message - Mensaje de error a mostrar.
+	 */
 	showUserError(message) {
 		alert(message);
 		console.error(message);
 	}
 
+	/**
+	 * Guarda el archivo en el sistema, usando el tipo de guardado especificado.
+	 * @param {string} type - Tipo de guardado ("save" o "save-as").
+	 */
 	async saveFile(type) {
 		console.log("Guardando archivo");
 
@@ -43,6 +54,9 @@ export class ManagerEditingShipment {
 		}
 	}
 
+	/**
+	 * Configura el evento de guardado en el botón de interfaz y en el menú de la aplicación.
+	 */
 	setEventForSave() {
 		const saveBtn = document.querySelector("#save-file-btn");
 
@@ -58,11 +72,14 @@ export class ManagerEditingShipment {
 		window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
 	}
 
+	/**
+	 * Configura el evento de clic en las filas de la tabla para iniciar la edición.
+	 */
 	setEventClickInTable() {
-		const table = document.querySelector("table tbody");
+		const tbody = document.querySelector("table tbody");
 
-		if (table) {
-			table.addEventListener("click", (e) => {
+		if (tbody) {
+			tbody.addEventListener("click", (e) => {
 				const { target } = e;
 
 				// console.log(
@@ -84,6 +101,9 @@ export class ManagerEditingShipment {
 		}
 	}
 
+	/**
+	 * Configura el evento de edición en el panel de detalles de la información.
+	 */
 	setEvetEditPanelInfoDetail() {
 		const buttonsEditContent = Array.from(
 			document.querySelectorAll("#container-info .card-container button.icon")
@@ -95,6 +115,7 @@ export class ManagerEditingShipment {
 			);
 		}
 
+		// Instancial clase  para manejar eventos de edición en panel de detalles
 		const eventManager = new HandleEventManagerEditShipmentDetail(
 			this.Shipment
 		);
@@ -106,10 +127,19 @@ export class ManagerEditingShipment {
 		});
 	}
 
+	/**
+	 * Registra un mensaje de error en la consola.
+	 * @param {string} message - Mensaje de error.
+	 */
 	logError(message) {
 		console.error(`Error: ${message}`);
 	}
 
+	/**
+	 * Inicializa los eventos principales de la clase.
+	 * Para  la edición de información y guardado del `Shipment`.
+
+	 */
 	initEvents() {
 		this.setEventForSave();
 		this.setEventClickInTable();
