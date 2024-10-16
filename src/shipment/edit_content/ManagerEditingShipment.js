@@ -1,4 +1,4 @@
-import { HandleEventManagerEditShipment } from "./EditShipmnet.js";
+import { HandleEventManagerEditShipment } from "./EditShipment.js";
 import { HandleEventManagerEditIDetailItem } from "./EditDetailItem.js";
 
 export class ManagerEditingShipment {
@@ -64,17 +64,18 @@ export class ManagerEditingShipment {
 		if (table) {
 			table.addEventListener("click", (e) => {
 				const { target } = e;
-				console.log(
-					"[Manager] : Original:",
-					this.ShipmentOriginal?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
-						?.Shipment?.[0]
-				);
+
+				// console.log(
+				// 	"[Manager] : Original:",
+				// 	this.ShipmentOriginal?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
+				// 		?.Shipment?.[0]
+				// );
+
+				// console.log("[Manager] : Shipment:", this.Shipment);
 
 				const eventManager = new HandleEventManagerEditIDetailItem(
 					this.Shipment
 				);
-
-				console.log("[Manager] : Shipment:", this.Shipment);
 
 				eventManager.handleEventClickInTable(target);
 			});

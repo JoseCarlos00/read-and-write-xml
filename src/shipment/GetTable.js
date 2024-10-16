@@ -46,7 +46,7 @@ export class GetTable {
 
 		const tbody = document.createElement("tbody");
 
-		sortedDetails.forEach(({ SKU, ErpOrderLineNum }, index) => {
+		sortedDetails.forEach(({ SKU, ErpOrderLineNum }) => {
 			if (!SKU || SKU.length === 0) {
 				console.warn("SKU no tiene datos para una fila");
 				return;
@@ -55,6 +55,7 @@ export class GetTable {
 			const { Item, Quantity } = SKU[0];
 			const tr = document.createElement("tr");
 
+			//  Crear elementos TD
 			const tdCheckbox = document.createElement("td");
 			const tdItem = document.createElement("td");
 			const tdQuantity = document.createElement("td");
@@ -62,35 +63,48 @@ export class GetTable {
 			const tdEditRow = document.createElement("td");
 			const tdDeleteRow = document.createElement("td");
 
-			tdCheckbox.innerHTML = `<input-checkbox></input-checkbox>`;
-			tdItem.textContent = Item;
+			// Contendido de elementos TD
 
+			// CHECKBOX -> Select Row
+			tdCheckbox.innerHTML = `<input-checkbox></input-checkbox>`;
+
+			// ITEM
+			tdItem.textContent = Item;
+			tdItem.classList.add("td-item");
+
+			//  QUANTITY
 			tdQuantity.innerHTML = `<label>${Quantity}</label><input class="edit-qty" type="number" min="1" value="">`;
 			tdQuantity.dataset["lineNumber"] = ErpOrderLineNum;
-			tdQuantity.classList.add("quantity");
+			tdQuantity.classList.add("quantity", "td-quantity");
 
+			// LINE NUMBER
 			tdErpOrderLineNum.textContent = ErpOrderLineNum;
 
-			tdEditRow.classList.add("position-relative");
-			tdEditRow.dataset["lineNumber"] = ErpOrderLineNum;
+			// EDIT
+			tdEditRow.classList.add("position-relative", "action");
 			tdEditRow.innerHTML = `
-				<svg class="icon icon-table" data-is-element="erpOrder">
+				<svg class="icon icon-table"  data-action-type="editRow" data-line-number="${ErpOrderLineNum}" >
+
 					<use href="src/icon/icons.svg#pencil"></use>
 				</svg>`;
 
-			tdDeleteRow.classList.add("position-relative");
-			tdDeleteRow.dataset["lineNumber"] = ErpOrderLineNum;
+			// DELEYE
+			tdDeleteRow.classList.add("position-relative", "action");
 			tdDeleteRow.innerHTML = `
-					<svg class="icon icon-table" data-is-element="erpOrder">
+					<svg class="icon icon-table"  data-action-type="deleteRow" data-line-number="${ErpOrderLineNum}" >
+>
 						<use href="src/icon/icons.svg#delete-fill"></use>
 					</svg>`;
 
-			tr.appendChild(tdCheckbox);
-			tr.appendChild(tdItem);
-			tr.appendChild(tdQuantity);
-			tr.appendChild(tdErpOrderLineNum);
-			tr.appendChild(tdEditRow);
-			tr.appendChild(tdDeleteRow);
+			// Insertar Contenidos  TD en la fila
+			tr.append(
+				tdCheckbox,
+				tdItem,
+				tdQuantity,
+				tdErpOrderLineNum,
+				tdEditRow,
+				tdDeleteRow
+			);
 
 			tbody.appendChild(tr);
 		});

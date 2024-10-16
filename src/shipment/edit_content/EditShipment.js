@@ -4,6 +4,7 @@ export class HandleEventManagerEditShipment {
 
 		this.currentCardContainer = null;
 		this.currentLabel = null;
+		this.updateField = "";
 		this.input = null;
 		this.currentValue = "";
 	}
@@ -71,7 +72,7 @@ export class HandleEventManagerEditShipment {
 
 	// Edita el contenido de Shipment
 	editContent = (newValue) => {
-		const { Shipment } = this;
+		const { Shipment, updateField } = this;
 
 		if (!Shipment) return this.showUserError("Error en datos de Shipment");
 
@@ -80,12 +81,12 @@ export class HandleEventManagerEditShipment {
 			erpOrder: "ErpOrder",
 		};
 
-		const fieldKey = fieldMap[this.updateField];
+		const fieldKey = fieldMap[updateField];
 
 		if (fieldKey) {
 			Shipment[fieldKey] = [newValue];
 		} else {
-			this.showUserError(`No se puede editar el campo: ${this.updateField}`);
+			this.showUserError(`No se puede editar el campo: ${updateField}`);
 		}
 
 		console.log("New value:", newValue);
