@@ -1,12 +1,12 @@
 import { GetTable } from "./GetTable.js";
 import { GetPanelInfo } from "./GetPanelInfo.js";
-import { EditingShipment } from "./EditingShipment.js";
+import { ManagerEditingShipment } from "./edit_content/ManagerEditingShipment.js";
 
 export class ShipmentManager {
 	constructor({ Shipment, ShipmentOriginal, FileName }) {
 		this.Shipment = Shipment;
 
-		this.EditingShipment = new EditingShipment({
+		this.ManagerEditingShipment = new ManagerEditingShipment({
 			ShipmentOriginal,
 			FileName,
 		});
@@ -42,7 +42,7 @@ export class ShipmentManager {
 		if (table) {
 			this.xmlContentContainer.appendChild(table);
 
-			this.EditingShipment.initEvents();
+			this.ManagerEditingShipment.initEvents();
 		}
 	}
 
