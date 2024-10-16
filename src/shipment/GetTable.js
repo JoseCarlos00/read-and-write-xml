@@ -73,7 +73,7 @@ export class GetTable {
 			tdItem.classList.add("td-item");
 
 			//  QUANTITY
-			tdQuantity.innerHTML = `<label>${Quantity}</label><input class="edit-qty" type="number" min="1" value="">`;
+			tdQuantity.innerHTML = `<label>${Quantity}</label> <input class="edit-qty" type="number" min="1" value="" data-current-value="">`;
 			tdQuantity.dataset["lineNumber"] = ErpOrderLineNum;
 			tdQuantity.classList.add("quantity", "td-quantity");
 

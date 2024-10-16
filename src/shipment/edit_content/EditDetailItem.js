@@ -1,74 +1,100 @@
 export class HandleEventManagerEditIDetailItem {
-	constructor(ShipmentOriginal) {
-		this.ShipmentOriginal = ShipmentOriginal;
+	constructor(Shipment) {
+		this.Shipment = Shipment;
 
-		this.currentCardContainer = null;
-		this.currentLabel = null;
-		this.input = null;
-		this.currentValue = "";
+		this.currentRow = null; // -> Value defined en [handleEventClickInTable]
 	}
 
 	handleEventClickInTable(target) {
-		const { classList, dataset, nodeName } = target;
+		const { nodeName, classList } = target;
 
-		console.log(
-			this.ShipmentOriginal?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]
-				?.Shipment?.[0]
-		);
+		const currentRow = target.closest("tr");
 
-		if (classList.contains("edit")) {
-			this.editCell(target, dataset?.index);
+		if (!currentRow) {
+			return this.showUserError(
+				"Ha ocurrido un error al intentar editar el contenido"
+			);
+		}
+
+		const currentElement = {
+			TD: () => {
+				// Verifica que el target tenga la clase "action"
+				return classList.contains("action")
+					? target.querySelector("svg")
+					: null;
+			},
+			use: () => target.closest("svg"),
+			svg: () => target,
+		};
+
+		if (!currentElement[nodeName]) {
 			return;
 		}
 
-		if (classList.contains("delete")) {
-			this.deleteCell(target, dataset?.index);
+		const currentButton = currentElement[nodeName]();
+
+		if (!currentButton) {
 			return;
+		}
+
+		this.currentRow = currentRow;
+		this.handleActionTable(currentButton);
+	}
+
+	handleActionTable({ dataset }) {
+		const { actionType, lineNumber } = dataset;
+
+		console.log(dataset);
+
+		const actions = {
+			editRow: () => this.editRow(lineNumber),
+			deleteRow: () => console.log("ELIMINAR FILA"),
+		};
+
+		const action = actions[actionType];
+
+		if (!action) {
+			this.showUserError(`No se puede editar el campo: ${actionType}`);
+		}
+
+		action();
+	}
+
+	// Método principal para editar los capoos de la tabla
+	editRow(lineNumber) {
+		// Aquí puedes implementar la lógica para editar la fila
+
+		// const tdItem = this.currentRow.querySelector(".td-item");
+		const tdQuantity = this.currentRow.querySelector(".td-quantity");
+
+		if (tdQuantity) {
+			this.editCell(tdQuantity, lineNumber);
 		}
 	}
 
-	editCell(td, index) {
-		const currentValue = td.textContent;
-		const trCurrent = td.closest("tr");
-
-		// Alerta de deshacer
-		if (!trCurrent) {
-			alert("Ha ocurrido un error al eliminar la fila");
-			return;
-		}
-
-		const currentLabel = trCurrent.querySelector("label");
+	editCell(td, lineNumber) {
+		const currentLabel = td.querySelector("label");
 
 		if (!currentLabel) {
-			alert(
+			return this.showUserError(
 				"Mostrar error al usuario\nHa ocurrido un problema al editar el contenido"
 			);
-
-			return;
 		}
 
-		trCurrent.classList.add("editing");
-
-		const input = trCurrent.querySelector("input.edit-qty");
+		const currentValue = currentLabel.textContent.trim();
+		const input = td.querySelector("input");
 
 		if (!input) {
-			return this.logError("No se encontró el elemento: [input.edit-qty]");
+			return this.showUserError("No se encontró el campo de texto para editar");
 		}
 
-		const numericIndex = parseInt(index, 10);
+		input.value = currentValue;
+		input.dataset.currentValue = currentValue;
 
-		if (typeof numericIndex === "string" || isNaN(numericIndex)) {
-			return this.logError("Índice inválido proporcionado a editCell");
-		}
+		this.currentRow.classList.add("editing");
 
-		const closeInput = () => {
-			input.value = "";
-
-			trCurrent?.classList?.remove("editing");
-
-			input.removeEventListener("keydown", handleKeyDown);
-			input.removeEventListener("blur", handleBlur);
-		};
+		this.insertEvent(input);
+		input.focus();
 
 		const editConten = (newValue) => {
 			const Shipment =
@@ -97,47 +123,6 @@ export class HandleEventManagerEditIDetailItem {
 
 			closeInput();
 		};
-
-		const handleBlur = () => {
-			const newValue = input.value;
-
-			if (newValue === currentValue) {
-				return;
-			}
-
-			if (isNaN(newValue)) {
-				alert("Solo puede ingresar numeros");
-				return;
-			}
-
-			editConten(newValue);
-		};
-
-		const handleKeyDown = ({ key }) => {
-			if (key === "Enter") {
-				const newValue = input.value;
-
-				if (newValue === currentValue) {
-					return;
-				}
-
-				if (isNaN(newValue)) {
-					alert("Solo puede ingresar numeros");
-					return;
-				}
-
-				editConten(newValue);
-			}
-
-			if (key === "Escape") {
-				closeInput();
-			}
-		};
-
-		input.addEventListener("blur", handleBlur);
-		input.addEventListener("keydown", handleKeyDown);
-
-		input.focus(); // Foco en el input
 	}
 
 	deleteCell(target, index) {
@@ -169,37 +154,16 @@ export class HandleEventManagerEditIDetailItem {
 		tr.remove();
 	}
 
-	// Método principal para editar un campo de Shipment
-	editShipment() {
-		this.currentLabel =
-			this.currentCardContainer.querySelector(".text-for-editing");
-
-		if (!this.currentLabel) {
-			return this.showUserError(
-				"Ha ocurrido un problema al editar el contenido"
-			);
-		}
-
-		this.currentCardContainer.classList.add("editing");
-		this.currentValue = this.currentLabel.textContent.trim() ?? "";
-		this.input = this.currentCardContainer.querySelector("input");
-
-		if (!this.input) {
-			return this.showUserError("No se encontró el campo de texto para editar");
-		}
-
-		this.input.value = this.currentValue;
-
-		this.insertEvent();
-		this.input.focus();
-	}
+	/*
+	 REVISAR METODOS
+	*/
 
 	// Cierra el input y remueve el modo edición
-	closeInput = () => {
-		this.input.value = "";
-		this.currentCardContainer.classList.remove("editing");
-		this.input.removeEventListener("keydown", this.handleInputEvents);
-		this.input.removeEventListener("blur", this.handleInputEvents);
+	closeInput = (input) => {
+		input.value = "";
+		this.currentRow.classList.remove("editing");
+		input.removeEventListener("keydown", this.handleInputEvents);
+		input.removeEventListener("blur", this.handleInputEvents);
 	};
 
 	// Edita el contenido de Shipment
@@ -232,25 +196,34 @@ export class HandleEventManagerEditIDetailItem {
 
 	// Maneja eventos de blur y keydown
 	handleInputEvents = (event) => {
-		console.log("[handleInputEvents]", event);
+		const { target: input } = event;
 
 		if (event.type === "blur" || event.key === "Enter") {
-			const newValue = this.input.value.trim();
+			const newValue = input.value.trim();
+			const currentValue = input.dataset.currentValue;
 
-			if (newValue === this.currentValue) this.closeInput();
+			if (!isNaN(Number(newValue)) && Number(newValue) < 0) {
+				return;
+			}
 
-			this.editContent(newValue);
+			if (newValue === currentValue) {
+				this.closeInput(input);
+				return;
+			}
+
+			// this.editContent(newValue);
+			console.log("EDITAR CONTENIDO en el EVENTO");
 		}
 
 		if (event.key === "Escape") {
-			this.closeInput();
+			this.closeInput(input);
 		}
 	};
 
 	// Inserta eventos en el input de edición
-	insertEvent() {
-		this.input.addEventListener("blur", this.handleInputEvents);
-		this.input.addEventListener("keydown", this.handleInputEvents);
+	insertEvent(input) {
+		input.addEventListener("blur", this.handleInputEvents);
+		input.addEventListener("keydown", this.handleInputEvents);
 	}
 
 	// Muestra mensajes de error al usuario
@@ -259,3 +232,10 @@ export class HandleEventManagerEditIDetailItem {
 		console.error(message);
 	}
 }
+
+/**
+ * * NOTE: verificar al momento de manejar el click de editar row
+ * * si existe  un campo con la clase [.editing] en la fila
+ * * si existe quitar la clase y retornar
+ * * en caso contrario continuar con el flujo de la funcion
+ */
