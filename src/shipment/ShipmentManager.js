@@ -24,9 +24,7 @@ export class ShipmentManager {
 	 */
 	async createTable() {
 		if (!this.Shipment) {
-			return this.logError(
-				"[createTable]: no se encontró el elemento [Shipment]"
-			);
+			throw new Error("[createTable]: no se encontró el elemento [Shipment]");
 		}
 
 		const table = await GetTable.getTableElement(this.Shipment);
@@ -39,8 +37,8 @@ export class ShipmentManager {
 	 */
 	async createPanelInfo() {
 		if (!this.Shipment) {
-			return this.logError(
-				"[createPanelInfo]: no se encontró el elemento [Shipment]"
+			throw new Error(
+				"[createPanelInfo]: No se encontró el elemento [Shipment]"
 			);
 		}
 
@@ -52,13 +50,25 @@ export class ShipmentManager {
 	 * Inicializa eventos de edición después de la renderización.
 	 */
 	async render() {
-		const table = await this.createTable();
-		await this.createPanelInfo();
+		try {
+			const table = await this.createTable();
+			await this.createPanelInfo();
 
-		if (table) {
+			if (!table) {
+				this.xmlContentContainer.innerHTML = "";
+				throw new Error(
+					"[render]: No se pudo obtener el elemento [table] del Shipment"
+				);
+			}
+
 			this.xmlContentContainer.appendChild(table);
 
 			this.ManagerEditingShipment.initEvents();
+		} catch (error) {
+			this.logError("Error al renderizar la tabla: " + error.message);
+			this.showUserError(
+				"Ha ocurrido un error al mostrar la lista de articulos."
+			);
 		}
 	}
 
@@ -67,6 +77,14 @@ export class ShipmentManager {
 	 * @param {string} message - Mensaje de error a registrar.
 	 */
 	logError(message) {
-		console.error(`Error: ${message}`);
+		console.error(`Detalle del error: ${message}`);
+	}
+
+	/**
+	 * Muestra un mensaje de error al usuario y lo registra en la consola.
+	 * @param {string} message - Mensaje de error a mostrar.
+	 */
+	showUserError(message) {
+		alert(message);
 	}
 }
