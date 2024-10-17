@@ -87,9 +87,14 @@ export class ShipmentEditor {
 		this.clearEventInput();
 	}
 
+	/**
+	 * Edita el contenido de un campo específico en `ShipmentDetails`.
+	 * @param {string} updateField - Nombre del campo a actualizar.
+	 * @param {string|number} newValue - Nuevo valor para el campo.
+	 */
 	editContent = (updateField, newValue) => {
-		if (!this.ShipmentDetails || !this.ShipmentDetails?.length) {
-			return this.showUserError("Error en datos de Shipment");
+		if (!this.ShipmentDetails || !this.ShipmentDetails.length === 0) {
+			throw new Error("Error en datos de Shipment");
 		}
 
 		const fieldMap = {
@@ -98,9 +103,7 @@ export class ShipmentEditor {
 		};
 
 		if (!fieldMap[updateField]) {
-			this.showUserError(`No se puede editar el campo: ${updateField}`);
-			this.clearEventInput;
-			return;
+			throw new Error(`Campo no editable: ${updateField}`);
 		}
 
 		fieldMap[updateField]();
@@ -109,37 +112,46 @@ export class ShipmentEditor {
 	// Muestra mensajes de error al usuario
 	showUserError(message) {
 		alert(message);
-		console.error(message);
 	}
 
-	// Se asigna -> currentLabelQty
+	/**
+	 * Prepara la celda `td` para la edición, asigna el input y agrega eventos.
+	 * Compara el  valor actual con el valor original para determinar si se debe actualizar
+	 * y actializa la celda selecionada tambien en el Objeto `Shipment`
+	 * Utiliza `try-catch` para capturar errores y mostrar un mensaje único en caso de fallo.
+	 */
 	editCell() {
-		const currentLabel = this.tdElement?.querySelector("label");
+		try {
+			const currentLabel = this.tdElement?.querySelector("label");
 
-		if (!currentLabel) {
-			return this.showUserError(
-				"Mostrar error al usuario\nHa ocurrido un problema al editar el contenido"
+			if (!currentLabel) {
+				throw new Error("No se encontró el label en la celda <td>.");
+			}
+
+			this.currentLabel = currentLabel;
+
+			const currentValue = currentLabel.textContent.trim();
+			const input = this.tdElement.querySelector("input");
+
+			if (!input) {
+				throw new Error("No se encontró el campo de texto para editar");
+			}
+
+			this.currentInput = input;
+
+			input.value = currentValue;
+			input.dataset.currentValue = currentValue;
+
+			this.tdElement.classList.add("editing");
+
+			this.insertEvent();
+			input.focus();
+			input.select();
+		} catch (error) {
+			this.showUserError(
+				"Ha ocurrido un problema al intentar editar la celda."
 			);
+			console.error("Detalles del error:", error);
 		}
-
-		this.currentLabel = currentLabel;
-
-		const currentValue = currentLabel.textContent.trim();
-		const input = this.tdElement.querySelector("input");
-
-		if (!input) {
-			return this.showUserError("No se encontró el campo de texto para editar");
-		}
-
-		this.currentInput = input;
-
-		input.value = currentValue;
-		input.dataset.currentValue = currentValue;
-
-		this.tdElement.classList.add("editing");
-
-		this.insertEvent();
-		input.focus();
-		input.select();
 	}
 }
