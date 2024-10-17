@@ -194,3 +194,14 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 		console.log(this.ShipmentDetails);
 	};
 }
+
+/**
+ * * NOTE: verificar al momento de manejar el click de editar row
+ * * si existe  un campo con la clase [.editing] en la fila
+ * * si existe quitar la clase y retornar
+ * * en caso contrario continuar con el flujo de la funcion
+ * 
+ * 
+ * ? Agregar un toggle class al button  de editar
+
+ */

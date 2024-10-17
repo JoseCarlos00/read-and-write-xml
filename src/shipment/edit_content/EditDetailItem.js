@@ -17,6 +17,8 @@ export class HandleEventManagerEditIDetailItem {
 
 		// Se instancia la clase para el manejo de eliminar filas
 		this.deleter = new ShipmentDeleter(this.ShipmentDetails);
+
+		this.nodeNamesAcepted = ["TD", "use", "svg"];
 	}
 
 	/**
@@ -28,7 +30,9 @@ export class HandleEventManagerEditIDetailItem {
 		try {
 			const { nodeName, classList } = target;
 
-			this.currentRow = target.closest("tr");
+			if (!this.nodeNamesAcepted.includes(nodeName)) return;
+
+			this.currentRow = target?.closest("tr");
 			if (!this.currentRow) {
 				throw new Error("No se pudo encontrar la fila actual <tr>.");
 			}
@@ -40,7 +44,7 @@ export class HandleEventManagerEditIDetailItem {
 				svg: () => target,
 			};
 
-			if (!currentElement[nodeName]) {
+			if (!currentElement?.[nodeName]?.()) {
 				return; // No es un tipo de elemento que nos interesa
 			}
 
@@ -55,7 +59,7 @@ export class HandleEventManagerEditIDetailItem {
 				"Ha ocurrido un problema al intentar editar la celda."
 			);
 
-			console.error("Detalles del error:", error);
+			console.error("Detalles del error:", error.message);
 		}
 	}
 
