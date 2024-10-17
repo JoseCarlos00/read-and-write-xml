@@ -1,31 +1,51 @@
+/**
+ * Clase ShipmentEditor para manejar la edición de celdas en detalles de envío.
+ */
 export class ShipmentEditor {
+	/**
+	 * @param {Array} ShipmentDetails - Lista de detalles de envío.
+	 * @param {string|number} currentLineNumber - Número de línea del pedido actual.
+	 * @param {HTMLElement} tdElement - Elemento de la celda `td` que se editará.
+	 */
 	constructor(ShipmentDetails, currentLineNumber, tdElement) {
 		this.ShipmentDetails = ShipmentDetails;
-		this.tdElement = tdElement;
 		this.currentLineNumber = currentLineNumber;
+		this.tdElement = tdElement;
 		this.currentLabel = null;
 		this.currentInput = null;
 	}
 
+	/**
+	 * Obtiene el índice de un Objeto `item` en `ShipmentDetails` según el número de línea de pedido.
+	 * @param {string|number} lineNumber - Número de línea de pedido a buscar.
+	 * @returns {number} Índice del detalle en `ShipmentDetails`, o -1 si no se encuentra.
+	 * @throws Error si no se encuentra el número de línea.
+	 */
 	getIndex(lineNumber) {
-		return this.ShipmentDetails.findIndex(
+		const index = this.ShipmentDetails.findIndex(
 			(detail) => detail?.ErpOrderLineNum?.[0] === lineNumber
 		);
+
+		if (index === -1) {
+			throw new Error("Número de línea no encontrado en detalles de envío.");
+		}
+		return index;
 	}
 
-	// Cierra el input y remueve el modo edición
+	/**
+	 * Limpia el input de edición y remueve el modo de edición de la celda.
+	 */
 	clearEventInput = () => {
-		const { currentInput: input } = this;
-
-		if (!input) return;
-
-		input.value = "";
-		input.closest("td")?.classList?.remove("editing");
-		input.removeEventListener("keydown", this.handleInputEvents);
-		input.removeEventListener("blur", this.handleInputEvents);
+		this.currentInput.value = "";
+		this.currentInput.closest("td")?.classList?.remove("editing");
+		this.currentInput.removeEventListener("keydown", this.handleInputEvents);
+		this.currentInput.removeEventListener("blur", this.handleInputEvents);
 	};
 
-	// Maneja eventos de blur y keydown
+	/**
+	 * Maneja eventos de `blur` y `keydown` para el input de edición.
+	 * @param {Event} event - Evento de teclado o desenfoque.
+	 */
 	handleInputEvents = (event) => {
 		const { target: input } = event;
 		const { currentValue, updateField } = input.dataset;
@@ -50,41 +70,35 @@ export class ShipmentEditor {
 		}
 	};
 
-	// Inserta eventos en el input de edición
+	/**
+	 * Inserta eventos en el input de edición.
+	 */
 	insertEvent() {
-		const { currentInput: input } = this;
-
-		if (!input) return;
-
-		input.addEventListener("blur", this.handleInputEvents);
-		input.addEventListener("keydown", this.handleInputEvents);
+		this.currentInput.addEventListener("blur", this.handleInputEvents);
+		this.currentInput.addEventListener("keydown", this.handleInputEvents);
 	}
 
+	/**
+	 * Actualiza el Quantity en `ShipmentDetails` y actualiza la celda de la interfaz.
+	 * @param {string|number} newValue - Nuevo valor para la cantidad.
+	 * @throws Error si no se puede actualizar el número de línea.
+	 */
 	handleEditQuantity(newValue) {
-		const { currentLineNumber, ShipmentDetails } = this;
-		const index = this.getIndex(currentLineNumber);
+		const index = this.getIndex(this.currentLineNumber);
 
-		console.log("Update:", index, "LINE:", currentLineNumber);
+		console.log("Update:", index, "LINE:", this.currentLineNumber);
 
-		// Si se encuentra, actualiza el campo RequestedQty
-		if (index !== -1) {
-			ShipmentDetails[index].RequestedQty = [newValue];
-			ShipmentDetails[index].TotalQuantity = [newValue];
+		this.ShipmentDetails[index].RequestedQty = [newValue];
+		this.ShipmentDetails[index].TotalQuantity = [newValue];
 
-			if (ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
-				ShipmentDetails[index].SKU[0].Quantity = [newValue];
-			}
-		} else {
-			console.warn(
-				"No se encontró un objeto con el ErpOrderLineNum especificado."
-			);
+		if (this.ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
+			this.ShipmentDetails[index].SKU[0].Quantity = [newValue];
 		}
-
-		console.log("New value:", newValue);
-		console.log({ ShipmentDetails });
 
 		this.currentLabel.textContent = newValue;
 		this.clearEventInput();
+
+		console.log(this.ShipmentDetails);
 	}
 
 	/**
@@ -109,7 +123,10 @@ export class ShipmentEditor {
 		fieldMap[updateField]();
 	};
 
-	// Muestra mensajes de error al usuario
+	/**
+	 * Muestra un mensaje de error al usuario y lo registra en la consola.
+	 * @param {string} message - Mensaje de error a mostrar.
+	 */
 	showUserError(message) {
 		alert(message);
 	}
@@ -122,35 +139,40 @@ export class ShipmentEditor {
 	 */
 	editCell() {
 		try {
-			const currentLabel = this.tdElement?.querySelector("label");
+			if (!this.tdElement) {
+				throw new Error("No se encontró la celda <td> a editar");
+			}
 
-			if (!currentLabel) {
+			// Asigna y verifica currentLabel
+			this.currentLabel = this.tdElement.querySelector("label");
+
+			if (!this.currentLabel) {
 				throw new Error("No se encontró el label en la celda <td>.");
 			}
 
-			this.currentLabel = currentLabel;
+			const currentValue = this.currentLabel.textContent.trim();
 
-			const currentValue = currentLabel.textContent.trim();
-			const input = this.tdElement.querySelector("input");
+			// Asigna y verifica currentInput
+			this.currentInput = this.tdElement.querySelector("input");
 
-			if (!input) {
+			if (!this.currentInput) {
 				throw new Error("No se encontró el campo de texto para editar");
 			}
 
-			this.currentInput = input;
-
-			input.value = currentValue;
-			input.dataset.currentValue = currentValue;
+			// Configuración del input
+			this.currentInput.value = currentValue;
+			this.currentInput.dataset.currentValue = currentValue;
 
 			this.tdElement.classList.add("editing");
 
 			this.insertEvent();
-			input.focus();
-			input.select();
+			this.currentInput.focus();
+			this.currentInput.select();
 		} catch (error) {
 			this.showUserError(
 				"Ha ocurrido un problema al intentar editar la celda."
 			);
+
 			console.error("Detalles del error:", error);
 		}
 	}
