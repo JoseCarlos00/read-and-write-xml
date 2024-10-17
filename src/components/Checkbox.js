@@ -1,6 +1,6 @@
 // Crea una hoja de estilo CSS
 const checkboxStyleSheet = new CSSStyleSheet();
-checkboxStyleSheet.replaceSync(`
+checkboxStyleSheet.replaceSync(/*css*/ `
 
   input[type="checkbox"] {
     display: none;

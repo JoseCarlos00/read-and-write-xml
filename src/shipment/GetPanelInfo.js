@@ -100,6 +100,8 @@ export class GetPanelInfo {
 				},
 			],
 		});
+
+		cardOrder.render();
 	}
 
 	/**
