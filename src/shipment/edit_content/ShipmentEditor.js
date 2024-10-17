@@ -1,7 +1,7 @@
 /**
- * Clase ShipmentEditor para manejar la edición de celdas en detalles de envío.
+ * Clase BASE ShipmentEditor para manejar la edición de celdas en detalles de envío.
  */
-export class ShipmentEditor {
+class ShipmentEditor {
 	/**
 	 * @param {Array} ShipmentDetails - Lista de detalles de envío.
 	 * @param {string|number} currentLineNumber - Número de línea del pedido actual.
@@ -13,6 +13,8 @@ export class ShipmentEditor {
 		this.tdElement = tdElement;
 		this.currentLabel = null;
 		this.currentInput = null;
+
+		console.log("Constuctor:", tdElement, this.tdElement);
 	}
 
 	/**
@@ -37,7 +39,7 @@ export class ShipmentEditor {
 	 */
 	clearEventInput = () => {
 		this.currentInput.value = "";
-		this.currentInput.closest("td")?.classList?.remove("editing");
+		this.tdElement.classList.remove("editing");
 		this.currentInput.removeEventListener("keydown", this.handleInputEvents);
 		this.currentInput.removeEventListener("blur", this.handleInputEvents);
 	};
@@ -79,48 +81,14 @@ export class ShipmentEditor {
 	}
 
 	/**
-	 * Actualiza el Quantity en `ShipmentDetails` y actualiza la celda de la interfaz.
-	 * @param {string|number} newValue - Nuevo valor para la cantidad.
-	 * @throws Error si no se puede actualizar el número de línea.
-	 */
-	handleEditQuantity(newValue) {
-		const index = this.getIndex(this.currentLineNumber);
-
-		console.log("Update:", index, "LINE:", this.currentLineNumber);
-
-		this.ShipmentDetails[index].RequestedQty = [newValue];
-		this.ShipmentDetails[index].TotalQuantity = [newValue];
-
-		if (this.ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
-			this.ShipmentDetails[index].SKU[0].Quantity = [newValue];
-		}
-
-		this.currentLabel.textContent = newValue;
-		this.clearEventInput();
-
-		console.log(this.ShipmentDetails);
-	}
-
-	/**
 	 * Edita el contenido de un campo específico en `ShipmentDetails`.
+	 * Este método debe ser implementado en las clases derivadas.
 	 * @param {string} updateField - Nombre del campo a actualizar.
 	 * @param {string|number} newValue - Nuevo valor para el campo.
+	 * @throws {Error} Si se llama a este método directamente desde la clase base.
 	 */
 	editContent = (updateField, newValue) => {
-		if (!this.ShipmentDetails || !this.ShipmentDetails.length === 0) {
-			throw new Error("Error en datos de Shipment");
-		}
-
-		const fieldMap = {
-			quantity: () => this.handleEditQuantity(newValue),
-			// Update  other fields from table here
-		};
-
-		if (!fieldMap[updateField]) {
-			throw new Error(`Campo no editable: ${updateField}`);
-		}
-
-		fieldMap[updateField]();
+		throw new Error("Este método debe ser implementado en la clase hija.");
 	};
 
 	/**
@@ -173,7 +141,58 @@ export class ShipmentEditor {
 				"Ha ocurrido un problema al intentar editar la celda."
 			);
 
+			this.tdElement?.classList?.remove("editing");
 			console.error("Detalles del error:", error);
 		}
 	}
+}
+
+export class ShipmentEditorQuantity extends ShipmentEditor {
+	constructor(ShipmentDetails, currentLineNumber, tdElement) {
+		super(ShipmentDetails, currentLineNumber, tdElement);
+	}
+
+	/**
+	 * Actuliza el quantity en el objeto `Shipment`: `RequestedQty`, `TotalQuantity` y  `Quantity`
+
+	 * @param {String} newValue valor a actulizar en el Objeto `Shipment`
+	 * @param {Number|String} index
+	 */
+	updateShipmentDetails(newValue, index) {
+		this.ShipmentDetails[index].RequestedQty = [newValue];
+		this.ShipmentDetails[index].TotalQuantity = [newValue];
+
+		if (this.ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
+			this.ShipmentDetails[index].SKU[0].Quantity = [newValue];
+		}
+	}
+
+	/**
+	 * Actualiza el Quantity en `ShipmentDetails` y actualiza la celda de la interfaz.
+	 * @param {string|number} newValue - Nuevo valor para la cantidad.
+	 * @throws Error si no se puede actualizar el número de línea.
+	 */
+	editContent = (updateField, newValue) => {
+		if (!this.ShipmentDetails || this.ShipmentDetails.length === 0) {
+			this.clearEventInput();
+			throw new Error("Error en datos de Shipment");
+		}
+
+		const index = this.getIndex(this.currentLineNumber);
+
+		if (index === -1) {
+			this.clearEventInput();
+			throw new Error(
+				"No se encontró un objeto con el ErpOrderLineNum especificado."
+			);
+		}
+
+		console.log("Update:", index, "LINE:", this.currentLineNumber);
+		this.updateShipmentDetails(newValue, index);
+
+		this.currentLabel.textContent = newValue;
+		this.clearEventInput();
+
+		console.log(this.ShipmentDetails);
+	};
 }

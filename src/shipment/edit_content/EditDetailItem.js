@@ -1,4 +1,4 @@
-import { ShipmentEditor } from "./ShipmentEditor.js";
+import { ShipmentEditorQuantity } from "./ShipmentEditor.js";
 
 export class HandleEventManagerEditIDetailItem {
 	constructor(Shipment) {
@@ -72,7 +72,7 @@ export class HandleEventManagerEditIDetailItem {
 		const tdQuantity = this.currentRow.querySelector(".td-quantity");
 
 		if (tdQuantity) {
-			new ShipmentEditor(
+			new ShipmentEditorQuantity(
 				this.ShipmentDetails,
 				this.currentLineNumber,
 				tdQuantity
