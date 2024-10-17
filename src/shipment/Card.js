@@ -94,14 +94,6 @@ export class Card {
 	}
 
 	/**
-	 * Muestra un mensaje de error al usuario y lo registra en la consola.
-	 * @param {string} message - Mensaje de error a mostrar.
-	 */
-	showUserError(message) {
-		alert(message);
-	}
-
-	/**
 	 * Renderiza la tarjeta en el contenedor designado.
 	 */
 	render() {
@@ -126,15 +118,8 @@ export class Card {
 
 			cardContainer.appendChild(card);
 		} catch (error) {
-			/**
-			 * ? Es necesario mostrar un mensaje al usuario?
-			 * */
-			this.showUserError(
-				"Ha ocurido un error al crear el panel de informacion"
-			);
 			console.error(
-				"Ha ocurrido un error al crear las Card del panelInfoDetail\nDetalles del error:",
-				error.message
+				`Ha ocurrido un error al crear la Card ${this.titleHeader} del panelInfoDetail\nDetalles del error: ${error.message}`
 			);
 		}
 	}

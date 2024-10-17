@@ -5,7 +5,7 @@ import { Card, CardEditData } from "./Card.js";
  */
 export class GetPanelInfo {
 	constructor(Shipment) {
-		this.Shipment = Shipment ?? [];
+		this.Shipment = Shipment;
 		this.cardContainer = document.querySelector("#container-info");
 	}
 
@@ -100,8 +100,6 @@ export class GetPanelInfo {
 				},
 			],
 		});
-
-		cardOrder.render();
 	}
 
 	/**
@@ -109,14 +107,15 @@ export class GetPanelInfo {
 	 */
 	async createPanelInfoDetail() {
 		if (!this.cardContainer) {
-			alert("Alerta usuario");
+			throw new Error(
+				"No se ha creado el contenedor de la tarjeta #container-info"
+			);
 		}
 
 		this.cardContainer.innerHTML = "";
 
 		if (!this.Shipment) {
-			console.error("No se encontro el objeto Shipment ");
-			return null;
+			throw new Error("No se encontro el objeto Shipment");
 		}
 
 		const shipmentId = this.Shipment?.ShipmentId?.[0] ?? "";
@@ -174,13 +173,27 @@ export class GetPanelInfo {
 	 * @param {Object} Shipment - Objeto de `Shipment`.
 	 */
 	static async setPanelInfoDetail(Shipment) {
-		if (!Shipment) {
-			alert("No se pudo inicializar el panel info detail");
-			return;
+		try {
+			if (!Shipment) {
+				throw new Error("No se proporcionó un objeto de Shipment.");
+			}
+
+			const panelInfo = new GetPanelInfo(Shipment);
+			panelInfo.createPanelInfoDetail();
+		} catch (error) {
+			showUserError("Ha ocurido un error al crear el panel de informacion");
+			console.error(
+				"Ha ocurrido un error general el panel de informacion\nDetalles del error:",
+				error.message
+			);
 		}
-
-		const panelInfo = new GetPanelInfo(Shipment);
-
-		panelInfo.createPanelInfoDetail();
 	}
+}
+
+/**
+ * Muestra un mensaje de error al usuario y lo registra en la consola.
+ * @param {string} message - Mensaje de error a mostrar.
+ */
+function showUserError(message) {
+	alert(message);
 }
