@@ -13,8 +13,6 @@ class ShipmentEditor {
 		this.tdElement = tdElement;
 		this.currentLabel = null;
 		this.currentInput = null;
-
-		console.log("Constuctor:", tdElement, this.tdElement);
 	}
 
 	/**
