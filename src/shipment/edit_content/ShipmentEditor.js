@@ -185,13 +185,10 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 			);
 		}
 
-		console.log("Update:", index, "LINE:", this.currentLineNumber);
 		this.updateShipmentDetails(newValue, index);
 
 		this.currentLabel.textContent = newValue;
 		this.clearEventInput();
-
-		console.log(this.ShipmentDetails);
 	};
 }
 

@@ -112,9 +112,6 @@ export class HandleEventManagerEditShipmentDetail {
 			this.showUserError(`No se puede editar el campo: ${updateField}`);
 		}
 
-		console.log("New value:", newValue);
-		console.log("Modificado desde [Editshioment]:", Shipment);
-
 		this.currentLabel.textContent = newValue;
 		this.closeInput();
 	};
