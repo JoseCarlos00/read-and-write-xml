@@ -72,9 +72,11 @@ export class HandleEventManagerEditIDetailItem {
 		const tdQuantity = this.currentRow.querySelector(".td-quantity");
 
 		if (tdQuantity) {
-			new ShipmentEditor(this.ShipmentDetails, this.currentLineNumber).editCell(
+			new ShipmentEditor(
+				this.ShipmentDetails,
+				this.currentLineNumber,
 				tdQuantity
-			);
+			).editCell();
 		}
 	}
 

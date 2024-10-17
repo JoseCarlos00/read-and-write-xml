@@ -1,11 +1,10 @@
 export class ShipmentEditor {
-	constructor(shipmentDetails, currentLineNumber) {
-		this.ShipmentDetails = shipmentDetails;
+	constructor(ShipmentDetails, currentLineNumber, tdElement) {
+		this.ShipmentDetails = ShipmentDetails;
+		this.tdElement = tdElement;
 		this.currentLineNumber = currentLineNumber;
 		this.currentLabel = null;
 		this.currentInput = null;
-
-		console.log("COnstruc:", this.currentLineNumber);
 	}
 
 	getIndex(lineNumber) {
@@ -53,11 +52,12 @@ export class ShipmentEditor {
 
 	// Inserta eventos en el input de edición
 	insertEvent() {
-		console.log("insertEvent:", this.currentLineNumber);
-		if (!this.input) return;
+		const { currentInput: input } = this;
 
-		this.input.addEventListener("blur", this.handleInputEvents);
-		this.input.addEventListener("keydown", this.handleInputEvents);
+		if (!input) return;
+
+		input.addEventListener("blur", this.handleInputEvents);
+		input.addEventListener("keydown", this.handleInputEvents);
 	}
 
 	handleEditQuantity(newValue) {
@@ -113,8 +113,8 @@ export class ShipmentEditor {
 	}
 
 	// Se asigna -> currentLabelQty
-	editCell(td) {
-		const currentLabel = td.querySelector("label");
+	editCell() {
+		const currentLabel = this.tdElement?.querySelector("label");
 
 		if (!currentLabel) {
 			return this.showUserError(
@@ -125,7 +125,7 @@ export class ShipmentEditor {
 		this.currentLabel = currentLabel;
 
 		const currentValue = currentLabel.textContent.trim();
-		const input = td.querySelector("input");
+		const input = this.tdElement.querySelector("input");
 
 		if (!input) {
 			return this.showUserError("No se encontró el campo de texto para editar");
@@ -136,7 +136,7 @@ export class ShipmentEditor {
 		input.value = currentValue;
 		input.dataset.currentValue = currentValue;
 
-		td.classList.add("editing");
+		this.tdElement.classList.add("editing");
 
 		this.insertEvent();
 		input.focus();
