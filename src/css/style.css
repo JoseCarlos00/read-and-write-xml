@@ -3,9 +3,8 @@
 :root {
 	--bs-body-color: #dee2e6;
 	--bs-body-bg: #0d1117;
-	--bs-body-font-family: system-ui, -apple-system, BlinkMacSystemFont,
-		"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-		sans-serif;
+	--bs-body-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+		"Open Sans", "Helvetica Neue", sans-serif;
 
 	--bs-table-bg: #2b3940;
 	--bs-table-color: #babdbf;
@@ -73,6 +72,25 @@ body {
 		color: #fff;
 		text-align: center;
 	}
+
+	.button-container {
+		display: flex;
+		gap: 0.75rem;
+		margin-left: 12px;
+
+		.button svg {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
+
+		.btn-open-file {
+			background-color: #4caf50;
+		}
+
+		.btn-save-as svg {
+			scale: 1.19;
+		}
+	}
 }
 
 /* Panel info detail */
@@ -105,10 +123,7 @@ body {
 	--body-font-size: 0.95rem;
 
 	width: 300px;
-	background-image: linear-gradient(
-		var(--bgColor-accent-muted),
-		var(--bgColor-accent-muted)
-	);
+	background-image: linear-gradient(var(--bgColor-accent-muted), var(--bgColor-accent-muted));
 	border-color: var(--borderColor-accent-muted);
 	border-radius: var(--borderRadius-medium);
 	border-style: solid;
@@ -214,10 +229,8 @@ table {
 
 	tbody tr {
 		background-color: var(--bs-table-bg);
-		border-top: var(--bs-table-border-width) var(--bs-table-border-style)
-			var(--bs-table-border-color);
-		border-bottom: var(--bs-table-border-width) var(--bs-table-border-style)
-			var(--bs-table-border-color);
+		border-top: var(--bs-table-border-width) var(--bs-table-border-style) var(--bs-table-border-color);
+		border-bottom: var(--bs-table-border-width) var(--bs-table-border-style) var(--bs-table-border-color);
 
 		&:nth-child(1) {
 			border-top: none;
@@ -385,4 +398,36 @@ table {
 /* Utils */
 .position-relative {
 	position: relative;
+}
+
+.button {
+	border: none;
+	display: flex;
+	padding: 0.45rem 1.2rem;
+	background-color: #488aec;
+	color: #ffffff;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	font-weight: 700;
+	text-align: center;
+	cursor: pointer;
+	text-transform: uppercase;
+	vertical-align: middle;
+	align-items: center;
+	border-radius: 0.5rem;
+	user-select: none;
+	gap: 0.75rem;
+	box-shadow: 0 4px 6px -1px #488aec31, 0 2px 4px -1px #488aec17;
+	transition: all 0.6s ease;
+	min-width: 120px;
+}
+
+.button:hover {
+	box-shadow: 0 10px 15px -3px #488aec4f, 0 4px 6px -2px #488aec17;
+}
+
+.button:focus,
+.button:active {
+	opacity: 0.85;
+	box-shadow: none;
 }

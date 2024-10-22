@@ -18,9 +18,29 @@
 	<div class="container-principal">
 		<header class="header">
 			<h1 class="title">Visor de Archivos XML</h1>
+
 			<div class="button-container">
-				<button id="open-file-btn">Abrir Archivo XML</button>
-				<button id="save-file-btn">Guardar Archivo XML</button>
+				<button id="open-file-btn" class="button btn-open-file">
+					<svg aria-hidden="true">
+						<use href="src/icon/icons.svg#openFile"></use>
+					</svg>
+					Abrir Archivo
+				</button>
+
+
+				<button id="save-file-btn" class="button btn-save">
+					<svg aria-hidden="true">
+						<use href="src/icon/icons.svg#save"></use>
+					</svg>
+					Guardar
+				</button>
+
+				<button id="save-as-file-btn" class="button btn-save-as">
+					<svg aria-hidden="true">
+						<use href="src/icon/icons.svg#save-as"></use>
+					</svg>
+					Guardar como
+				</button>
 			</div>
 		</header>
 

@@ -36,5 +36,24 @@
       </g>
     </symbol>
 
+    <symbol id="openFile" aria-hidden="true" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path stroke-width="2" stroke="#fffffff"
+        d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
+        stroke-linejoin="round" stroke-linecap="round"></path>
+      <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#fffffff"
+        d="M17 15V18M17 21V18M17 18H14M17 18H20"></path>
+    </symbol>
+
+    <symbol id="save-as" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+      <path fill="currentColor"
+        d="M1848 896q42 0 78 15t64 41t42 63t16 79q0 39-15 76t-43 65l-717 717l-377 94l94-377l717-716q29-29 65-43t76-14zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 692l-34 135l135-34l692-691zM768 1536h128l-128 128H293l-165-165V256q0-27 10-50t27-40t41-28t50-10h1280q27 0 50 10t40 27t28 41t10 50v512l-128 128V256h-128v640H384V256H256v1189l91 91h37v-512h896v128l-128 128v-128H512v384h128v-256h128v256zM512 768h768V256H512v512z" />
+    </symbol>
+
+    <symbol id="save" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+      <path fill="currentColor"
+        d="M1792 128q27 0 50 10t40 27t28 41t10 50v1664H357l-229-230V256q0-27 10-50t27-40t41-28t50-10h1536zM512 896h1024V256H512v640zm768 512H640v384h128v-256h128v256h384v-384zm512-1152h-128v768H384V256H256v1381l154 155h102v-512h896v512h384V256z" />
+    </symbol>
+
   </defs>
 </svg>
