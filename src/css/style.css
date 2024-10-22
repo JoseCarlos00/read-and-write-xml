@@ -76,7 +76,7 @@ body {
 	.button-container {
 		display: flex;
 		gap: 0.75rem;
-		margin-left: 12px;
+		justify-content: center;
 
 		.button svg {
 			width: 1.25rem;
