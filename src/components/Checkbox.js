@@ -82,17 +82,7 @@ class InputCheckbox extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.shadowRoot.innerHTML = /*html*/ `
-          <div class="container">
-              <input type="checkbox" id="${this._id}"">
-              <label for="${this._id}" class="check">
-                  <svg width="18px" height="18px" viewBox="0 0 18 18">
-                      <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-                      <polyline points="1 9 7 14 15 4"></polyline>
-                  </svg>
-              </label>
-          </div>
-          `;
+		this.#render();
 
 		// Agregar evento de cambio al checkbox
 		const checkbox = this.shadowRoot.querySelector("#cbx");
@@ -100,8 +90,14 @@ class InputCheckbox extends HTMLElement {
 		if (checkbox) {
 			checkbox.addEventListener("change", () => {
 				const trElement = this.closest("tr");
+
 				if (trElement) {
 					trElement.classList.toggle("selected", checkbox.checked);
+				}
+
+				// Si no es el checkbox de "selectAll", verificar el estado general
+				if (this._id !== "selectAll") {
+					this.checkHeaderState();
 				}
 			});
 		}
@@ -109,6 +105,20 @@ class InputCheckbox extends HTMLElement {
 		if (this._id === "selectAll") {
 			this.setEventSelectAll();
 		}
+	}
+
+	#render() {
+		this.shadowRoot.innerHTML = /*html*/ `
+    <div class="container">
+        <input type="checkbox" id="${this._id}"">
+        <label for="${this._id}" class="check">
+            <svg width="18px" height="18px" viewBox="0 0 18 18">
+                <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                <polyline points="1 9 7 14 15 4"></polyline>
+            </svg>
+        </label>
+    </div>
+    `;
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -123,15 +133,10 @@ class InputCheckbox extends HTMLElement {
 		if (selectAll) {
 			selectAll.addEventListener("change", () => {
 				const isChecked = selectAll.checked;
-				const checkboxes = document.querySelectorAll(
-					'input-checkbox:not([my-id="selectAll"])'
-				);
+				const checkboxes = document.querySelectorAll('input-checkbox:not([my-id="selectAll"])');
 
 				selectAll.checked = isChecked;
-
-				if (checkboxes.length == 0) {
-					return;
-				}
+				if (checkboxes.length == 0) return;
 
 				checkboxes.forEach((checkbox) => {
 					const input = checkbox.shadowRoot.querySelector("#cbx");
@@ -144,6 +149,22 @@ class InputCheckbox extends HTMLElement {
 				});
 			});
 		}
+	}
+
+	checkHeaderState() {
+		const selectAllCheckbox = document
+			.querySelector('input-checkbox[my-id="selectAll"]')
+			?.shadowRoot?.querySelector("#selectAll");
+
+		if (!selectAllCheckbox) return;
+
+		const checkboxes = document.querySelectorAll('input-checkbox:not([my-id="selectAll"])');
+		const allChecked = Array.from(checkboxes).every((checkbox) => {
+			const input = checkbox.shadowRoot.querySelector("#cbx");
+			return input.checked;
+		});
+
+		selectAllCheckbox.checked = allChecked;
 	}
 }
 
