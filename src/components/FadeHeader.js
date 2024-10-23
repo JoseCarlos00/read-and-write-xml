@@ -15,7 +15,7 @@ export class FadeHeader extends HTMLElement {
 		let lastScroll = 0;
 
 		window.addEventListener("scroll", () => {
-			const currentScroll = window.pageYOffset;
+			const currentScroll = window.scrollY;
 			if (currentScroll <= 0) {
 				body.classList.remove(scrollUp);
 				return;
