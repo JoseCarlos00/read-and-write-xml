@@ -46,7 +46,18 @@
 
 		<div id="container-info" class="container-info"></div>
 
-		<main id="xml-content"></main>
+		<main>
+			<div class="delete-row-container">
+				<button id="delete-row-btn" class="button btn-delete-row d-none">
+					<svg aria-hidden="true" width="30" height="30">
+						<use href="./src/icon/icons.svg#trash"></use>
+					</svg>
+					<span>Eliminar filas</span>
+				</button>
+			</div>
+
+			<div id="xml-content"></div>
+		</main>
 
 		<footer class="footer"></footer>
 	</div>

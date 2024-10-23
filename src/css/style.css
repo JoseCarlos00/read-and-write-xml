@@ -113,7 +113,6 @@ body {
 }
 
 /* Panel info detail */
-
 .container-info {
 	width: 80%;
 	max-width: 800px;
@@ -129,7 +128,7 @@ body {
 	flex-wrap: wrap;
 }
 
-/* Card */
+/* Card info detail*/
 .card-container {
 	--bgColor-accent-muted: #388bfd1a;
 	--borderColor-accent-muted: #388bfd66;
@@ -238,6 +237,18 @@ body {
 			&:active {
 				scale: 0.9;
 			}
+		}
+	}
+}
+
+/*  */
+.delete-row-container {
+	width: 100%;
+	.btn-delete-row {
+		background-color: red;
+		svg {
+			width: 1.25rem;
+			height: 1.25rem;
 		}
 	}
 }
@@ -417,6 +428,10 @@ table {
 /* Utils */
 .position-relative {
 	position: relative;
+}
+
+.d-none {
+	display: none;
 }
 
 .button {
