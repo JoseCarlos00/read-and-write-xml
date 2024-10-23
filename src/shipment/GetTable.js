@@ -66,6 +66,7 @@ export class GetTable {
 
 			const { Item, Quantity } = SKU[0];
 			const tr = document.createElement("tr");
+			tr.dataset["lineNumber"] = ErpOrderLineNum;
 
 			//  Crear elementos TD
 			const tdCheckbox = document.createElement("td");
@@ -112,14 +113,7 @@ export class GetTable {
 					</svg>`;
 
 			// Insertar Contenidos  TD en la fila
-			tr.append(
-				tdCheckbox,
-				tdItem,
-				tdQuantity,
-				tdErpOrderLineNum,
-				tdEditRow,
-				tdDeleteRow
-			);
+			tr.append(tdCheckbox, tdItem, tdQuantity, tdErpOrderLineNum, tdEditRow, tdDeleteRow);
 
 			tbody.appendChild(tr);
 		});
@@ -145,6 +139,7 @@ export class GetTable {
 		}</strong>, <small>Order By Item</small>`;
 
 		const table = document.createElement("table");
+		table.id = "shipmentDetailsTable";
 
 		table.appendChild(caption);
 		table.appendChild(getTable.getThead());

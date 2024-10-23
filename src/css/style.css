@@ -427,11 +427,11 @@ table {
 
 /* Utils */
 .position-relative {
-	position: relative;
+	position: relative !important;
 }
 
 .d-none {
-	display: none;
+	display: none !important;
 }
 
 .button {
