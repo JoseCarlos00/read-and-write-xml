@@ -28,6 +28,25 @@
 	}
 }
 
+body:where(.scroll-down, .scroll-up) .nav-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	background: #000;
+	transition: transform 0.4s;
+	width: 100%;
+}
+
+.scroll-down .nav-header {
+	transform: translate3d(0, -100%, 0);
+}
+
+.scroll-up .nav-header {
+	transform: none;
+}
+
 p,
 body {
 	margin: 0;
