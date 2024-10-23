@@ -10,6 +10,10 @@ export class ShipmentDeleter {
 	constructor(shipmentDetails) {
 		this.ShipmentDetails = shipmentDetails;
 		this.totalLinesElement = document.querySelector("#totalLines");
+		this.deleteRowsButton = document.querySelector("#delete-row-btn");
+
+		this.table = document.querySelector("#shipmentDetailsTable");
+		this.setEventButtonDeleteRows();
 	}
 
 	/**
@@ -17,11 +21,14 @@ export class ShipmentDeleter {
 	 * @param {number} lineNumber - Número de línea del detalle a eliminar.
 	 * @throws {Error} Si no se encuentra un objeto con el ErpOrderLineNum especificado.
 	 */
-	deleteRow(lineNumber) {
+	deleteRow(lineNumber, update = true) {
 		const index = this.getIndex(lineNumber);
 		if (index !== -1) {
 			this.ShipmentDetails.splice(index, 1);
-			this.updateLineNumber();
+
+			if (update) {
+				this.updateLineNumber();
+			}
 		} else {
 			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
 		}
@@ -47,5 +54,40 @@ export class ShipmentDeleter {
 	 */
 	updateLineNumber() {
 		this.totalLinesElement.textContent = this.ShipmentDetails.length;
+	}
+
+	handleDeleteRows = () => {
+		const rowsSelected = Array.from(this.table.querySelectorAll("tbody tr.selected"));
+		if (rowsSelected.length === 0) return;
+
+		const deleteRows = confirm("¿Estás seguro de eliminar todas las líneas del envío?");
+		if (!deleteRows) return;
+
+		const isChekedAll = document
+			.querySelector('input-checkbox[my-id="selectAll"]')
+			?.shadowRoot?.querySelector("#selectAll")?.checked;
+
+		if (isChekedAll) {
+			console.warn("Borrar todas las lineas de envio");
+			this.ShipmentDetails.length = 0;
+		} else {
+			console.warn("Borrar  solo las lineas seleccionadas");
+			const lineNumbers = rowsSelected.map((row) => row.dataset.lineNumber);
+
+			if (lineNumbers.length > 0) {
+				lineNumbers.forEach((lineNumber) => this.deleteRow(lineNumber, false));
+			}
+		}
+
+		rowsSelected.forEach((row) => row.remove());
+		this.updateLineNumber();
+	};
+
+	setEventButtonDeleteRows() {
+		if (!this.deleteRowsButton && !this.table) return;
+		this.deleteRowsButton.classList.remove("d-none");
+
+		this.deleteRowsButton.removeEventListener("click", this.handleDeleteRows);
+		this.deleteRowsButton.addEventListener("click", this.handleDeleteRows);
 	}
 }
