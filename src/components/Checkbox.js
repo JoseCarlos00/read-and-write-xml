@@ -66,7 +66,7 @@ checkboxStyleSheet.replaceSync(/*css*/ `
   }
 `);
 
-class InputCheckbox extends HTMLElement {
+export class InputCheckbox extends HTMLElement {
 	static nameElement = "input-checkbox";
 
 	static get observedAttributes() {
@@ -167,5 +167,3 @@ class InputCheckbox extends HTMLElement {
 		selectAllCheckbox.checked = allChecked;
 	}
 }
-
-customElements.define(InputCheckbox.nameElement, InputCheckbox);

@@ -11,15 +11,15 @@
 
 	<link rel="stylesheet" href="./src/css/style.css" />
 
-	<script src="./src/components/Checkbox.js"></script>
+	<script type="module" src="./src/components/components.js"></script>
 </head>
 
 <body>
 	<div class="container-principal">
-		<header class="header">
+		<header class="header" is="fade-header">
 			<h1 class="title">Visor de Archivos XML</h1>
 
-			<div class="button-container">
+			<div class="button-container nav-header">
 				<button id="open-file-btn" class="button btn-open-file">
 					<svg aria-hidden="true">
 						<use href="src/icon/icons.svg#openFile"></use>
