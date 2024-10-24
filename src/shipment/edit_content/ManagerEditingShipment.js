@@ -1,5 +1,6 @@
 import { HandleEventManagerEditShipmentDetail } from "./EditShipmentDetail.js";
 import { HandleEventManagerEditIDetailItem } from "./EditDetailItem.js";
+import ToastAlert from "../../utils/ToasAlert.js";
 
 /**
  * Clase principal para gestionar la edición y guardado de detalles de `Shipment`.
@@ -51,8 +52,10 @@ export class ManagerEditingShipment {
 			}
 
 			console.log("Archivo guardado en:", result?.filePath);
+			ToastAlert.showAlertFullTop({ message: `Archivo guardado en: ${result?.filePath}`, type: "success" });
 		} catch (error) {
-			this.showUserError("Ha ocurrido un error al guardar el archivo.");
+			ToastAlert.showAlertFullTop({ message: "Error al guardar archivo", type: "error" });
+
 			console.error("Error al guardar el archivo:", error.message);
 		}
 	}

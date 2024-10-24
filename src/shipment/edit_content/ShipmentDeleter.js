@@ -1,3 +1,5 @@
+import ToasAlert from "../../utils/ToasAlert.js";
+
 /**
  * Clase que maneja la eliminación de filas en los detalles del envío.
  * @class
@@ -54,6 +56,11 @@ export class ShipmentDeleter {
 	 */
 	updateLineNumber() {
 		this.totalLinesElement.textContent = this.ShipmentDetails.length;
+		this.messageDeleteRow({ message: "Fila eliminada con éxito.", type: "info", duration: 1500 }); // 2 segundos
+	}
+
+	messageDeleteRow(msg) {
+		ToasAlert.showAlertRightBottom(msg, "info");
 	}
 
 	handleDeleteRows = () => {
