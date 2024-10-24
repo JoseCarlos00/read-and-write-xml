@@ -28,9 +28,7 @@ export class ManagerEditingShipment {
 			console.log("Guardando archivo");
 
 			// Crea el contenido XML que deseas guardar
-			const xmlContent = await window.fileApi.createXMLFile(
-				this.ShipmentOriginal
-			);
+			const xmlContent = await window.fileApi.createXMLFile(this.ShipmentOriginal);
 
 			// Guarda el archivo
 			let result = null;
@@ -65,21 +63,25 @@ export class ManagerEditingShipment {
 	setEventForSave() {
 		try {
 			const saveBtn = document.querySelector("#save-file-btn");
+			const saveAsBtn = document.querySelector("#save-file-as-btn");
 
 			if (!saveBtn) {
-				throw new Error("No se encontró el botón de #guardar");
+				return new Error("No se encontró el botón de #guardar");
+			}
+
+			if (!saveAsBtn) {
+				return new Error("No se encontró el botón de #guardar como");
 			}
 
 			// Configurar el evento del botón en el DOM
 			saveBtn.addEventListener("click", () => this.saveFile("save"));
+			saveAsBtn.addEventListener("click", () => this.saveFile("save-as"));
 
 			// Configurar el evento de guardar archivo en el menú
 			window.ipcRenderer.saveFileAsEvent(() => this.saveFile("save-as"));
 			window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
 		} catch (error) {
-			this.logError(
-				"Error al configurar el evento de guardado: " + error.message
-			);
+			this.logError("Error al configurar el evento de guardado: " + error.message);
 		}
 	}
 
@@ -102,9 +104,7 @@ export class ManagerEditingShipment {
 				eventManager.handleEventClickInTable(target);
 			});
 		} catch (error) {
-			this.logError(
-				"Error al configurar el evento de clic en la tabla: " + error.message
-			);
+			this.logError("Error al configurar el evento de clic en la tabla: " + error.message);
 		}
 	}
 
@@ -113,31 +113,20 @@ export class ManagerEditingShipment {
 	 */
 	setEvetEditPanelInfoDetail() {
 		try {
-			const buttonsEditContent = Array.from(
-				document.querySelectorAll("#container-info .card-container button.icon")
-			);
+			const buttonsEditContent = Array.from(document.querySelectorAll("#container-info .card-container button.icon"));
 
 			if (!buttonsEditContent || buttonsEditContent.length === 0) {
-				throw new Error(
-					"No se encontraron los botones de edición en el panel de detalles"
-				);
+				throw new Error("No se encontraron los botones de edición en el panel de detalles");
 			}
 
 			// Instancial clase  para manejar eventos de edición en panel de detalles
-			const eventManager = new HandleEventManagerEditShipmentDetail(
-				this.Shipment
-			);
+			const eventManager = new HandleEventManagerEditShipmentDetail(this.Shipment);
 
 			buttonsEditContent.forEach((button) => {
-				button.addEventListener("click", () =>
-					eventManager.handleEventEditPanelInfoDetail(button)
-				);
+				button.addEventListener("click", () => eventManager.handleEventEditPanelInfoDetail(button));
 			});
 		} catch (error) {
-			this.logError(
-				"Error al configurar el evento de edición en el panel de detalles: " +
-					error.message
-			);
+			this.logError("Error al configurar el evento de edición en el panel de detalles: " + error.message);
 		}
 	}
 
