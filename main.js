@@ -49,7 +49,8 @@ async function selectFile() {
 	try {
 		const { canceled, filePaths } = await dialog.showOpenDialog({
 			properties: ["openFile"],
-			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP"] }],
+			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP", "shxml"] }],
+
 			title: "Selecione un  archivo XML",
 			buttonLabel: "Abrir",
 		});
@@ -75,8 +76,7 @@ async function selectFile() {
 				if (err) {
 					reject(err);
 				} else {
-					const data =
-						result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
+					const data = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
 					resolve({ ShipmentOriginal: result, shipment: data, fileName });
 				}
 			});
@@ -202,12 +202,7 @@ const template = Menu.buildFromTemplate([
 			{ role: "minimize" },
 			{ role: "zoom" },
 			...(isMac
-				? [
-						{ type: "separator" },
-						{ role: "front" },
-						{ type: "separator" },
-						{ role: "window" },
-				  ]
+				? [{ type: "separator" }, { role: "front" }, { type: "separator" }, { role: "window" }]
 				: [{ role: "close" }]),
 		],
 	},
