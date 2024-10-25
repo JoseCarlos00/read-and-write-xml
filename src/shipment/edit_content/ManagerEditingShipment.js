@@ -54,7 +54,7 @@ export class ManagerEditingShipment {
 			if (type === "save-as") {
 				ToastAlert.showAlertFullTop({ message: `Archivo guardado en: ${result?.filePath}`, type: "success" });
 			} else {
-				ToastAlert.showAlertFullTop({ message: `Archivo guardado en`, type: "success" });
+				ToastAlert.showAlertFullTop({ message: `Archivo guardado`, type: "success" });
 			}
 		} catch (error) {
 			ToastAlert.showAlertFullTop({ message: "Error al guardar archivo", type: "error" });
