@@ -8,6 +8,7 @@ import { ManagerEditingShipment } from "./edit_content/ManagerEditingShipment.js
 export class ShipmentManager {
 	constructor({ Shipment, ShipmentOriginal, FileName }) {
 		this.Shipment = Shipment;
+		this.FileName = FileName;
 
 		this.ManagerEditingShipment = new ManagerEditingShipment({
 			ShipmentOriginal,
@@ -16,6 +17,7 @@ export class ShipmentManager {
 		});
 
 		this.xmlContentContainer = document.getElementById("xml-content");
+		this.titleDocument = document.getElementById("title-page");
 	}
 
 	/**
@@ -37,9 +39,7 @@ export class ShipmentManager {
 	 */
 	async createPanelInfo() {
 		if (!this.Shipment) {
-			throw new Error(
-				"[createPanelInfo]: No se encontró el elemento [Shipment]"
-			);
+			throw new Error("[createPanelInfo]: No se encontró el elemento [Shipment]");
 		}
 
 		GetPanelInfo.setPanelInfoDetail(this.Shipment);
@@ -56,19 +56,18 @@ export class ShipmentManager {
 
 			if (!table) {
 				this.xmlContentContainer.innerHTML = "";
-				throw new Error(
-					"[render]: No se pudo obtener el elemento [table] del Shipment"
-				);
+				throw new Error("[render]: No se pudo obtener el elemento [table] del Shipment");
 			}
 
 			this.xmlContentContainer.appendChild(table);
-
 			this.ManagerEditingShipment.initEvents();
+
+			if (this.titleDocument) {
+				this.titleDocument.textContent = "Visor de XML | " + this.FileName;
+			}
 		} catch (error) {
 			this.logError("Error al renderizar la tabla: " + error.message);
-			this.showUserError(
-				"Ha ocurrido un error al mostrar la lista de articulos."
-			);
+			this.showUserError("Ha ocurrido un error al mostrar la lista de articulos.");
 		}
 	}
 
