@@ -20,18 +20,22 @@ function createMainWindow() {
 		},
 	});
 
+	Menu.setApplicationMenu(mainMenu);
+
 	mainWindow.loadFile("index.html");
 
 	// Show devtools automatically if in development
 	if (isDev) {
 		mainWindow.webContents.openDevTools();
 	}
+
+	mainWindow.webContents.on("context-menu", () => {
+		contextTemplate.popup(mainMenu.webContents);
+	});
 }
 
 app.whenReady().then(() => {
 	createMainWindow();
-
-	Menu.setApplicationMenu(template);
 
 	app.on("activate", function () {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
@@ -147,7 +151,7 @@ ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
 
 // Crear el menú de la aplicación
-const template = Menu.buildFromTemplate([
+const mainMenu = Menu.buildFromTemplate([
 	{
 		label: "Archivo",
 		submenu: [
@@ -223,4 +227,37 @@ const template = Menu.buildFromTemplate([
 				],
 		  }
 		: "",
+]);
+
+const contextTemplate = Menu.buildFromTemplate([
+	{
+		label: "Abrir archivo",
+		accelerator: "CmdOrCtrl+O",
+		click: () => {
+			mainWindow.webContents.send("menu-open-file");
+		},
+	},
+	{
+		label: "Guardar archivo",
+		accelerator: "CmdOrCtrl+S",
+		click: () => {
+			mainWindow.webContents.send("menu-save-file");
+		},
+	},
+	{
+		label: "Guardar Archivo Como",
+		accelerator: "CmdOrCtrl+Shift+S",
+		click: () => {
+			mainWindow.webContents.send("menu-save-file-as");
+		},
+	},
+	{
+		type: "separator",
+	},
+	{
+		role: "close",
+	},
+	{
+		role: "reload",
+	},
 ]);
