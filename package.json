@@ -5,13 +5,24 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dist": "electron-builder"
+	},
+	"build": {
+		"appId": "read.and.write.xml.autoupdater",
+		"productName": "read and write xml",
+		"win": {
+			"target": "nsis"
+		},
+		"directories": {
+			"output": "dist"
+		}
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoseCarlos00/read-and-write-xml"
 	},
-	"author": "Jose Carlos",
+	"author": "Jose Carlos Aguirre Romero",
 	"keywords": [
 		"Electron",
 		"electron-app",
@@ -26,6 +37,8 @@
 		"standard": "^17.1.2"
 	},
 	"dependencies": {
+		"electron-builder": "^25.1.8",
+		"electron-updater": "^6.3.9",
 		"xml2js": "^0.6.2"
 	}
 }
