@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
+const { autoUpdater, AppUpdater } = require("electron-updater");
+
 const path = require("node:path");
 const fs = require("node:fs");
 const xml2js = require("xml2js");
@@ -8,6 +10,10 @@ const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
+
+//Basic flags
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -40,6 +46,29 @@ app.whenReady().then(() => {
 	app.on("activate", function () {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
+
+	autoUpdater.checkForUpdates();
+	curWindow.showMessage(`Checking for updates. Current version ${app.getVersion()}`);
+});
+
+/*New Update Available*/
+autoUpdater.on("update-available", (info) => {
+	mainWindow.showMessage(`Update available. Current version ${app.getVersion()}`);
+	let pth = autoUpdater.downloadUpdate();
+	mainWindow.showMessage(pth);
+});
+
+autoUpdater.on("update-not-available", (info) => {
+	mainWindow.showMessage(`No update available. Current version ${app.getVersion()}`);
+});
+
+/*Download Completion Message*/
+autoUpdater.on("update-downloaded", (info) => {
+	mainWindow.showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+});
+
+autoUpdater.on("error", (info) => {
+	mainWindow.showMessage(info);
 });
 
 app.on("window-all-closed", () => {
