@@ -18,6 +18,7 @@ autoUpdater.autoInstallOnAppQuit = true;
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: isDev ? 1250 : 500,
+		icon: path.join(__dirname, "icon.ico"),
 
 		webPreferences: {
 			nodeIntegration: true,
@@ -31,9 +32,9 @@ function createMainWindow() {
 	mainWindow.loadFile("index.html");
 
 	// Show devtools automatically if in development
-	if (isDev) {
-		mainWindow.webContents.openDevTools();
-	}
+	// if (isDev) {
+	// 	mainWindow.webContents.openDevTools();
+	// }
 
 	mainWindow.webContents.on("context-menu", () => {
 		contextTemplate.popup(mainMenu.webContents);
@@ -48,27 +49,33 @@ app.whenReady().then(() => {
 	});
 
 	autoUpdater.checkForUpdates();
-	curWindow.showMessage(`Checking for updates. Current version ${app.getVersion()}`);
+	showMessage(`Checking for updates. Current version ${app.getVersion()}`);
 });
+
+function showMessage(message) {
+	console.log("showMessage trapped");
+	console.log(message);
+	mainWindow.webContents.send("updateMessage", message);
+}
 
 /*New Update Available*/
 autoUpdater.on("update-available", (info) => {
-	mainWindow.showMessage(`Update available. Current version ${app.getVersion()}`);
+	showMessage(`Actualización disponible. Versión actual ${app.getVersion()}`);
 	let pth = autoUpdater.downloadUpdate();
-	mainWindow.showMessage(pth);
+	showMessage(pth);
 });
 
 autoUpdater.on("update-not-available", (info) => {
-	mainWindow.showMessage(`No update available. Current version ${app.getVersion()}`);
+	showMessage(`No hay actualizaciones disponibles. Versión actual ${app.getVersion()}`);
 });
 
 /*Download Completion Message*/
 autoUpdater.on("update-downloaded", (info) => {
-	mainWindow.showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+	showMessage(`Actualización descargada. Versión actual ${app.getVersion()}`);
 });
 
 autoUpdater.on("error", (info) => {
-	mainWindow.showMessage(info);
+	showMessage(info);
 });
 
 app.on("window-all-closed", () => {

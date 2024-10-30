@@ -5,10 +5,8 @@ const builder = new xml2js.Builder();
 
 contextBridge.exposeInMainWorld("fileApi", {
 	selectFile: () => ipcRenderer.invoke("dialog:select-file"),
-	saveFile: ({ content, fileName }) =>
-		ipcRenderer.invoke("dialog:save-file", { content, fileName }),
-	saveFileAs: ({ content, fileName }) =>
-		ipcRenderer.invoke("dialog:save-file-as", { content, fileName }),
+	saveFile: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file", { content, fileName }),
+	saveFileAs: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file-as", { content, fileName }),
 	createXMLFile,
 });
 
@@ -16,6 +14,10 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	openFileEvent: (callback) => ipcRenderer.on("menu-open-file", callback),
 	saveFileEvent: (callback) => ipcRenderer.on("menu-save-file", callback),
 	saveFileAsEvent: (callback) => ipcRenderer.on("menu-save-file-as", callback),
+});
+
+contextBridge.exposeInMainWorld("bridge", {
+	updateMessage: (callback) => ipcRenderer.on("updateMessage", callback),
 });
 
 async function createXMLFile(data) {

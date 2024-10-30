@@ -6,10 +6,10 @@
 	"scripts": {
 		"start": "electron .",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dist": "electron-builder"
+		"build": "electron-builder"
 	},
 	"build": {
-		"appId": "read.and.write.xml.autoupdater",
+		"appId": "com.readAndWriteXml.id",
 		"productName": "read and write xml",
 		"win": {
 			"target": "nsis"
@@ -17,6 +17,10 @@
 		"directories": {
 			"output": "dist"
 		}
+	},
+	"win": {
+		"target": "nsis",
+		"icon": "icon.ico"
 	},
 	"repository": {
 		"type": "git",
