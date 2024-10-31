@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-const { autoUpdater, AppUpdater } = require("electron-updater");
+// const { autoUpdater, AppUpdater } = require("electron-updater");
 
 const path = require("node:path");
 const fs = require("node:fs");
@@ -12,8 +12,8 @@ let mainWindow = null;
 let currentFilePath = null;
 
 //Basic flags
-autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = true;
+// autoUpdater.autoDownload = false;
+// autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -48,7 +48,7 @@ app.whenReady().then(() => {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
 
-	autoUpdater.checkForUpdates();
+	// autoUpdater.checkForUpdates();
 	showMessage(`Checking for updates. Current version ${app.getVersion()}`);
 });
 
@@ -58,25 +58,25 @@ function showMessage(message) {
 	mainWindow.webContents.send("updateMessage", message);
 }
 
-/*New Update Available*/
-autoUpdater.on("update-available", (info) => {
-	showMessage(`Actualización disponible. Versión actual ${app.getVersion()}`);
-	let pth = autoUpdater.downloadUpdate();
-	showMessage(pth);
-});
+// /*New Update Available*/
+// autoUpdater.on("update-available", (info) => {
+// 	showMessage(`Actualización disponible. Versión actual ${app.getVersion()}`);
+// 	let pth = autoUpdater.downloadUpdate();
+// 	showMessage(pth);
+// });
 
-autoUpdater.on("update-not-available", (info) => {
-	showMessage(`No hay actualizaciones disponibles. Versión actual ${app.getVersion()}`);
-});
+// autoUpdater.on("update-not-available", (info) => {
+// 	showMessage(`No hay actualizaciones disponibles. Versión actual ${app.getVersion()}`);
+// });
 
-/*Download Completion Message*/
-autoUpdater.on("update-downloaded", (info) => {
-	showMessage(`Actualización descargada. Versión actual ${app.getVersion()}`);
-});
+// /*Download Completion Message*/
+// autoUpdater.on("update-downloaded", (info) => {
+// 	showMessage(`Actualización descargada. Versión actual ${app.getVersion()}`);
+// });
 
-autoUpdater.on("error", (info) => {
-	showMessage(info);
-});
+// autoUpdater.on("error", (info) => {
+// 	showMessage(info);
+// });
 
 app.on("window-all-closed", () => {
 	if (!isMac) app.quit();

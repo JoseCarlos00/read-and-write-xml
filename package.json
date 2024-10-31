@@ -4,38 +4,14 @@
 	"description": "App  xml",
 	"main": "main.js",
 	"scripts": {
-		"start": "electron .",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "electron-builder"
+		"start": "electron-forge start",
+		"package": "electron-forge package",
+		"make": "electron-forge make",
+		"publish": "env-cmd electron-forge publish"
 	},
-	"build": {
-		"appId": "com.readAndWriteXml.id",
-		"productName": "read and write xml",
-		"win": {
-			"target": "nsis"
-		},
-		"directories": {
-			"output": "dist"
-		}
-	},
-	"win": {
-		"target": "nsis",
-		"icon": "icon.ico"
-	},
-	"files": [
-		"dist/**/*",
-		"main.js",
-		"index.html",
-		"preload.js",
-		"icon.ico"
-	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoseCarlos00/read-and-write-xml"
-	},
-	"publish": {
-		"provider": "github",
-		"releaseType": "release"
 	},
 	"author": "Jose Carlos Aguirre Romero",
 	"keywords": [
@@ -48,12 +24,21 @@
 	],
 	"license": "ISC",
 	"devDependencies": {
+		"@electron-forge/cli": "^7.5.0",
+		"@electron-forge/maker-deb": "^7.5.0",
+		"@electron-forge/maker-rpm": "^7.5.0",
+		"@electron-forge/maker-squirrel": "^7.5.0",
+		"@electron-forge/maker-zip": "^7.5.0",
+		"@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+		"@electron-forge/plugin-fuses": "^7.5.0",
+		"@electron-forge/publisher-github": "^7.5.0",
+		"@electron/fuses": "^1.8.0",
 		"electron": "^32.2.0",
-		"electron-builder": "^25.1.8",
 		"standard": "^17.1.2"
 	},
 	"dependencies": {
-		"electron-updater": "^6.3.9",
+		"electron-squirrel-startup": "^1.0.1",
+		"env-cmd": "^10.1.0",
 		"xml2js": "^0.6.2"
 	}
 }
