@@ -22,17 +22,27 @@
 		"javascript",
 		"xml2js"
 	],
-	"fileAssociations": [
-		{
-			"ext": [
-				"xml",
-				"shxmlP",
-				"shxml"
-			],
-			"name": "read-and-write-xml",
-			"role": "Editor"
-		}
-	],
+	"build": {
+		"appId": "com.josecarlosaguirre.read-and-write-xml",
+		"icon": "./icon.ico",
+		"fileAssociations": [
+			{
+				"ext": "xml",
+				"name": "read-and-write-xml",
+				"role": "Editor"
+			},
+			{
+				"ext": "shxmlP",
+				"name": "read-and-write-xml",
+				"role": "Editor"
+			},
+			{
+				"ext": "shxml",
+				"name": "read-and-write-xml",
+				"role": "Editor"
+			}
+		]
+	},
 	"license": "ISC",
 	"devDependencies": {
 		"@electron-forge/cli": "^7.5.0",

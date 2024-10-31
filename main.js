@@ -1,17 +1,42 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-
 const { updateElectronApp } = require("update-electron-app");
-updateElectronApp(); // additional configuration options available
 
 const path = require("node:path");
 const fs = require("node:fs");
 const xml2js = require("xml2js");
+
+// updateElectronApp(); // additional configuration options available
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
+
+// Comprobar si la aplicación ya está en ejecución
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+	console.log("Se quito  la aplicación de la memoria");
+	app.quit();
+} else {
+	app.on("second-instance", (_, argv) => {
+		// Usuario solicitó una segunda instancia de la aplicación
+		if (mainWindow) {
+			if (mainWindow.isMinimized()) mainWindow.restore();
+			mainWindow.focus();
+		}
+
+		// Procesar los argumentos de la segunda instancia
+		handleFileOpenInWindows(argv);
+	});
+
+	app.on("ready", () => {
+		createMainWindow();
+
+		// Manejar los argumentos de la primera instancia
+		handleFileOpenInWindows(process.argv);
+	});
+}
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -29,19 +54,31 @@ function createMainWindow() {
 
 	mainWindow.loadFile("index.html");
 
+	// Enviar la ruta del archivo al renderizador cuando la ventana esté completamente cargada
+	mainWindow.webContents.on("did-finish-load", () => {
+		if (currentFilePath) {
+			console.log("[did-finish-load] Ruta del archivo actual:", currentFilePath);
+			mainWindow.webContents.send("file-opened", currentFilePath);
+		} else {
+			console.log("No se encotro una ruta actual");
+		}
+	});
+
 	mainWindow.webContents.on("context-menu", () => {
 		contextTemplate.popup(mainMenu.webContents);
 	});
 }
 
 app.whenReady().then(() => {
-	createMainWindow();
-
 	app.on("activate", function () {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
 
 	showMessage(`Checking for updates. Current version ${app.getVersion()}`);
+});
+
+app.on("window-all-closed", () => {
+	if (!isMac) app.quit();
 });
 
 function showMessage(message) {
@@ -50,9 +87,41 @@ function showMessage(message) {
 	mainWindow.webContents.send("updateMessage", message);
 }
 
-app.on("window-all-closed", () => {
-	if (!isMac) app.quit();
-});
+function handleFileOpenInWindows(argv) {
+	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
+	const validatedExtensions = ["xml", "shxmlP", "shxml"];
+
+	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
+	const filePath = argsArray.find((arg) => {
+		console.log("[filePath]:", arg[1], arg);
+
+		// Verifica si es un string, no comienza con "--", y tiene una extensión válida
+		if (typeof arg === "string" && !arg.startsWith("--")) {
+			let ext = "";
+			let name;
+
+			if (arg.length > 1) {
+				ext = path.extname(arg[1]).toLowerCase().substring(1); // Obtén la extensión sin el "."
+				name = arg[1];
+			} else {
+				ext = path.extname(arg[0]).toLowerCase().substring(1); // Obtén la extens
+				name = arg[0];
+			}
+
+			return validatedExtensions.includes(name) && fs.existsSync(name);
+		}
+		return false;
+	});
+
+	// Verificar si se encontró una ruta de archivo válida
+	if (filePath) {
+		currentFilePath = filePath;
+		console.log("Archivo abierto:", currentFilePath);
+		mainWindow.webContents.send("file-opened", currentFilePath);
+	} else {
+		console.log("No se encontró un archivo válido en los argumentos:", argsArray);
+	}
+}
 
 const parser = new xml2js.Parser();
 
@@ -99,7 +168,7 @@ async function selectFile() {
 }
 
 // Función para guardar archivo como
-async function saveFileAs(event, { content, fileName = "archivo.xml" }) {
+async function saveFileAs(event, { content, fileName = "archivo.shxml" }) {
 	try {
 		if (!content) {
 			throw new Error("No existe el  contenido para guardar");
@@ -133,7 +202,7 @@ async function saveFileAs(event, { content, fileName = "archivo.xml" }) {
 }
 
 // Funcion para guardar remplazando el archivo actual
-async function saveFile(event, { content, fileName = "archivo.xml" }) {
+async function saveFile(event, { content, fileName = "archivo.shxml" }) {
 	try {
 		if (!content) {
 			throw new Error("No hay contenido para guardar");
@@ -157,22 +226,6 @@ async function saveFile(event, { content, fileName = "archivo.xml" }) {
 ipcMain.handle("dialog:select-file", selectFile);
 ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
-
-// Maneja el evento `open-file`
-app.on("open-file", (event, filePath) => {
-	event.preventDefault();
-
-	if (mainWindow) {
-		// Envía la ruta del archivo al renderizador
-		mainWindow.webContents.send("file-opened", filePath);
-	} else {
-		// Si la ventana principal aún no está creada
-		app.once("ready", () => {
-			createMainWindow();
-			mainWindow.webContents.send("file-opened", filePath);
-		});
-	}
-});
 
 // Crear el menú de la aplicación
 const mainMenu = Menu.buildFromTemplate([

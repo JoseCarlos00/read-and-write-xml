@@ -41,5 +41,19 @@ function showUserError(message) {
 // Escuchar el evento desde el menú para abrir el archivo
 window.ipcRenderer.openFileEvent(handleOpenFile);
 
-//  Escuchar el evento desde el exploraror de windows para abrir el archivo
-window.ipcRenderer.openFileWindows(handleOpenFile);
+async function handleOpenFileInWindows(event, filePath) {
+	try {
+		console.log("Archivo abierto desde el explorador:", filePath);
+		// Leer el contenido del archivo XML (puedes agregar la lógica que desees aquí)
+	} catch (error) {
+		console.error("Error al abrir el archivo:", error);
+		showUserError("No se pudo abrir el archivo.");
+	}
+}
+
+window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
+
+window.addEventListener("load", () => {
+	// Escuchar el evento `file-opened` desde el proceso principal
+	console.log("Pagina  cargada con éxito [4]");
+});

@@ -17,10 +17,6 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	openFileWindows: (callback) => ipcRenderer.on("file-opened", callback),
 });
 
-contextBridge.exposeInMainWorld("bridge", {
-	updateMessage: (callback) => ipcRenderer.on("updateMessage", callback),
-});
-
 async function createXMLFile(data) {
 	const xml = builder.buildObject(data);
 	return xml;
