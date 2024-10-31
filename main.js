@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-// const { autoUpdater, AppUpdater } = require("electron-updater");
+
+const { updateElectronApp } = require("update-electron-app");
+updateElectronApp(); // additional configuration options available
 
 const path = require("node:path");
 const fs = require("node:fs");
@@ -10,10 +12,6 @@ const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
-
-//Basic flags
-// autoUpdater.autoDownload = false;
-// autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -31,11 +29,6 @@ function createMainWindow() {
 
 	mainWindow.loadFile("index.html");
 
-	// Show devtools automatically if in development
-	// if (isDev) {
-	// 	mainWindow.webContents.openDevTools();
-	// }
-
 	mainWindow.webContents.on("context-menu", () => {
 		contextTemplate.popup(mainMenu.webContents);
 	});
@@ -48,7 +41,6 @@ app.whenReady().then(() => {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
 
-	// autoUpdater.checkForUpdates();
 	showMessage(`Checking for updates. Current version ${app.getVersion()}`);
 });
 
@@ -57,26 +49,6 @@ function showMessage(message) {
 	console.log(message);
 	mainWindow.webContents.send("updateMessage", message);
 }
-
-// /*New Update Available*/
-// autoUpdater.on("update-available", (info) => {
-// 	showMessage(`Actualización disponible. Versión actual ${app.getVersion()}`);
-// 	let pth = autoUpdater.downloadUpdate();
-// 	showMessage(pth);
-// });
-
-// autoUpdater.on("update-not-available", (info) => {
-// 	showMessage(`No hay actualizaciones disponibles. Versión actual ${app.getVersion()}`);
-// });
-
-// /*Download Completion Message*/
-// autoUpdater.on("update-downloaded", (info) => {
-// 	showMessage(`Actualización descargada. Versión actual ${app.getVersion()}`);
-// });
-
-// autoUpdater.on("error", (info) => {
-// 	showMessage(info);
-// });
 
 app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
@@ -185,6 +157,22 @@ async function saveFile(event, { content, fileName = "archivo.xml" }) {
 ipcMain.handle("dialog:select-file", selectFile);
 ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
+
+// Maneja el evento `open-file`
+app.on("open-file", (event, filePath) => {
+	event.preventDefault();
+
+	if (mainWindow) {
+		// Envía la ruta del archivo al renderizador
+		mainWindow.webContents.send("file-opened", filePath);
+	} else {
+		// Si la ventana principal aún no está creada
+		app.once("ready", () => {
+			createMainWindow();
+			mainWindow.webContents.send("file-opened", filePath);
+		});
+	}
+});
 
 // Crear el menú de la aplicación
 const mainMenu = Menu.buildFromTemplate([

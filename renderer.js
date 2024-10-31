@@ -41,9 +41,5 @@ function showUserError(message) {
 // Escuchar el evento desde el menú para abrir el archivo
 window.ipcRenderer.openFileEvent(handleOpenFile);
 
-window.bridge.updateMessage(updateMessage);
-
-function updateMessage(event, message) {
-	console.log("[Renderer.js]");
-	console.log(message);
-}
+//  Escuchar el evento desde el exploraror de windows para abrir el archivo
+window.ipcRenderer.openFileWindows(handleOpenFile);

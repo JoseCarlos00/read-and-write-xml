@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	openFileEvent: (callback) => ipcRenderer.on("menu-open-file", callback),
 	saveFileEvent: (callback) => ipcRenderer.on("menu-save-file", callback),
 	saveFileAsEvent: (callback) => ipcRenderer.on("menu-save-file-as", callback),
+	openFileWindows: (callback) => ipcRenderer.on("file-opened", callback),
 });
 
 contextBridge.exposeInMainWorld("bridge", {

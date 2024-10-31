@@ -1,6 +1,6 @@
 {
 	"name": "read-and-write-xml",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"description": "App  xml",
 	"main": "main.js",
 	"scripts": {
@@ -21,6 +21,17 @@
 		"nodejs",
 		"javascript",
 		"xml2js"
+	],
+	"fileAssociations": [
+		{
+			"ext": [
+				"xml",
+				"shxmlP",
+				"shxml"
+			],
+			"name": "read-and-write-xml",
+			"role": "Editor"
+		}
 	],
 	"license": "ISC",
 	"devDependencies": {
