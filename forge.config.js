@@ -8,6 +8,10 @@ module.exports = {
 	rebuildConfig: {},
 	makers: [
 		{
+			name: "@electron-forge/maker-squirrel",
+			config: {},
+		},
+		{
 			name: "@electron-forge/maker-zip",
 		},
 	],
@@ -37,7 +41,6 @@ module.exports = {
 					owner: "JoseCarlos00",
 					name: "read-and-write-xml",
 				},
-				prerelease: true,
 			},
 		},
 	],
