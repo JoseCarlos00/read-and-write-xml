@@ -41,5 +41,27 @@ function showUserError(message) {
 // Escuchar el evento desde el menú para abrir el archivo
 window.ipcRenderer.openFileEvent(handleOpenFile);
 
-//  Escuchar el evento desde el exploraror de windows para abrir el archivo
-window.ipcRenderer.openFileWindows(handleOpenFile);
+async function handleOpenFileInWindows(event, filePath) {
+	try {
+		console.log("Archivo abierto desde el explorador:", filePath);
+
+		const fileContent = await window.fileApi.readFile({ filePath });
+
+		console.log({ fileContent });
+
+		xmlContentContainer.innerHTML = "";
+
+		const shipment = new ShipmentManager({
+			Shipment: fileContent.shipment,
+			ShipmentOriginal: fileContent.ShipmentOriginal,
+			FileName: fileContent.fileName,
+		});
+
+		shipment.render();
+	} catch (error) {
+		console.error("Error al abrir el archivo:", error);
+		showUserError("No se pudo abrir el archivo.");
+	}
+}
+
+window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
