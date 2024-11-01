@@ -65,8 +65,3 @@ async function handleOpenFileInWindows(event, filePath) {
 }
 
 window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
-
-window.addEventListener("load", () => {
-	// Escuchar el evento `file-opened` desde el proceso principal
-	console.log("Pagina  cargada con éxito [4]");
-});

@@ -16,11 +16,11 @@ let currentFilePath = null;
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
-	console.log("Se quito  la aplicación de la memoria");
 	app.quit();
 } else {
 	app.on("second-instance", (_, argv) => {
 		// Usuario solicitó una segunda instancia de la aplicación
+
 		if (mainWindow) {
 			if (mainWindow.isMinimized()) mainWindow.restore();
 			mainWindow.focus();
@@ -90,6 +90,8 @@ function showMessage(message) {
 function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
 	const validatedExtensions = ["xml", "shxmlp", "shxml"];
+	console.log({ argsArray });
+	console.log({ appp: app.isPackaged });
 
 	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
 	const filePath = argsArray.find((arg) => {
@@ -215,7 +217,6 @@ async function saveFile(event, { content, fileName = "archivo.shxml" }) {
 	}
 }
 
-// main.js
 async function readFile(event, { filePath }) {
 	try {
 		if (!filePath) {
@@ -233,12 +234,12 @@ async function readFile(event, { filePath }) {
 	}
 }
 
-ipcMain.handle("win:read-file", readFile);
-
 // Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
 ipcMain.handle("dialog:select-file", selectFile);
 ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
+
+ipcMain.handle("win:read-file", readFile);
 
 // Crear el menú de la aplicación
 const mainMenu = Menu.buildFromTemplate([
