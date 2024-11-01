@@ -2,9 +2,12 @@ const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
 const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 
+const fs = require("fs");
 const path = require("node:path");
-const fs = require("node:fs");
 const xml2js = require("xml2js");
+
+const fsPromise = require("fs").promises; // Usando fs.promises para operaciones asíncronas
+const { getAppUpdateYml, getChannelYml } = require("electron-updater-yaml");
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
@@ -97,8 +100,57 @@ app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
 });
 
+// Opciones para app-update.yml
+const appUpdateOptions = {
+	name: "read-and-write-xml", // Nombre de tu aplicación
+	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/v2.0.1",
+	channel: "latest", // Canal por defecto
+};
+
+// Opciones para channel.yml
+const channelOptions = {
+	installerPath: path.join(__dirname, "out/read-and-write-xml-win32-x64"), // Ruta a tu carpeta de instaladores
+	version: "2.0.1",
+};
+
+// Función principal para generar los archivos YML
+async function generateYmlFiles() {
+	try {
+		// Generar app-update.yml
+		const appUpdateYml = await getAppUpdateYml(appUpdateOptions);
+		const appUpdateYmlPath = path.join(__dirname, "out/app-update.yml");
+		await fsPromise.writeFile(appUpdateYmlPath, appUpdateYml, "utf8");
+		console.log("app-update.yml creado correctamente.");
+
+		// Generar latest.yml
+		const channelYml = await getChannelYml(channelOptions);
+		const latestYmlPath = path.join(__dirname, "out/latest.yml");
+		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
+		console.log("latest.yml creado correctamente.");
+	} catch (error) {
+		console.error("Error al generar los archivos YML:", error);
+	}
+}
+
+// Llamar a la función
+if (!app.isPackaged) {
+	generateYmlFiles();
+}
+
+// Actualizaciones
 autoUpdater.on("update-available", () => {
 	console.log("Actualización disponible");
+	const dialogOpts = {
+		type: "info",
+		buttons: ["Restart", "Later"],
+		title: "Application Update",
+		message: "update",
+		detail: "A new version has been downloaded. Restart the application to apply the updates.",
+	};
+
+	dialog.showMessageBox(dialogOpts).then((returnValue) => {
+		if (returnValue.response === 0) autoUpdater.quitAndInstall();
+	});
 });
 
 autoUpdater.on("update-not-available", () => {

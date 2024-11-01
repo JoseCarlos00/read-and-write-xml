@@ -1,6 +1,6 @@
 {
 	"name": "read-and-write-xml",
-	"version": "2.0.2",
+	"version": "2.0.1",
 	"description": "App  xml",
 	"main": "main.js",
 	"scripts": {
@@ -32,7 +32,7 @@
 		"icon": "./icon.ico",
 		"productName": "read-and-write-xml",
 		"win": {
-			"target": "squirrel"
+			"target": "nsis"
 		},
 		"publish": [
 			{
@@ -41,6 +41,10 @@
 				"repo": "read-and-write-xml"
 			}
 		],
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true
+		},
 		"directories": {
 			"output": "dist"
 		},
@@ -83,6 +87,7 @@
 		"electron-log": "^5.2.0",
 		"electron-squirrel-startup": "^1.0.1",
 		"electron-updater": "^6.3.9",
+		"electron-updater-yaml": "^1.1.2",
 		"env-cmd": "^10.1.0",
 		"xml2js": "^0.6.2"
 	}
