@@ -103,7 +103,7 @@ app.on("window-all-closed", () => {
 // Opciones para app-update.yml
 const appUpdateOptions = {
 	name: "read-and-write-xml", // Nombre de tu aplicación
-	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/v2.0.2",
+	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/",
 	channel: "latest", // Canal por defecto
 };
 
