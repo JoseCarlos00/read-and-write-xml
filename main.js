@@ -103,7 +103,7 @@ app.on("window-all-closed", () => {
 // Opciones para app-update.yml
 const appUpdateOptions = {
 	name: "read-and-write-xml", // Nombre de tu aplicación
-	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/v2.0.1",
+	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/v2.0.2",
 	channel: "latest", // Canal por defecto
 };
 
@@ -118,13 +118,13 @@ async function generateYmlFiles() {
 	try {
 		// Generar app-update.yml
 		const appUpdateYml = await getAppUpdateYml(appUpdateOptions);
-		const appUpdateYmlPath = path.join(__dirname, "out/app-update.yml");
+		const appUpdateYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/app-update.yml");
 		await fsPromise.writeFile(appUpdateYmlPath, appUpdateYml, "utf8");
 		console.log("app-update.yml creado correctamente.");
 
 		// Generar latest.yml
 		const channelYml = await getChannelYml(channelOptions);
-		const latestYmlPath = path.join(__dirname, "out/latest.yml");
+		const latestYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/latest.yml");
 		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
 		console.log("latest.yml creado correctamente.");
 	} catch (error) {
@@ -350,36 +350,6 @@ const mainMenu = Menu.buildFromTemplate([
 			},
 			{ type: "separator" },
 			isMac ? { role: "close" } : { role: "quit" },
-		],
-	},
-	{
-		label: "Configuracion",
-		submenu: [
-			{
-				label: "Selecionar carpeta de destino",
-			},
-		],
-	},
-	{
-		label: "Edit",
-		submenu: [
-			{ role: "undo" },
-			{ role: "redo" },
-			{ type: "separator" },
-			{ role: "cut" },
-			{ role: "copy" },
-			{ role: "paste" },
-		],
-	},
-	// { role: 'windowMenu' }
-	{
-		label: "Window",
-		submenu: [
-			{ role: "minimize" },
-			{ role: "zoom" },
-			...(isMac
-				? [{ type: "separator" }, { role: "front" }, { type: "separator" }, { role: "window" }]
-				: [{ role: "close" }]),
 		],
 	},
 	// { role: 'viewMenu' }
