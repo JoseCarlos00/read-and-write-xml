@@ -110,7 +110,7 @@ const appUpdateOptions = {
 // Opciones para channel.yml
 const channelOptions = {
 	installerPath: path.join(__dirname, "out/read-and-write-xml-win32-x64"), // Ruta a tu carpeta de instaladores
-	version: "2.0.1",
+	version: "2.0.2",
 };
 
 // Función principal para generar los archivos YML
