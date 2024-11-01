@@ -89,28 +89,12 @@ function showMessage(message) {
 
 function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
-	const validatedExtensions = ["xml", "shxmlP", "shxml"];
+	const validatedExtensions = ["xml", "shxmlp", "shxml"];
 
 	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
 	const filePath = argsArray.find((arg) => {
-		console.log("[filePath]:", arg[1], arg);
-
-		// Verifica si es un string, no comienza con "--", y tiene una extensión válida
-		if (typeof arg === "string" && !arg.startsWith("--")) {
-			let ext = "";
-			let name;
-
-			if (arg.length > 1) {
-				ext = path.extname(arg[1]).toLowerCase().substring(1); // Obtén la extensión sin el "."
-				name = arg[1];
-			} else {
-				ext = path.extname(arg[0]).toLowerCase().substring(1); // Obtén la extens
-				name = arg[0];
-			}
-
-			return validatedExtensions.includes(name) && fs.existsSync(name);
-		}
-		return false;
+		const ext = path.extname(arg).toLowerCase().substring(1); // Obtén la extens
+		return validatedExtensions.includes(ext) && fs.existsSync(arg);
 	});
 
 	// Verificar si se encontró una ruta de archivo válida
@@ -124,6 +108,31 @@ function handleFileOpenInWindows(argv) {
 }
 
 const parser = new xml2js.Parser();
+
+function parseFile({ filePath, fileContent }) {
+	if (!filePath || !fileContent) {
+		console.log("No se encontró un archivo válido para parsear");
+		return null;
+	}
+
+	// Actualizar la ruta actual después de guardar como
+	currentFilePath = filePath;
+
+	// Extraer el nombre del archivo
+	const fileName = path.basename(filePath);
+
+	// Devuelve una promesa que se resuelve con el resultado del análisis XML
+	return new Promise((resolve, reject) => {
+		parser.parseString(fileContent, function (err, result) {
+			if (err) {
+				reject(err);
+			} else {
+				const data = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
+				resolve({ ShipmentOriginal: result, shipment: data, fileName });
+			}
+		});
+	});
+}
 
 // Funcion para abrir un archivo y retornarlo
 async function selectFile() {
@@ -141,27 +150,11 @@ async function selectFile() {
 		}
 
 		const filePath = filePaths[0];
-		const fileContent = fs.readFileSync(filePath, "utf-8");
+		const fileContent = await fs.promises.readFile(filePath, "utf-8");
 
 		if (!fileContent) return null;
 
-		// Actualizar la ruta actual después de guardar como
-		currentFilePath = filePath;
-
-		// Extraer el nombre del archivo
-		const fileName = path.basename(filePath);
-
-		// Devuelve una promesa que se resuelve con el resultado del análisis XML
-		return new Promise((resolve, reject) => {
-			parser.parseString(fileContent, function (err, result) {
-				if (err) {
-					reject(err);
-				} else {
-					const data = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
-					resolve({ ShipmentOriginal: result, shipment: data, fileName });
-				}
-			});
-		});
+		return parseFile({ filePath, fileContent });
 	} catch (error) {
 		console.error("Error:", error);
 	}
@@ -221,6 +214,26 @@ async function saveFile(event, { content, fileName = "archivo.shxml" }) {
 		return { success: false, error: error.message };
 	}
 }
+
+// main.js
+async function readFile(event, { filePath }) {
+	try {
+		if (!filePath) {
+			throw new Error("{readFile] No hay ruta de archivo");
+		}
+
+		const fileContent = await fs.promises.readFile(filePath, "utf-8");
+
+		if (!fileContent) return null;
+
+		return parseFile({ filePath, fileContent });
+	} catch (error) {
+		console.error("Error al leer el archivo:", error);
+		throw new Error("No se pudo leer el archivo.");
+	}
+}
+
+ipcMain.handle("win:read-file", readFile);
 
 // Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
 ipcMain.handle("dialog:select-file", selectFile);
