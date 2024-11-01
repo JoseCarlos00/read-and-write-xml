@@ -5,11 +5,20 @@ module.exports = {
 	packagerConfig: {
 		asar: true,
 		icon: "./icon",
+		executableName: "read-and-write-xml",
+		appCopyright: "Copyright © 2024",
 	},
 	rebuildConfig: {},
 	makers: [
 		{
 			name: "@electron-forge/maker-zip",
+		},
+		{
+			name: "@electron-forge/maker-squirrel",
+			config: {
+				name: "read_and_write_xml",
+				icon: "./icon",
+			},
 		},
 	],
 
@@ -39,6 +48,9 @@ module.exports = {
 					name: "read-and-write-xml",
 				},
 			},
+			draft: false,
+			prerelease: false,
+			generateReleaseNotes: true,
 		},
 	],
 };

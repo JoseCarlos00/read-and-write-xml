@@ -1,17 +1,30 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-const { updateElectronApp } = require("update-electron-app");
+const { autoUpdater } = require("electron-updater");
+const log = require("electron-log");
 
 const path = require("node:path");
 const fs = require("node:fs");
 const xml2js = require("xml2js");
-
-// updateElectronApp(); // additional configuration options available
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
+
+// Inicializar el logger
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = "info";
+
+autoUpdater.setFeedURL({
+	provider: "github",
+	owner: "JoseCarlos00",
+	repo: "read-and-write-xml",
+	releaseType: "release", // release O "draft" para pruebas
+});
+
+// run this as early in the main process as possible
+if (require("electron-squirrel-startup")) app.quit();
 
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -32,6 +45,9 @@ if (!gotSingleInstanceLock) {
 
 	app.on("ready", () => {
 		createMainWindow();
+
+		// Inicia la verificación de actualizaciones
+		autoUpdater.checkForUpdatesAndNotify();
 
 		// Manejar los argumentos de la primera instancia
 		handleFileOpenInWindows(process.argv);
@@ -81,6 +97,19 @@ app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
 });
 
+autoUpdater.on("update-available", () => {
+	console.log("Actualización disponible");
+});
+
+autoUpdater.on("update-not-available", () => {
+	console.log("No hay actualizaciones disponibles");
+});
+
+autoUpdater.on("error", (error) => {
+	console.error("Error en el autoupdate:", error);
+	log.error("Error en el autoupdate: " + error);
+});
+
 function showMessage(message) {
 	console.log("showMessage trapped");
 	console.log(message);
@@ -91,7 +120,7 @@ function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
 	const validatedExtensions = ["xml", "shxmlp", "shxml"];
 	console.log({ argsArray });
-	console.log({ appp: app.isPackaged });
+	console.log({ isPackaged: app.isPackaged });
 
 	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
 	const filePath = argsArray.find((arg) => {
