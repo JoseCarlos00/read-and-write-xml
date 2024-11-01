@@ -44,7 +44,20 @@ window.ipcRenderer.openFileEvent(handleOpenFile);
 async function handleOpenFileInWindows(event, filePath) {
 	try {
 		console.log("Archivo abierto desde el explorador:", filePath);
-		// Leer el contenido del archivo XML (puedes agregar la lógica que desees aquí)
+
+		const fileContent = await window.fileApi.readFile({ filePath });
+
+		console.log({ fileContent });
+
+		xmlContentContainer.innerHTML = "";
+
+		const shipment = new ShipmentManager({
+			Shipment: fileContent.shipment,
+			ShipmentOriginal: fileContent.ShipmentOriginal,
+			FileName: fileContent.fileName,
+		});
+
+		shipment.render();
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
 		showUserError("No se pudo abrir el archivo.");

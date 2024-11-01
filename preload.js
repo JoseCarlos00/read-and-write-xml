@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld("fileApi", {
 	selectFile: () => ipcRenderer.invoke("dialog:select-file"),
 	saveFile: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file", { content, fileName }),
 	saveFileAs: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file-as", { content, fileName }),
+	readFile: ({ filePath }) => ipcRenderer.invoke("win:read-file", { filePath }),
+
 	createXMLFile,
 });
 
