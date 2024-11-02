@@ -18,6 +18,7 @@ let currentFilePath = null;
 // Inicializar el logger
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
+autoUpdater.fullChangelog = true;
 
 autoUpdater.setFeedURL({
 	provider: "github",
@@ -110,7 +111,7 @@ const appUpdateOptions = {
 // Opciones para channel.yml
 const channelOptions = {
 	installerPath: path.join(__dirname, "out/read-and-write-xml-win32-x64"), // Ruta a tu carpeta de instaladores
-	version: "2.0.3",
+	version: app.getVersion(),
 };
 
 // Función principal para generar los archivos YML
@@ -120,13 +121,15 @@ async function generateYmlFiles() {
 		const appUpdateYml = await getAppUpdateYml(appUpdateOptions);
 		const appUpdateYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/app-update.yml");
 		await fsPromise.writeFile(appUpdateYmlPath, appUpdateYml, "utf8");
-		console.log("app-update.yml creado correctamente.");
+		console.log("[File create]: app-update.yml creado correctamente.");
 
 		// Generar latest.yml
 		const channelYml = await getChannelYml(channelOptions);
 		const latestYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/latest.yml");
 		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
-		console.log("latest.yml creado correctamente.");
+		console.log("version:", channelOptions.version2);
+
+		console.log("[File create]: latest.yml creado correctamente.");
 	} catch (error) {
 		console.error("Error al generar los archivos YML:", error);
 	}
@@ -139,13 +142,13 @@ if (!app.isPackaged) {
 
 // Actualizaciones
 autoUpdater.on("update-available", () => {
-	console.log("Actualización disponible");
+	console.log("Actualizacion disponible");
 	const dialogOpts = {
 		type: "info",
-		buttons: ["Restart", "Later"],
-		title: "Application Update",
+		buttons: ["Reinicie", "Mas tarde"],
+		title: "Actualizacion disponible",
 		message: "update",
-		detail: "A new version has been downloaded. Restart the application to apply the updates.",
+		detail: "Se ha descargado la nueva versión. Reinicie la aplicación para aplicar las actualizaciones.",
 	};
 
 	dialog.showMessageBox(dialogOpts).then((returnValue) => {
@@ -186,7 +189,7 @@ function handleFileOpenInWindows(argv) {
 		console.log("Archivo abierto:", currentFilePath);
 		mainWindow.webContents.send("file-opened", currentFilePath);
 	} else {
-		console.log("No se encontró un archivo válido en los argumentos:", argsArray);
+		console.log("No se encontro un archivo valido en los argumentos:", argsArray);
 	}
 }
 
@@ -194,7 +197,7 @@ const parser = new xml2js.Parser();
 
 function parseFile({ filePath, fileContent }) {
 	if (!filePath || !fileContent) {
-		console.log("No se encontró un archivo válido para parsear");
+		console.log("No se encontro un archivo vaslido para parsear");
 		return null;
 	}
 
