@@ -19,6 +19,8 @@ let currentFilePath = null;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 autoUpdater.fullChangelog = true;
+autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
+autoUpdater.allowDowngrade = false; // Desactiva la posibilidad de downgradear
 
 autoUpdater.setFeedURL({
 	provider: "github",
