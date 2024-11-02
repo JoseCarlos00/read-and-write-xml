@@ -1,6 +1,6 @@
 {
 	"name": "read-and-write-xml",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"description": "App  xml",
 	"main": "main.js",
 	"scripts": {
@@ -32,7 +32,8 @@
 		"icon": "./icon.ico",
 		"productName": "read-and-write-xml",
 		"win": {
-			"target": "nsis"
+			"target": " nsis",
+			"icon": "./icon.ico"
 		},
 		"publish": [
 			{

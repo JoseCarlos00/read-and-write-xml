@@ -16,6 +16,11 @@ let mainWindow = null;
 let currentFilePath = null;
 
 // Inicializar el logger
+// Configura el logger para guardar los logs en un archivo
+log.transports.file.resolvePath = () => path.join(app.getPath("userData"), "logs", "app.log");
+log.transports.file.level = "info";
+log.info("La aplicación se ha iniciado");
+
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 autoUpdater.fullChangelog = true;
@@ -155,7 +160,10 @@ autoUpdater.on("update-available", () => {
 	};
 
 	dialog.showMessageBox(dialogOpts).then((returnValue) => {
-		if (returnValue.response === 0) autoUpdater.quitAndInstall();
+		if (returnValue.response === 0) {
+			log.info('El usuario seleccionó "Reinicie". Aplicando la actualización...');
+			autoUpdater.quitAndInstall();
+		}
 	});
 });
 
@@ -165,7 +173,7 @@ autoUpdater.on("update-not-available", () => {
 
 autoUpdater.on("error", (error) => {
 	console.error("Error en el autoupdate:", error);
-	log.error("Error en el autoupdate: " + error);
+	log.error("Error en el proceso de actualización:", error);
 });
 
 function showMessage(message) {
