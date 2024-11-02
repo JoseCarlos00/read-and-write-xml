@@ -1,6 +1,6 @@
 {
 	"name": "read-and-write-xml",
-	"version": "2.0.5",
+	"version": "2.0.6",
 	"description": "App  xml",
 	"main": "main.js",
 	"scripts": {

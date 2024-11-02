@@ -129,7 +129,7 @@ async function generateYmlFiles() {
 		const channelYml = await getChannelYml(channelOptions);
 		const latestYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/latest.yml");
 		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
-		console.log("version:", channelOptions.version2);
+		console.log("version:", channelOptions.version);
 
 		console.log("[File create]: latest.yml creado correctamente.");
 	} catch (error) {
