@@ -21,15 +21,8 @@ log.info("La aplicacion se ha iniciado");
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 autoUpdater.fullChangelog = true;
-autoUpdater.autoDownload = false; // Activa la descarga automática de la actualización completa
+autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
 autoUpdater.autoInstallOnAppQuit = false; // Activa la instalación automática de la actualización al salir de la aplicación
-
-autoUpdater.setFeedURL({
-	provider: "github",
-	owner: "JoseCarlos00",
-	repo: "read-and-write-xml",
-	releaseType: "release", // release O "draft" para pruebas
-});
 
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -53,7 +46,9 @@ if (!gotSingleInstanceLock) {
 
 		// Inicia la verificación de actualizaciones
 		// autoUpdater.checkForUpdatesAndNotify();
-		autoUpdater.checkForUpdates();
+		autoUpdater.checkForUpdates().catch((error) => {
+			log.error("Error al verificar actualizaciones:", error);
+		});
 
 		// Manejar los argumentos de la primera instancia
 		handleFileOpenInWindows(process.argv);
@@ -106,29 +101,14 @@ app.on("window-all-closed", () => {
 // Actualizaciones
 autoUpdater.on("update-available", () => {
 	console.log("Actualizacion disponible");
-	const dialogOpts = {
-		type: "info",
-		buttons: ["Reinicie", "Mas tarde"],
-		title: "Actualizacion disponible",
-		message: "update",
-		detail: "Se ha descargado la nueva versión. Reinicie la aplicación para aplicar las actualizaciones.",
-	};
-
-	// dialog.showMessageBox(dialogOpts).then((returnValue) => {
-	// 	if (returnValue.response === 0) {
-	// 		log.info('El usuario seleccionó "Reinicie". Aplicando la actualización...');
-	// 		autoUpdater.quitAndInstall();
-	// 	}
-	// });
-
-	log.info(`Update available. Current version ${app.getVersion()}`);
+	log.info(`Actualizacion disponible. Current version ${app.getVersion()}`);
 	let pth = autoUpdater.downloadUpdate();
 	log.info(pth);
 });
 
 autoUpdater.on("update-not-available", () => {
 	console.log("No hay actualizaciones disponibles");
-	log.info(`No update available. Current version ${app.getVersion()}`);
+	log.info(`No hay actualizaciones disponibles. Current version ${app.getVersion()}`);
 });
 
 autoUpdater.on("error", (error) => {
@@ -138,7 +118,17 @@ autoUpdater.on("error", (error) => {
 
 /*Download Completion Message*/
 autoUpdater.on("update-downloaded", (info) => {
-	log.info(`Update downloaded. Current version ${app.getVersion()}`);
+	log.info(`Actualización descargada, listo para instalar. Current version ${app.getVersion()}`);
+	const response = dialog.showMessageBoxSync({
+		type: "info",
+		buttons: ["Reiniciar ahora", "Más tarde"],
+		defaultId: 0,
+		message: "La actualización ha sido descargada. ¿Quieres reiniciar la aplicación para actualizar ahora?",
+	});
+
+	if (response === 0) {
+		autoUpdater.quitAndInstall();
+	}
 });
 
 //Global exception handler
