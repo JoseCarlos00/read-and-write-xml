@@ -6,9 +6,6 @@ const fs = require("fs");
 const path = require("node:path");
 const xml2js = require("xml2js");
 
-const fsPromise = require("fs").promises; // Usando fs.promises para operaciones asíncronas
-const { getAppUpdateYml, getChannelYml } = require("electron-updater-yaml");
-
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
@@ -19,14 +16,13 @@ let currentFilePath = null;
 // Configura el logger para guardar los logs en un archivo
 log.transports.file.resolvePath = () => path.join(app.getPath("userData"), "logs", "app.log");
 log.transports.file.level = "info";
-log.info("La aplicación se ha iniciado");
+log.info("La aplicacion se ha iniciado");
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 autoUpdater.fullChangelog = true;
-autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
-autoUpdater.allowDowngrade = false; // Desactiva la posibilidad de downgradear
-autoUpdater.disableWebInstaller = true; // Agrega esta línea para desactivar el instalador web.
+autoUpdater.autoDownload = false; // Activa la descarga automática de la actualización completa
+autoUpdater.autoInstallOnAppQuit = false; // Activa la instalación automática de la actualización al salir de la aplicación
 
 autoUpdater.setFeedURL({
 	provider: "github",
@@ -34,9 +30,6 @@ autoUpdater.setFeedURL({
 	repo: "read-and-write-xml",
 	releaseType: "release", // release O "draft" para pruebas
 });
-
-// run this as early in the main process as possible
-if (require("electron-squirrel-startup")) app.quit();
 
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -59,7 +52,8 @@ if (!gotSingleInstanceLock) {
 		createMainWindow();
 
 		// Inicia la verificación de actualizaciones
-		autoUpdater.checkForUpdatesAndNotify();
+		// autoUpdater.checkForUpdatesAndNotify();
+		autoUpdater.checkForUpdates();
 
 		// Manejar los argumentos de la primera instancia
 		handleFileOpenInWindows(process.argv);
@@ -109,45 +103,6 @@ app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
 });
 
-// Opciones para app-update.yml
-const appUpdateOptions = {
-	name: "read-and-write-xml", // Nombre de tu aplicación
-	url: "https://github.com/JoseCarlos00/read-and-write-xml/releases/download/",
-	channel: "latest", // Canal por defecto
-};
-
-// Opciones para channel.yml
-const channelOptions = {
-	installerPath: path.join(__dirname, "out/make/squirrel.windows/x64"), // Ruta a tu carpeta de instaladores
-	version: app.getVersion(),
-};
-
-// Función principal para generar los archivos YML
-async function generateYmlFiles() {
-	try {
-		// Generar app-update.yml
-		const appUpdateYml = await getAppUpdateYml(appUpdateOptions);
-		const appUpdateYmlPath = path.join(__dirname, "out/make/squirrel.windows/x64/app-update.yml");
-		await fsPromise.writeFile(appUpdateYmlPath, appUpdateYml, "utf8");
-		console.log("[File create]: app-update.yml creado correctamente.");
-
-		// Generar latest.yml
-		const channelYml = await getChannelYml(channelOptions);
-		const latestYmlPath = path.join(__dirname, "out/make/squirrel.windows/x64/latest.yml");
-		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
-		console.log("version:", channelOptions.version);
-
-		console.log("[File create]: latest.yml creado correctamente.");
-	} catch (error) {
-		console.error("Error al generar los archivos YML:", error);
-	}
-}
-
-// Llamar a la función
-if (!app.isPackaged) {
-	generateYmlFiles();
-}
-
 // Actualizaciones
 autoUpdater.on("update-available", () => {
 	console.log("Actualizacion disponible");
@@ -159,21 +114,37 @@ autoUpdater.on("update-available", () => {
 		detail: "Se ha descargado la nueva versión. Reinicie la aplicación para aplicar las actualizaciones.",
 	};
 
-	dialog.showMessageBox(dialogOpts).then((returnValue) => {
-		if (returnValue.response === 0) {
-			log.info('El usuario seleccionó "Reinicie". Aplicando la actualización...');
-			autoUpdater.quitAndInstall();
-		}
-	});
+	// dialog.showMessageBox(dialogOpts).then((returnValue) => {
+	// 	if (returnValue.response === 0) {
+	// 		log.info('El usuario seleccionó "Reinicie". Aplicando la actualización...');
+	// 		autoUpdater.quitAndInstall();
+	// 	}
+	// });
+
+	log.info(`Update available. Current version ${app.getVersion()}`);
+	let pth = autoUpdater.downloadUpdate();
+	log.info(pth);
 });
 
 autoUpdater.on("update-not-available", () => {
 	console.log("No hay actualizaciones disponibles");
+	log.info(`No update available. Current version ${app.getVersion()}`);
 });
 
 autoUpdater.on("error", (error) => {
 	console.error("Error en el autoupdate:", error);
 	log.error("Error en el proceso de actualización:", error);
+});
+
+/*Download Completion Message*/
+autoUpdater.on("update-downloaded", (info) => {
+	log.info(`Update downloaded. Current version ${app.getVersion()}`);
+});
+
+//Global exception handler
+process.on("uncaughtException", function (err) {
+	console.log(err);
+	log.error("Error no controlado:", err);
 });
 
 function showMessage(message) {
