@@ -24,6 +24,13 @@ autoUpdater.fullChangelog = true;
 autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
 autoUpdater.autoInstallOnAppQuit = false; // Activa la instalación automática de la actualización al salir de la aplicación
 
+autoUpdater.setFeedURL({
+	provider: "github",
+	owner: "JoseCarlos00",
+	repo: "read-and-write-xml",
+	releaseType: "release", // release O "draft" para pruebas
+});
+
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
