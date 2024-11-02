@@ -21,6 +21,7 @@ autoUpdater.logger.transports.file.level = "info";
 autoUpdater.fullChangelog = true;
 autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
 autoUpdater.allowDowngrade = false; // Desactiva la posibilidad de downgradear
+autoUpdater.disableWebInstaller = true; // Agrega esta línea para desactivar el instalador web.
 
 autoUpdater.setFeedURL({
 	provider: "github",
@@ -112,7 +113,7 @@ const appUpdateOptions = {
 
 // Opciones para channel.yml
 const channelOptions = {
-	installerPath: path.join(__dirname, "out/read-and-write-xml-win32-x64"), // Ruta a tu carpeta de instaladores
+	installerPath: path.join(__dirname, "out/make/squirrel.windows/x64"), // Ruta a tu carpeta de instaladores
 	version: app.getVersion(),
 };
 
@@ -121,13 +122,13 @@ async function generateYmlFiles() {
 	try {
 		// Generar app-update.yml
 		const appUpdateYml = await getAppUpdateYml(appUpdateOptions);
-		const appUpdateYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/app-update.yml");
+		const appUpdateYmlPath = path.join(__dirname, "out/make/squirrel.windows/x64/app-update.yml");
 		await fsPromise.writeFile(appUpdateYmlPath, appUpdateYml, "utf8");
 		console.log("[File create]: app-update.yml creado correctamente.");
 
 		// Generar latest.yml
 		const channelYml = await getChannelYml(channelOptions);
-		const latestYmlPath = path.join(__dirname, "out/read-and-write-xml-win32-x64/resources/latest.yml");
+		const latestYmlPath = path.join(__dirname, "out/make/squirrel.windows/x64/latest.yml");
 		await fsPromise.writeFile(latestYmlPath, channelYml, "utf8");
 		console.log("version:", channelOptions.version);
 
