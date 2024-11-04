@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
-const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 
 const fs = require("fs");
@@ -11,25 +10,6 @@ const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
-
-// Inicializar el logger
-// Configura el logger para guardar los logs en un archivo
-log.transports.file.resolvePath = () => path.join(app.getPath("userData"), "logs", "app.log");
-log.transports.file.level = "info";
-log.info("La aplicacion se ha iniciado");
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = "info";
-autoUpdater.fullChangelog = true;
-autoUpdater.autoDownload = true; // Activa la descarga automática de la actualización completa
-autoUpdater.autoInstallOnAppQuit = false; // Activa la instalación automática de la actualización al salir de la aplicación
-
-autoUpdater.setFeedURL({
-	provider: "github",
-	owner: "JoseCarlos00",
-	repo: "read-and-write-xml",
-	releaseType: "release", // release O "draft" para pruebas
-});
 
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -50,12 +30,6 @@ if (!gotSingleInstanceLock) {
 
 	app.on("ready", () => {
 		createMainWindow();
-
-		// Inicia la verificación de actualizaciones
-		// autoUpdater.checkForUpdatesAndNotify();
-		autoUpdater.checkForUpdates().catch((error) => {
-			log.error("Error al verificar actualizaciones:", error);
-		});
 
 		// Manejar los argumentos de la primera instancia
 		handleFileOpenInWindows(process.argv);
@@ -103,39 +77,6 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
-});
-
-// Actualizaciones
-autoUpdater.on("update-available", () => {
-	console.log("Actualizacion disponible");
-	log.info(`Actualizacion disponible. Current version ${app.getVersion()}`);
-	let pth = autoUpdater.downloadUpdate();
-	log.info(pth);
-});
-
-autoUpdater.on("update-not-available", () => {
-	console.log("No hay actualizaciones disponibles");
-	log.info(`No hay actualizaciones disponibles. Current version ${app.getVersion()}`);
-});
-
-autoUpdater.on("error", (error) => {
-	console.error("Error en el autoupdate:", error);
-	log.error("Error en el proceso de actualización:", error);
-});
-
-/*Download Completion Message*/
-autoUpdater.on("update-downloaded", (info) => {
-	log.info(`Actualización descargada, listo para instalar. Current version ${app.getVersion()}`);
-	const response = dialog.showMessageBoxSync({
-		type: "info",
-		buttons: ["Reiniciar ahora", "Más tarde"],
-		defaultId: 0,
-		message: "La actualización ha sido descargada. ¿Quieres reiniciar la aplicación para actualizar ahora?",
-	});
-
-	if (response === 0) {
-		autoUpdater.quitAndInstall();
-	}
 });
 
 //Global exception handler
