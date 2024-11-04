@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron/main");
+const { updateElectronApp } = require("update-electron-app");
 const log = require("electron-log");
 
 const fs = require("fs");
@@ -10,6 +11,19 @@ const isMac = process.platform === "darwin";
 
 let mainWindow = null;
 let currentFilePath = null;
+
+// Inicializar el logger
+// Configura el logger para guardar los logs en un archivo
+log.transports.file.resolvePath = () => path.join(app.getPath("userData"), "logs", "app.log");
+log.transports.file.level = "info";
+log.info("La aplicacion se ha iniciado");
+
+updateElectronApp({
+	logger: log,
+	notifyUser: true,
+});
+
+if (require("electron-squirrel-startup")) app.quit();
 
 // Comprobar si la aplicación ya está en ejecución
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -72,7 +86,7 @@ app.whenReady().then(() => {
 		if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 	});
 
-	showMessage(`Checking for updates. Current version ${app.getVersion()}`);
+	log.info(`Checking for updates. Current version ${app.getVersion()}`);
 });
 
 app.on("window-all-closed", () => {
@@ -84,12 +98,6 @@ process.on("uncaughtException", function (err) {
 	console.log(err);
 	log.error("Error no controlado:", err);
 });
-
-function showMessage(message) {
-	console.log("showMessage trapped");
-	console.log(message);
-	mainWindow.webContents.send("updateMessage", message);
-}
 
 function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
@@ -224,7 +232,7 @@ async function saveFile(event, { content, fileName = "archivo.shxml" }) {
 async function readFile(event, { filePath }) {
 	try {
 		if (!filePath) {
-			throw new Error("{readFile] No hay ruta de archivo");
+			throw new Error("[readFile] No hay ruta de archivo");
 		}
 
 		const fileContent = await fs.promises.readFile(filePath, "utf-8");
@@ -235,6 +243,7 @@ async function readFile(event, { filePath }) {
 	} catch (error) {
 		console.error("Error al leer el archivo:", error);
 		throw new Error("No se pudo leer el archivo.");
+		log.error("[readFile] No hay ruta de archivo:" + error);
 	}
 }
 
