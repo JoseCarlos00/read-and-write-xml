@@ -65,3 +65,9 @@ async function handleOpenFileInWindows(event, filePath) {
 }
 
 window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
+
+async function setCurrentVersion() {
+	document.querySelector("#version").innerHTML = (await window.bridge.version()) ?? "No disponible";
+}
+
+window.addEventListener("load", setCurrentVersion);

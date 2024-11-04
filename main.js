@@ -254,6 +254,10 @@ ipcMain.handle("dialog:save-file-as", saveFileAs);
 
 ipcMain.handle("win:read-file", readFile);
 
+ipcMain.handle("get-version", (event, argv) => {
+	return app.getVersion();
+});
+
 // Crear el menú de la aplicación
 const mainMenu = Menu.buildFromTemplate([
 	{
