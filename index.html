@@ -11,13 +11,15 @@
 
 	<link rel="stylesheet" href="./src/css/style.css" />
 	<link rel="stylesheet" href="./src/css/toasAlert.css">
+	<link rel="stylesheet" href="./src/css/tabs.css">
 
 	<script type="module" src="./src/components/components.js"></script>
 </head>
 
 <body>
 	<div class="container-principal">
-		<header class="header" is="fade-header">
+
+		<header class="header d-none" is="fade-header">
 			<h1 class="title">Visor de Archivos XML <small>Versison actual: <span id="version"></span></small></h1>
 
 			<div class="button-container nav-header">
@@ -45,19 +47,41 @@
 			</div>
 		</header>
 
-		<div id="container-info" class="container-info"></div>
-
-		<main>
-			<div class="delete-row-container">
-				<button id="delete-row-btn" class="button btn-delete-row d-none">
-					<svg aria-hidden="true" width="30" height="30">
-						<use href="./src/icon/icons.svg#trash"></use>
-					</svg>
-					<span>Eliminar filas</span>
-				</button>
+		<div class="tabs-fixed">
+			<div id="tabs-container">
+				<div class="tab active">
+					<div class="tab-border-top-container"></div>
+					<button class="button">
+						file0.txt
+						<span class="btn-close" title="cerrar">
+							<svg class="icon-close" viewBox="0 0 24 24">
+								<use href="./src/icon/icons.svg#close"></use>
+							</svg>
+						</span>
+					</button>
+				</div>
 			</div>
+		</div>
 
-			<div id="xml-content"></div>
+		<div class="separator"></div>
+
+		<main id="content-container">
+
+			<div class="tab-content d-block" id="file0.txt">This is the content of file1.txt</div>
+			<div id="container-info" class="container-info"></div>
+
+			<section>
+				<div class="delete-row-container">
+					<button id="delete-row-btn" class="button btn-delete-row d-none">
+						<svg aria-hidden="true" width="30" height="30">
+							<use href="./src/icon/icons.svg#trash"></use>
+						</svg>
+						<span>Eliminar filas</span>
+					</button>
+				</div>
+
+				<div id="xml-content"></div>
+			</section>
 		</main>
 
 		<footer class="footer"></footer>
