@@ -174,6 +174,32 @@ async function selectFile() {
 	}
 }
 
+async function selectFileMultiple() {
+	try {
+		const { canceled, filePaths } = await dialog.showOpenDialog({
+			properties: ["openFile", "multiSelections"],
+			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP", "shxml"] }],
+			title: "Seleccione archivos XML",
+			buttonLabel: "Abrir",
+		});
+
+		if (canceled || filePaths.length === 0) {
+			return null;
+		}
+
+		// Leer el contenido de todos los archivos seleccionados
+		const filePromises = filePaths.map(async (filePath) => {
+			const fileContent = await fs.promises.readFile(filePath, "utf-8");
+			return parseFile({ filePath, fileContent });
+		});
+
+		// Esperar a que se resuelvan todas las promesas
+		return await Promise.all(filePromises);
+	} catch (error) {
+		console.error("Error:", error);
+	}
+}
+
 // Función para guardar archivo como
 async function saveFileAs(event, { content, fileName = "archivo.shxml" }) {
 	try {
@@ -248,7 +274,7 @@ async function readFile(event, { filePath }) {
 }
 
 // Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
-ipcMain.handle("dialog:select-file", selectFile);
+ipcMain.handle("dialog:select-file", selectFileMultiple);
 ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
 
