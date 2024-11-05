@@ -15,6 +15,7 @@ export class ShipmentManager {
 			ShipmentOriginal,
 			Shipment,
 			FileName,
+			contentContainer,
 		});
 	}
 
@@ -61,7 +62,7 @@ export class ShipmentManager {
 
 			this.contentContainer.appendChild(panelInfo);
 			this.contentContainer.appendChild(table);
-			// this.ManagerEditingShipment.initEvents();
+			this.ManagerEditingShipment.initEvents();
 		} catch (error) {
 			this.logError("Error al renderizar la tabla: " + error.message);
 			this.showUserError("Ha ocurrido un error al mostrar la lista de articulos.");

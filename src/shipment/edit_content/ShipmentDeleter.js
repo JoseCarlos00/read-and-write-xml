@@ -8,14 +8,31 @@ export class ShipmentDeleter {
 	/**
 	 * Crea una instancia de ShipmentDeleter.
 	 * @param {Array} shipmentDetails - Lista de detalles de envío.
+	 * @param {HTMLElement} contentContainer - Elemento que el contenido de la `tab` actual.
 	 */
-	constructor(shipmentDetails) {
+	constructor(shipmentDetails, contentContainer) {
 		this.ShipmentDetails = shipmentDetails;
-		this.totalLinesElement = document.querySelector("#totalLines");
-		this.deleteRowsButton = document.querySelector("#delete-row-btn");
+		this.ContentContainer = contentContainer;
+		this.totalLinesElement = this.ContentContainer?.querySelector("#totalLines");
+		this.deleteRowsButton = this.ContentContainer?.querySelector("#delete-row-btn");
 
-		this.table = document.querySelector("#shipmentDetailsTable");
-		this.setEventButtonDeleteRows();
+		this.table = this.ContentContainer?.querySelector("#shipmentDetailsTable");
+
+		try {
+			if (!this.totalLinesElement || !this.deleteRowsButton || !this.table) {
+				throw new Error("[constructor] No se encontraron los elementos necesarios para eliminar filas");
+			}
+
+			console.log("ContentContainer:", this.ContentContainer);
+
+			console.log("totalLinesElement:", this.totalLinesElement);
+			console.log("deleteRowsButton:", this.deleteRowsButton);
+			console.log("table:", this.table);
+
+			this.setEventButtonDeleteRows();
+		} catch (error) {
+			console.error("[ShipmentDeleter]: Error al inicializar ShipmentDeleter:", error);
+		}
 	}
 
 	/**
@@ -64,15 +81,15 @@ export class ShipmentDeleter {
 	}
 
 	handleDeleteRows = () => {
-		const rowsSelected = Array.from(this.table.querySelectorAll("tbody tr.selected"));
+		const rowsSelected = Array.from(this.table?.querySelectorAll("tbody tr.selected"));
 		if (rowsSelected.length === 0) return;
 
 		const deleteRows = confirm("¿Estás seguro de eliminar todas las líneas del envío?");
 		if (!deleteRows) return;
 
-		const isChekedAll = document
-			.querySelector('input-checkbox[my-id="selectAll"]')
-			?.shadowRoot?.querySelector("#selectAll")?.checked;
+		const isChekedAll = this.ContentContainer?.querySelector(
+			'input-checkbox[my-id="selectAll"]'
+		)?.shadowRoot?.querySelector("#selectAll")?.checked;
 
 		if (isChekedAll) {
 			console.warn("Borrar todas las lineas de envio");
