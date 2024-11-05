@@ -6,7 +6,7 @@ import { Card, CardEditData } from "./Card.js";
 export class GetPanelInfo {
 	constructor(Shipment) {
 		this.Shipment = Shipment;
-		this.containerPanelInfo = document.createElement("div");
+		this.containerPanelInfo = document.createElement("section");
 		this.containerPanelInfo.classList.add("container-info");
 	}
 
@@ -174,6 +174,9 @@ export class GetPanelInfo {
 	/**
 	 * Método estático para inicializar el panel de información detallada del `Shipment`.
 	 * @param {Object} Shipment - Objeto de `Shipment`.
+	 *
+	 * @return {HTMLElement|null} El elemento  `<section class="container-info"></section>` del panel de información detallada del `Shipment`.
+
 	 */
 	static async getPanelInfoDetail(Shipment) {
 		try {

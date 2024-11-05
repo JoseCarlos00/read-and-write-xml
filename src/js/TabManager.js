@@ -44,10 +44,12 @@ export class TabManager {
 	 * Crea una nueva pestaña con su contenido asociado.
 	 * Si la pestaña ya existe, cambia a ella en lugar de crear una nueva.
 	 * @param {string} filename - Nombre de la pestaña y identificador único.
-	 * @param {string} content - Contenido que se mostrará en la pestaña.
+	 * 
+	* @return {HTMLElement|null} El contenedor principal del contenido `<div class="tab-content"></div>` de la `tab` actual.
+
 	 */
-	createNewTab(filename, content) {
-		if (typeof filename !== "string" || typeof content !== "string") {
+	createNewTab(filename) {
+		if (typeof filename !== "string") {
 			console.warn("El nombre del archivo y el contenido deben ser cadenas de texto.");
 			return;
 		}
@@ -82,21 +84,19 @@ export class TabManager {
 		}
 
 		// Crear el contenedor de contenido para la pestaña
-		const contentDiv = document.createElement("div");
-		contentDiv.className = "tab-content";
-		// contentDiv.id = filename;
-		contentDiv.textContent = content;
+		const contentContainer = document.createElement("div");
+		contentContainer.className = "tab-content";
 
 		// Guardar en el mapa la referencia de la pestaña y su contenido
-		this.tabsMap.set(filename, [tabButton, contentDiv]);
+		this.tabsMap.set(filename, [tabButton, contentContainer]);
 
 		// Agregar la pestaña y el contenido al DOM
 		this.tabsContainer.appendChild(tab);
-		this.contentContainer.appendChild(contentDiv);
+		this.contentContainer.appendChild(contentContainer);
 
 		// Enfocar la nueva pestaña
-		tabButton.onclick = () => this.switchTab(tabButton, contentDiv);
-		this.switchTab(tabButton, contentDiv);
+		tabButton.onclick = () => this.switchTab(tabButton, contentContainer);
+		this.switchTab(tabButton, contentContainer);
 
 		// Agregar evento de cierre a la pestaña
 		const closeButton = tab.querySelector(".btn-close");
@@ -106,6 +106,8 @@ export class TabManager {
 				this.closeTab(filename);
 			});
 		}
+
+		return contentContainer;
 	}
 
 	/**
