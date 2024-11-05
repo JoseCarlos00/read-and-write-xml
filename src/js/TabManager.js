@@ -63,8 +63,8 @@ export class TabManager {
 		tab.className = "tab";
 		tab.innerHTML = `
 			<div class="tab-border-top-container"></div>
-			<button class="button">
-				${filename} 
+			<button class="button-tab">
+				<label class="title-label">${filename} </label>
 				<span class="btn-close" title="Cerrar">
 					<svg class="icon-close" viewBox="0 0 24 24">
 						<use href="./src/icon/icons.svg#close"></use>
@@ -84,7 +84,7 @@ export class TabManager {
 		// Crear el contenedor de contenido para la pestaña
 		const contentDiv = document.createElement("div");
 		contentDiv.className = "tab-content";
-		contentDiv.id = filename;
+		// contentDiv.id = filename;
 		contentDiv.textContent = content;
 
 		// Guardar en el mapa la referencia de la pestaña y su contenido

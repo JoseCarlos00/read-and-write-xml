@@ -35,6 +35,8 @@
 	/* Estilo de las pestañas */
 	.tab {
 		padding: 10px 20px;
+		padding: 0.45rem 0.8rem;
+
 		cursor: pointer;
 		transition: background-color 0.3s;
 
@@ -48,23 +50,28 @@
 
 		flex-shrink: 0;
 		min-width: fit-content;
-		width: 120px;
 		white-space: nowrap;
 
-		.button {
+		.button-tab {
 			background: inherit;
 			cursor: pointer;
 			color: inherit;
 			border: none;
 			border-radius: 0;
-			width: 100%;
-			height: var(--editor-group-tab-height);
-			position: absolute;
-			display: block;
-			top: 0;
-			left: 0;
+			font-size: 0.75rem;
+			font-weight: bold;
 
-			&:active {
+			/* width: 100%; */
+			min-width: fit-content;
+			height: var(--editor-group-tab-height);
+			display: flex;
+
+			.title-label {
+				padding-right: 1.15rem;
+			}
+
+			&:active,
+			&:focus {
 				outline: none;
 			}
 		}
@@ -108,14 +115,14 @@
 
 	/* Pestaña activa */
 	.tab.active {
-		background-color: #ffffff;
+		background-color: #504545;
 		font-weight: bold;
 		position: relative;
+		width: fit-content;
 
 		left: auto;
 		color: var(--vscode-tab-activeForeground);
 		background-color: var(--bs-body-bg);
-		border-bottom: 2px solid var(--bs-body-bg);
 
 		.tab-border-top-container {
 			background-color: var(--tab-border-top-color);
@@ -128,7 +135,7 @@
 		.tab-border-bottom-container {
 			background-color: var(--tab-border-bottom-color);
 			display: block;
-			bottom: -2px;
+			bottom: 0;
 			height: 1.5px;
 			z-index: 10;
 		}

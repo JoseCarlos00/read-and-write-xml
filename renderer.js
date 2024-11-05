@@ -1,7 +1,7 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
+import { TabManager } from "./src/js/TabManager.js";
 
 const openFileButton = document.getElementById("open-file-btn");
-const xmlContentContainer = document.getElementById("xml-content");
 
 openFileButton.addEventListener("click", handleOpenFile);
 
@@ -15,15 +15,11 @@ async function handleOpenFile() {
 			throw new Error("No se pudo obtener el contenido del archivo.");
 		}
 
-		xmlContentContainer.innerHTML = "";
-
-		const shipment = new ShipmentManager({
+		createNewTab({
 			Shipment: fileContent.shipment,
 			ShipmentOriginal: fileContent.ShipmentOriginal,
 			FileName: fileContent.fileName,
 		});
-
-		shipment.render();
 	} catch (error) {
 		console.error("Detalles del error:", error);
 		showUserError("No se pudo abrir el archivo.");
@@ -49,19 +45,30 @@ async function handleOpenFileInWindows(event, filePath) {
 
 		console.log({ fileContent });
 
-		xmlContentContainer.innerHTML = "";
-
-		const shipment = new ShipmentManager({
+		createNewTab({
 			Shipment: fileContent.shipment,
 			ShipmentOriginal: fileContent.ShipmentOriginal,
 			FileName: fileContent.fileName,
 		});
-
-		shipment.render();
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
 		showUserError("No se pudo abrir el archivo.");
 	}
+}
+
+let currenfile = 1;
+
+const tabManager = new TabManager("tabs-container", "content-container");
+
+function createNewTab({ Shipment, ShipmentOriginal, FileName }) {
+	// const shipment = new ShipmentManager({
+	// 	Shipment,
+	// 	ShipmentOriginal,
+	// 	FileName,
+	// });
+	// shipment.render();
+
+	tabManager.createNewTab(FileName, `This is the content of file${currenfile}.xml`);
 }
 
 window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
