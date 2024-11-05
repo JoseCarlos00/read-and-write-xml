@@ -59,6 +59,7 @@
 							</svg>
 						</span>
 					</button>
+					<div class="tab-border-bottom-container"></div>
 				</div>
 			</div>
 		</div>
@@ -67,20 +68,23 @@
 
 		<main id="content-container">
 
-			<div class="tab-content d-block" id="file0.txt">This is the content of file1.txt</div>
-			<div id="container-info" class="container-info"></div>
+			<section class="tab-content d-block" id="file0.txt">
+				This is the content of file1.txt
 
-			<section>
-				<div class="delete-row-container">
-					<button id="delete-row-btn" class="button btn-delete-row d-none">
-						<svg aria-hidden="true" width="30" height="30">
-							<use href="./src/icon/icons.svg#trash"></use>
-						</svg>
-						<span>Eliminar filas</span>
-					</button>
+				<div id="container-info" class="container-info"></div>
+
+				<div class="container-actions">
+					<div class="delete-row-container">
+						<button id="delete-row-btn" class="button btn-delete-row d-none">
+							<svg aria-hidden="true" width="30" height="30">
+								<use href="./src/icon/icons.svg#trash"></use>
+							</svg>
+							<span>Eliminar filas</span>
+						</button>
+					</div>
+
+					<div id="xml-content"></div>
 				</div>
-
-				<div id="xml-content"></div>
 			</section>
 		</main>
 

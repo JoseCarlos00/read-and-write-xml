@@ -1,16 +1,4 @@
-:root {
-	--tabs-border-bottom-color: #2b2b2b;
-	--editor-group-tab-height: 35px;
-	--vscode-tab-inactiveBackground: #181818;
-	--vscode-tab-inactiveForeground: #9d9d9d;
-
-	--separator-border: rgba(255, 255, 255, 0.09);
-	--vscode-tab-activeForeground: #ffffff;
-
-	/* Active */
-	--tab-border-bottom-color: #1f1f1f;
-	--tab-border-top-color: #0078d4;
-}
+@import url("./utils.css");
 
 /* Contenedor de pestañas */
 .tabs-fixed {
@@ -29,11 +17,12 @@
 	color: var(--vscode-tab-inactiveForeground);
 	overflow: hidden;
 
-	&::before {
+	/* separator line */
+	&::after {
 		background-color: var(--tabs-border-bottom-color);
 		bottom: 0;
 		content: "";
-		height: 1px;
+		height: 1.5px;
 		left: 0;
 		pointer-events: none;
 		position: absolute;
@@ -53,7 +42,6 @@
 
 		display: flex;
 		height: var(--editor-group-tab-height);
-		/* padding-left: 10px; */
 		position: relative;
 		white-space: nowrap;
 		color: var(--vscode-tab-inactiveForeground);
@@ -70,6 +58,7 @@
 			cursor: pointer;
 			color: inherit;
 			border: none;
+			border-radius: 0;
 			width: 100%;
 			height: var(--editor-group-tab-height);
 			position: absolute;
@@ -110,6 +99,15 @@
 		}
 	}
 
+	.tab-border-bottom-container,
+	.tab-border-top-container {
+		display: none;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		width: 100%;
+	}
+
 	/* Pestaña activa */
 	.tab.active {
 		background-color: #ffffff;
@@ -126,24 +124,15 @@
 			height: 1px;
 			top: 0;
 			z-index: 6;
-
 			display: block;
-			left: 0;
-			pointer-events: none;
-			position: absolute;
-			width: 100%;
 		}
 
-		&::before {
-			background-color: var(--bs-body-bg);
-			bottom: -3px;
-			content: "";
-			height: 5px;
-			left: 0;
-			pointer-events: none;
-			position: absolute;
-			width: 100%;
-			z-index: 9;
+		.tab-border-bottom-container {
+			background-color: var(--tab-border-bottom-color);
+			display: block;
+			bottom: -2px;
+			height: 1.5px;
+			z-index: 10;
 		}
 
 		.btn-close {

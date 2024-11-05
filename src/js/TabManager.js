@@ -71,6 +71,7 @@ export class TabManager {
 					</svg>
 				</span>
 			</button>
+			<div class="tab-border-bottom-container"></div>
 		`;
 
 		// Añadir evento para cambiar de pestaña
