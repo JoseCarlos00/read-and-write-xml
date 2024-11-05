@@ -1,0 +1,177 @@
+:root {
+	--tabs-border-bottom-color: #2b2b2b;
+	--editor-group-tab-height: 35px;
+	--vscode-tab-inactiveBackground: #181818;
+	--vscode-tab-inactiveForeground: #9d9d9d;
+
+	--separator-border: rgba(255, 255, 255, 0.09);
+	--vscode-tab-activeForeground: #ffffff;
+
+	/* Active */
+	--tab-border-bottom-color: #1f1f1f;
+	--tab-border-top-color: #0078d4;
+}
+
+/* Contenedor de pestañas */
+.tabs-fixed {
+	position: fixed;
+	width: 100%;
+	top: 0;
+	background-color: rgb(24, 24, 24);
+	z-index: 100;
+}
+
+#tabs-container {
+	display: flex;
+	position: relative;
+	height: var(--editor-group-tab-height);
+	background-color: rgb(24, 24, 24);
+	color: var(--vscode-tab-inactiveForeground);
+	overflow: hidden;
+
+	&::before {
+		background-color: var(--tabs-border-bottom-color);
+		bottom: 0;
+		content: "";
+		height: 1px;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		width: 100%;
+		z-index: 9;
+	}
+
+	&:hover {
+		overflow-x: auto;
+	}
+
+	/* Estilo de las pestañas */
+	.tab {
+		padding: 10px 20px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+
+		display: flex;
+		height: var(--editor-group-tab-height);
+		/* padding-left: 10px; */
+		position: relative;
+		white-space: nowrap;
+		color: var(--vscode-tab-inactiveForeground);
+		background-color: var(--vscode-tab-inactiveBackground);
+		border-right: 1px solid rgb(43, 43, 43);
+
+		flex-shrink: 0;
+		min-width: fit-content;
+		width: 120px;
+		white-space: nowrap;
+
+		.button {
+			background: inherit;
+			cursor: pointer;
+			color: inherit;
+			border: none;
+			width: 100%;
+			height: var(--editor-group-tab-height);
+			position: absolute;
+			display: block;
+			top: 0;
+			left: 0;
+
+			&:active {
+				outline: none;
+			}
+		}
+
+		.btn-close {
+			position: absolute;
+			cursor: pointer;
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			opacity: 0;
+			transition: opacity 0.22s ease-in-out;
+			width: 20px;
+			height: 20px;
+
+			&:hover {
+				background-color: #443b3b;
+				border-radius: 4px;
+			}
+			&:active {
+				transform: translateY(-50%) scale(0.98);
+			}
+		}
+	}
+
+	.tab:not(.active):hover {
+		background-color: var(--bs-body-bg);
+		.btn-close {
+			opacity: 1;
+		}
+	}
+
+	/* Pestaña activa */
+	.tab.active {
+		background-color: #ffffff;
+		font-weight: bold;
+		position: relative;
+
+		left: auto;
+		color: var(--vscode-tab-activeForeground);
+		background-color: var(--bs-body-bg);
+		border-bottom: 2px solid var(--bs-body-bg);
+
+		.tab-border-top-container {
+			background-color: var(--tab-border-top-color);
+			height: 1px;
+			top: 0;
+			z-index: 6;
+
+			display: block;
+			left: 0;
+			pointer-events: none;
+			position: absolute;
+			width: 100%;
+		}
+
+		&::before {
+			background-color: var(--bs-body-bg);
+			bottom: -3px;
+			content: "";
+			height: 5px;
+			left: 0;
+			pointer-events: none;
+			position: absolute;
+			width: 100%;
+			z-index: 9;
+		}
+
+		.btn-close {
+			opacity: 1;
+		}
+	}
+}
+
+.separator {
+	height: var(--editor-group-tab-height);
+}
+
+/* Estilo de contenido de la pestaña */
+.tab-content {
+	display: none; /* Solo se muestra la pestaña activa */
+}
+
+#tabs-container::-webkit-scrollbar {
+	height: 3px; /* Tamaño del scroll en horizontal */
+}
+
+/* Ponemos un color de fondo y redondeamos las esquinas del thumb */
+#tabs-container::-webkit-scrollbar-thumb {
+	background-color: #4d4d4d;
+	border-radius: 4px;
+}
+
+/* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
+#tabs-container::-webkit-scrollbar-thumb:hover {
+	box-shadow: 0 0 2px 1px rgsba(0, 0, 0, 0.2);
+}

@@ -438,6 +438,10 @@ table {
 	display: none !important;
 }
 
+.d-block {
+	display: block !important;
+}
+
 .button {
 	border: none;
 	display: flex;
