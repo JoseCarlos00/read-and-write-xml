@@ -1,10 +1,6 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
 import { TabManager } from "./src/js/TabManager.js";
 
-const openFileButton = document.getElementById("open-file-btn");
-
-openFileButton.addEventListener("click", handleOpenFile);
-
 async function handleOpenFile() {
 	try {
 		const fileContent = await window.fileApi.selectFile();
@@ -68,14 +64,24 @@ async function handleOpenFileInWindows(event, filePath) {
 	try {
 		console.log("Archivo abierto desde el explorador:", filePath);
 
-		const fileContent = await window.fileApi.readFile({ filePath });
+		const filesContent = Array.from(await window.fileApi.readFile({ filePath }));
 
-		console.log({ fileContent });
+		if (!filesContent || filesContent.length === 0) {
+			throw new Error("No se seleccionaron archivos o están vacíos.");
+		}
 
-		createNewTab({
-			Shipment: fileContent.shipment,
-			ShipmentOriginal: fileContent.ShipmentOriginal,
-			FileName: fileContent.fileName,
+		// Iterar sobre cada archivo y crear una pestaña para cada uno
+		filesContent.forEach((fileContent) => {
+			if (!fileContent?.shipment) {
+				console.warn("No se pudo obtener el contenido del archivo.");
+				return;
+			}
+
+			createNewTab({
+				Shipment: fileContent.shipment,
+				ShipmentOriginal: fileContent.ShipmentOriginal,
+				FileName: fileContent.fileName,
+			});
 		});
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
@@ -83,31 +89,19 @@ async function handleOpenFileInWindows(event, filePath) {
 	}
 }
 
-let currenfile = 1;
-
 const tabManager = new TabManager("tabs-container", "content-container");
 
 function createNewTab({ Shipment, ShipmentOriginal, FileName }) {
-	// const shipment = new ShipmentManager({
-	// 	Shipment,
-	// 	ShipmentOriginal,
-	// 	FileName,
-	// });
-	// shipment.render();
+	const contentContainer = tabManager.createNewTab(FileName);
 
-	console.log(Shipment);
-
-	tabManager.createNewTab(
+	const shipment = new ShipmentManager({
+		Shipment,
+		ShipmentOriginal,
 		FileName,
-		`This is the content of file${currenfile++}.xml
-		`
-	);
+		contentContainer,
+	});
+
+	shipment.render();
 }
 
 window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
-
-async function setCurrentVersion() {
-	document.querySelector("#version").innerHTML = (await window.bridge.version()) ?? "No disponible";
-}
-
-window.addEventListener("load", setCurrentVersion);
