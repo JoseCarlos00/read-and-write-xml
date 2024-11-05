@@ -6,18 +6,16 @@ import { ManagerEditingShipment } from "./edit_content/ManagerEditingShipment.js
  * Clase para gestionar la creación y renderización de tablas y paneles de información de envíos.
  */
 export class ShipmentManager {
-	constructor({ Shipment, ShipmentOriginal, FileName }) {
+	constructor({ Shipment, ShipmentOriginal, FileName, contentContainer }) {
 		this.Shipment = Shipment;
 		this.FileName = FileName;
+		this.contentContainer = contentContainer;
 
 		this.ManagerEditingShipment = new ManagerEditingShipment({
 			ShipmentOriginal,
 			Shipment,
 			FileName,
 		});
-
-		this.xmlContentContainer = document.getElementById("xml-content");
-		this.titleDocument = document.getElementById("title-page");
 	}
 
 	/**
@@ -29,8 +27,7 @@ export class ShipmentManager {
 			throw new Error("[createTable]: no se encontró el elemento [Shipment]");
 		}
 
-		const table = await GetTable.getTableElement(this.Shipment);
-		return table;
+		return await GetTable.getTableElement(this.Shipment);
 	}
 
 	/**
@@ -42,7 +39,7 @@ export class ShipmentManager {
 			throw new Error("[createPanelInfo]: No se encontró el elemento [Shipment]");
 		}
 
-		GetPanelInfo.setPanelInfoDetail(this.Shipment);
+		return await GetPanelInfo.getPanelInfoDetail(this.Shipment);
 	}
 
 	/**
@@ -52,19 +49,19 @@ export class ShipmentManager {
 	async render() {
 		try {
 			const table = await this.createTable();
-			await this.createPanelInfo();
+			const panelInfo = await this.createPanelInfo();
 
 			if (!table) {
-				this.xmlContentContainer.innerHTML = "";
 				throw new Error("[render]: No se pudo obtener el elemento [table] del Shipment");
 			}
 
-			this.xmlContentContainer.appendChild(table);
-			this.ManagerEditingShipment.initEvents();
-
-			if (this.titleDocument) {
-				this.titleDocument.textContent = "Visor de XML | " + this.FileName;
+			if (!panelInfo) {
+				throw new Error("[render]: No se pudo obtener el panel de informacion");
 			}
+
+			this.contentContainer.appendChild(panelInfo);
+			this.contentContainer.appendChild(table);
+			// this.ManagerEditingShipment.initEvents();
 		} catch (error) {
 			this.logError("Error al renderizar la tabla: " + error.message);
 			this.showUserError("Ha ocurrido un error al mostrar la lista de articulos.");
