@@ -6,7 +6,7 @@ import { ManagerEditingShipment } from "./edit_content/ManagerEditingShipment.js
  * Clase para gestionar la creación y renderización de tablas y paneles de información de envíos.
  */
 export class ShipmentManager {
-	constructor({ Shipment, ShipmentOriginal, FileName, contentContainer }) {
+	constructor({ Shipment, ShipmentOriginal, FileName, FilePath, contentContainer }) {
 		this.Shipment = Shipment;
 		this.FileName = FileName;
 		this.contentContainer = contentContainer;
@@ -15,6 +15,7 @@ export class ShipmentManager {
 			ShipmentOriginal,
 			Shipment,
 			FileName,
+			FilePath,
 			contentContainer,
 		});
 	}

@@ -6,11 +6,11 @@ import ToastAlert from "../../utils/ToasAlert.js";
  * Clase principal para gestionar la edición y guardado de detalles de `Shipment`.
  */
 export class ManagerEditingShipment {
-	constructor({ ShipmentOriginal, FileName, Shipment, contentContainer, filePath }) {
+	constructor({ ShipmentOriginal, FileName, Shipment, contentContainer, FilePath }) {
 		this.ShipmentOriginal = ShipmentOriginal;
 		this.FileName = FileName;
 		this.Shipment = Shipment;
-		this.filePath = filePath;
+		this.FilePath = FilePath;
 		this.contentContainer = contentContainer;
 
 		try {
@@ -52,7 +52,7 @@ export class ManagerEditingShipment {
 			if (type === "save-as") {
 				result = await window.fileApi.saveFileAs(objConfiguration);
 			} else {
-				result = await window.fileApi.saveFile({ ...objConfiguration, filePath: this.filePath });
+				result = await window.fileApi.saveFile({ ...objConfiguration, filePath: this.FilePath });
 			}
 
 			console.log({ result });

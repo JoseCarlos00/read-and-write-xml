@@ -20,6 +20,7 @@ async function handleOpenFileMultiple() {
 				Shipment: fileContent.shipment,
 				ShipmentOriginal: fileContent.ShipmentOriginal,
 				FileName: fileContent.fileName,
+				FilePath: fileContent.filePath,
 			});
 		});
 	} catch (error) {
@@ -54,6 +55,7 @@ async function handleOpenFileInWindows(event, filePath) {
 			Shipment: fileContent.shipment,
 			ShipmentOriginal: fileContent.ShipmentOriginal,
 			FileName: fileContent.fileName,
+			FilePath: fileContent.filePath,
 		});
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
@@ -63,13 +65,14 @@ async function handleOpenFileInWindows(event, filePath) {
 
 const tabManager = new TabManager("tabs-container", "content-container");
 
-function createNewTab({ Shipment, ShipmentOriginal, FileName }) {
+function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
 	const contentContainer = tabManager.createNewTab(FileName);
 
 	const shipment = new ShipmentManager({
 		Shipment,
 		ShipmentOriginal,
 		FileName,
+		FilePath,
 		contentContainer,
 	});
 
