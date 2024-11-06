@@ -72,6 +72,12 @@ export class ShipmentManager {
 					</svg>
 					<span>Eliminar filas</span>
 				</button>
+
+				<label>
+					Total lines: <strong id="totalLines">${
+						this.Shipment.Details?.[0]?.ShipmentDetail?.length ?? ""
+					}</strong>, <small>Order By Item</small>
+				</label>
 			`;
 
 			tableContainer.appendChild(deleteRowContainer);

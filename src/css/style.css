@@ -83,7 +83,6 @@ body {
 /* Panel info detail */
 .container-info {
 	width: 80%;
-	max-width: 800px;
 	min-width: 350px;
 	display: flex;
 	gap: 1rem;
@@ -94,6 +93,8 @@ body {
 	margin-bottom: 1.5rem;
 	flex-direction: row;
 	flex-wrap: wrap;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 /* Card info detail*/
@@ -209,9 +210,20 @@ body {
 	}
 }
 
-/*  */
+/* Contenedor de la tabla */
+.table-container {
+	position: relative;
+	width: fit-content;
+	margin: 0 auto;
+}
+
+/*Delete container*/
 .delete-row-container {
-	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	margin-bottom: 0.4rem;
+
 	.btn-delete-row {
 		background-color: red;
 		svg {

@@ -133,15 +133,9 @@ export class GetTable {
 
 		const getTable = new GetTable(shipment);
 
-		const caption = document.createElement("caption");
-		caption.innerHTML = `Total lines: <strong id="totalLines">${
-			getTable.totalLines ?? ""
-		}</strong>, <small>Order By Item</small>`;
-
 		const table = document.createElement("table");
 		table.id = "shipmentDetailsTable";
 
-		table.appendChild(caption);
 		table.appendChild(getTable.getThead());
 		table.appendChild(await getTable.getTbody());
 

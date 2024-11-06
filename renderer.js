@@ -64,24 +64,17 @@ async function handleOpenFileInWindows(event, filePath) {
 	try {
 		console.log("Archivo abierto desde el explorador:", filePath);
 
-		const filesContent = Array.from(await window.fileApi.readFile({ filePath }));
+		const fileContent = await window.fileApi.readFile({ filePath });
 
-		if (!filesContent || filesContent.length === 0) {
+		if (!fileContent) {
+			// return;
 			throw new Error("No se seleccionaron archivos o están vacíos.");
 		}
 
-		// Iterar sobre cada archivo y crear una pestaña para cada uno
-		filesContent.forEach((fileContent) => {
-			if (!fileContent?.shipment) {
-				console.warn("No se pudo obtener el contenido del archivo.");
-				return;
-			}
-
-			createNewTab({
-				Shipment: fileContent.shipment,
-				ShipmentOriginal: fileContent.ShipmentOriginal,
-				FileName: fileContent.fileName,
-			});
+		createNewTab({
+			Shipment: fileContent.shipment,
+			ShipmentOriginal: fileContent.ShipmentOriginal,
+			FileName: fileContent.fileName,
 		});
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
