@@ -3,6 +3,20 @@ const xml2js = require("xml2js");
 
 const builder = new xml2js.Builder();
 
+class ActiveTabManager {
+	#activeTabManager;
+
+	set activeTab(tab) {
+		this.activeTabManager = tab;
+	}
+
+	get activeTab() {
+		return this.activeTabManager;
+	}
+}
+
+const activeTabManager = new ActiveTabManager();
+
 contextBridge.exposeInMainWorld("fileApi", {
 	selectFile: () => ipcRenderer.invoke("dialog:select-file"),
 	saveFile: ({ content, fileName, filePath }) =>
@@ -21,6 +35,8 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 
 contextBridge.exposeInMainWorld("bridge", {
 	version: async () => await ipcRenderer.invoke("get-version"),
+	setActiveTab: (tab) => (activeTabManager.activeTab = tab),
+	getActiveTab: () => activeTabManager.activeTab,
 });
 
 async function createXMLFile(data) {
