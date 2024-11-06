@@ -25,6 +25,9 @@ export class TabManager {
 		// Agregar evento de click a las pestañas
 		document.addEventListener("keydown", ({ key, ctrlKey }) => {
 			if (key === "Tab") {
+				const currentTab = window.bridge.getActiveTab();
+				// const indexCurrentab = this.tabsMap.get();
+				// Array.from(this.tabsMap.keys()).filter((key) => key !== filename)
 				return;
 			}
 
