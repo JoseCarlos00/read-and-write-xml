@@ -6,10 +6,11 @@ import ToastAlert from "../../utils/ToasAlert.js";
  * Clase principal para gestionar la edición y guardado de detalles de `Shipment`.
  */
 export class ManagerEditingShipment {
-	constructor({ ShipmentOriginal, FileName, Shipment, contentContainer }) {
+	constructor({ ShipmentOriginal, FileName, Shipment, contentContainer, filePath }) {
 		this.ShipmentOriginal = ShipmentOriginal;
 		this.FileName = FileName;
 		this.Shipment = Shipment;
+		this.filePath = filePath;
 		this.contentContainer = contentContainer;
 
 		try {
@@ -51,7 +52,7 @@ export class ManagerEditingShipment {
 			if (type === "save-as") {
 				result = await window.fileApi.saveFileAs(objConfiguration);
 			} else {
-				result = await window.fileApi.saveFile(objConfiguration);
+				result = await window.fileApi.saveFile({ ...objConfiguration, filePath: this.filePath });
 			}
 
 			console.log({ result });
@@ -91,9 +92,6 @@ export class ManagerEditingShipment {
 	setEventClickInTable() {
 		try {
 			const tbody = this.contentContainer?.querySelector("table tbody");
-
-			console.log("contentContainer:", this.contentContainer);
-			console.log("tbody:", tbody);
 
 			if (!tbody) {
 				throw new Error("No se encontró el elemento <tbody> en la tabla");
