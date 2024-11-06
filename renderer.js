@@ -1,27 +1,6 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
 import { TabManager } from "./src/js/TabManager.js";
 
-async function handleOpenFile() {
-	try {
-		const fileContent = await window.fileApi.selectFile();
-
-		console.log({ fileContent });
-
-		if (!fileContent?.shipment || !fileContent) {
-			throw new Error("No se pudo obtener el contenido del archivo.");
-		}
-
-		createNewTab({
-			Shipment: fileContent.shipment,
-			ShipmentOriginal: fileContent.ShipmentOriginal,
-			FileName: fileContent.fileName,
-		});
-	} catch (error) {
-		console.error("Detalles del error:", error);
-		showUserError("No se pudo abrir el archivo.");
-	}
-}
-
 async function handleOpenFileMultiple() {
 	try {
 		const filesContent = await window.fileApi.selectFile();
