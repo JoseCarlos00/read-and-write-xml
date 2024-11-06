@@ -72,8 +72,12 @@ function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
 	try {
 		const contentContainer = tabManager.createNewTab(FileName);
 
+		if (contentContainer?.status === "existe") {
+			return;
+		}
+
 		if (!contentContainer) {
-			throw new Error("No se pudo crear un nuevo tab [contentContainer] ya existe o  no se pudo crear.");
+			throw new Error("No se pudo crear un nuevo tab: No existe [contentContainer].");
 		}
 
 		const shipment = new ShipmentManager({

@@ -17,6 +17,25 @@ export class TabManager {
 		if (!this.tabsContainer || !this.contentContainer) {
 			throw new Error("No se pudo encontrar uno o ambos contenedores. Verifique los IDs proporcionados.");
 		}
+
+		this.setEventListeners();
+	}
+
+	setEventListeners() {
+		// Agregar evento de click a las pestañas
+		document.addEventListener("keydown", ({ key, ctrlKey }) => {
+			if (key === "Tab") {
+				return;
+			}
+
+			if (ctrlKey && key === "w") {
+				const currentTab = window.bridge.getActiveTab();
+				if (currentTab) {
+					this.closeTab(currentTab);
+				}
+				return;
+			}
+		});
 	}
 
 	// Función que se llama cuando se cambia de pestaña
@@ -41,7 +60,7 @@ export class TabManager {
 		this.contentContainer.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("d-block"));
 
 		// Muestra el contenido correspondiente y marca la pestaña como activa
-		contentDiv?.classList?.add("d-block");
+		contentDiv.classList.add("d-block");
 
 		const currentTab = tabButton.closest(".tab");
 		if (currentTab) {
@@ -60,15 +79,15 @@ export class TabManager {
 	 */
 	createNewTab(filename) {
 		try {
-			if (typeof filename !== "string") {
+			if (typeof filename !== "string" || !filename) {
 				console.warn("El nombre del archivo  deben ser cadena de texto.");
 				return null;
 			}
 
 			if (this.tabsMap.has(filename)) {
 				console.warn(`La pestaña con el nombre ${filename} ya existe.`);
-				this.switchTab(...this.tabsMap.get(filename), filename);
-				return null;
+				this.switchTab(...this.tabsMap.get(filename));
+				return { status: "existe" };
 			}
 
 			// Crear el elemento de la pestaña
@@ -100,7 +119,7 @@ export class TabManager {
 			contentContainer.className = "tab-content";
 
 			// Guardar en el mapa la referencia de la pestaña y su contenido
-			this.tabsMap.set(filename, [tabButton, contentContainer]);
+			this.tabsMap.set(filename, [tabButton, contentContainer, filename]);
 
 			// Agregar la pestaña y el contenido al DOM
 			this.tabsContainer.appendChild(tab);
@@ -132,6 +151,10 @@ export class TabManager {
 	 * @param {string} filename - Nombre de la pestaña que se va a cerrar.
 	 */
 	closeTab(filename) {
+		if (!filename) {
+			return;
+		}
+
 		const [tabButton, contentDiv] = this.tabsMap.get(filename) || [];
 		const tab = tabButton?.closest(".tab");
 
@@ -143,8 +166,13 @@ export class TabManager {
 		// Si la pestaña está activa, cambiar a otra pestaña si está disponible
 		if (tab.classList.contains("active") && this.tabsMap.size > 1) {
 			const remainingTabs = Array.from(this.tabsMap.keys()).filter((key) => key !== filename);
-			const [newTabButton, newContentDiv] = this.tabsMap.get(remainingTabs[remainingTabs.length - 1]);
-			this.switchTab(newTabButton, newContentDiv, filename);
+			const [newTabButton, newContentDiv, newFilename] = this.tabsMap.get(remainingTabs[remainingTabs.length - 1]);
+
+			this.switchTab(newTabButton, newContentDiv, newFilename);
+		}
+
+		if (this.tabsMap.size === 1) {
+			this.setActiveTab("");
 		}
 
 		// Remover elementos del DOM y del mapa
