@@ -63,20 +63,31 @@ async function handleOpenFileInWindows(event, filePath) {
 	}
 }
 
-const tabManager = new TabManager("tabs-container", "content-container");
+const tabManager = new TabManager({
+	tabsContainerId: "tabs-container",
+	contentContainerId: "content-container",
+});
 
 function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
-	const contentContainer = tabManager.createNewTab(FileName);
+	try {
+		const contentContainer = tabManager.createNewTab(FileName);
 
-	const shipment = new ShipmentManager({
-		Shipment,
-		ShipmentOriginal,
-		FileName,
-		FilePath,
-		contentContainer,
-	});
+		if (!contentContainer) {
+			throw new Error("No se pudo crear un nuevo tab [contentContainer] ya existe o  no se pudo crear.");
+		}
 
-	shipment.render();
+		const shipment = new ShipmentManager({
+			Shipment,
+			ShipmentOriginal,
+			FileName,
+			FilePath,
+			contentContainer,
+		});
+
+		shipment.render();
+	} catch (error) {
+		console.error("Error al crear el nuevo tab:", error);
+	}
 }
 
 window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
