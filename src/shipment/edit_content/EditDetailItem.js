@@ -17,7 +17,7 @@ export class HandleEventManagerEditIDetailItem {
 		this.currentLineNumber = null;
 
 		// Se instancia la clase para el manejo de eliminar filas
-		this.shipmentDeleter = new ShipmentDeleter(this.ShipmentDetails, this.contentContainer);
+		this.shipmentDeleter = new ShipmentDeleter(this.ShipmentDetails, contentContainer);
 
 		this.nodeNamesAcepted = ["TD", "use", "svg"];
 	}

@@ -11,6 +11,16 @@ export class ManagerEditingShipment {
 		this.FileName = FileName;
 		this.Shipment = Shipment;
 		this.contentContainer = contentContainer;
+
+		try {
+			if (!this.ShipmentOriginal || !this.FileName || !this.Shipment || this.contentContainer) {
+				throw new Error("[constructor] No se encontraron los elementos necesarios inicializar clase");
+			}
+
+			this.setEventButtonDeleteRows();
+		} catch (error) {
+			console.error("[ManagerEditingShipment]: Error al inicializar ManagerEditingShipment:", error);
+		}
 	}
 
 	/**

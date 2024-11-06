@@ -60,8 +60,25 @@ export class ShipmentManager {
 				throw new Error("[render]: No se pudo obtener el panel de informacion");
 			}
 
+			const tableContainer = document.createElement("div");
+			tableContainer.classList.add("table-container");
+
+			const deleteRowContainer = document.createElement("div");
+			deleteRowContainer.classList.add("delete-row-container");
+			deleteRowContainer.innerHTML = /*html*/ `
+				<button id="delete-row-btn" class="button btn-delete-row d-none">
+					<svg aria-hidden="true" width="30" height="30">
+						<use href="./src/icon/icons.svg#trash"></use>
+					</svg>
+					<span>Eliminar filas</span>
+				</button>
+			`;
+
+			tableContainer.appendChild(deleteRowContainer);
+			tableContainer.appendChild(table);
+
 			this.contentContainer.appendChild(panelInfo);
-			this.contentContainer.appendChild(table);
+			this.contentContainer.appendChild(tableContainer);
 			this.ManagerEditingShipment.initEvents();
 		} catch (error) {
 			this.logError("Error al renderizar la tabla: " + error.message);

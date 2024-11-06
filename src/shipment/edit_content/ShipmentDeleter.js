@@ -23,12 +23,6 @@ export class ShipmentDeleter {
 				throw new Error("[constructor] No se encontraron los elementos necesarios para eliminar filas");
 			}
 
-			console.log("ContentContainer:", this.ContentContainer);
-
-			console.log("totalLinesElement:", this.totalLinesElement);
-			console.log("deleteRowsButton:", this.deleteRowsButton);
-			console.log("table:", this.table);
-
 			this.setEventButtonDeleteRows();
 		} catch (error) {
 			console.error("[ShipmentDeleter]: Error al inicializar ShipmentDeleter:", error);
