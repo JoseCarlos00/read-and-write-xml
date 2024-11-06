@@ -181,6 +181,7 @@ async function saveFileAs(event, { content, fileName = "archivo" }) {
 			try {
 				fs.writeFileSync(result.filePath, content, "utf-8");
 
+				mainWindow.webContents.send("file-opened", result.filePath);
 				return { success: true, filePath: result.filePath };
 			} catch (error) {
 				console.error("Error al guardar el archivo:", error);
@@ -229,8 +230,8 @@ async function readFile(event, { filePath }) {
 		return parseFile({ filePath, fileContent });
 	} catch (error) {
 		console.error("Error al leer el archivo:", error);
-		throw new Error("No se pudo leer el archivo.");
 		log.error("[readFile] No hay ruta de archivo:" + error);
+		throw new Error("No se pudo leer el archivo.");
 	}
 }
 
