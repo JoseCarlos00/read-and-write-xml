@@ -36,6 +36,10 @@ export class ManagerEditingShipment {
 	 */
 	async saveFile(type) {
 		try {
+			if (window.bridge.getActiveTab() !== this.FileName) {
+				return;
+			}
+
 			console.log("Guardando archivo");
 
 			// Crea el contenido XML que deseas guardar
