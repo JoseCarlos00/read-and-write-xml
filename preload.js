@@ -5,7 +5,8 @@ const builder = new xml2js.Builder();
 
 contextBridge.exposeInMainWorld("fileApi", {
 	selectFile: () => ipcRenderer.invoke("dialog:select-file"),
-	saveFile: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file", { content, fileName }),
+	saveFile: ({ content, fileName, filePath }) =>
+		ipcRenderer.invoke("dialog:save-file", { content, fileName, filePath }),
 	saveFileAs: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file-as", { content, fileName }),
 	readFile: ({ filePath }) => ipcRenderer.invoke("win:read-file", { filePath }),
 	createXMLFile,
