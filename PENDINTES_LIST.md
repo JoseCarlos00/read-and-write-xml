@@ -10,3 +10,7 @@
 ##
 
 - [] Crear Alerta de confirmación para cerrar La ventana principal `mainWindows`. Revisando que no haya archivos abiertos o sin guarda
+
+**Layout**
+
+- [] Ocultar el panel de detalles por default, Solo mostrar*Shipment id* _Erp Oder_

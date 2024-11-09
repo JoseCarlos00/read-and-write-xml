@@ -23,12 +23,47 @@ export class TabManager {
 
 	setEventListeners() {
 		// Agregar evento de click a las pestañas
-		document.addEventListener("keydown", ({ key, ctrlKey }) => {
-			if (key === "Tab") {
+		document.addEventListener("keydown", (e) => {
+			const { key, ctrlKey, shiftKey } = e;
+
+			if (ctrlKey && key === "Tab") {
+				e.preventDefault();
 				const currentTab = window.bridge.getActiveTab();
-				// const indexCurrentab = this.tabsMap.get();
-				// Array.from(this.tabsMap.keys()).filter((key) => key !== filename)
-				return;
+
+				console.log("[Event]: currentTab:", currentTab);
+
+				// Validación: Si no hay una pestaña seleccionada o mapeada
+				if (!this.tabsMap.has(currentTab) || !currentTab) {
+					console.error("Error: No hay pestañas para cambiar o no hay pestaña seleccionada.");
+					return;
+				}
+
+				// Obtener índice de la pestaña activa actual
+				const currentTabIndex = Array.from(this.tabsMap.keys()).indexOf(currentTab);
+
+				if (currentTabIndex === -1) {
+					console.error("Error: no se encontró el índice de la pestaña:", currentTab);
+					return;
+				}
+
+				// Determinar el índice de la siguiente pestaña (circular)
+				let nextTabIndex;
+				if (shiftKey) {
+					// Retroceder si Shift está presionado
+					nextTabIndex = currentTabIndex === 0 ? this.tabsMap.size - 1 : currentTabIndex - 1;
+				} else {
+					// Avanzar si solo Ctrl + Tab
+					nextTabIndex = currentTabIndex === this.tabsMap.size - 1 ? 0 : currentTabIndex + 1;
+				}
+
+				// Obtener la siguiente pestaña basada en el índice calculado
+				const nextTab = Array.from(this.tabsMap.keys())[nextTabIndex];
+
+				// Actualizar la pestaña actual
+				this.setActiveTab(nextTab);
+
+				const [newTabButton, newContentDiv, newFilename] = this.tabsMap.get(nextTab);
+				this.switchTab(newTabButton, newContentDiv, newFilename);
 			}
 
 			if (ctrlKey && key === "w") {
