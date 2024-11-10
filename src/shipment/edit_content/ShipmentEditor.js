@@ -22,9 +22,7 @@ class ShipmentEditor {
 	 * @throws Error si no se encuentra el número de línea.
 	 */
 	getIndex(lineNumber) {
-		const index = this.ShipmentDetails.findIndex(
-			(detail) => detail?.ErpOrderLineNum?.[0] === lineNumber
-		);
+		const index = this.ShipmentDetails.findIndex((detail) => detail?.ErpOrderLineNum?.[0] === lineNumber);
 
 		if (index === -1) {
 			throw new Error("Número de línea no encontrado en detalles de envío.");
@@ -74,8 +72,15 @@ class ShipmentEditor {
 	 * Inserta eventos en el input de edición.
 	 */
 	insertEvent() {
-		this.currentInput.addEventListener("blur", this.handleInputEvents);
-		this.currentInput.addEventListener("keydown", this.handleInputEvents);
+		this.currentInput.addEventListener(
+			"focus",
+			() => {
+				this.currentInput.select();
+				this.currentInput.addEventListener("blur", this.handleInputEvents);
+				this.currentInput.addEventListener("keydown", this.handleInputEvents);
+			},
+			{ once: true }
+		);
 	}
 
 	/**
@@ -129,15 +134,13 @@ class ShipmentEditor {
 			this.currentInput.value = currentValue;
 			this.currentInput.dataset.currentValue = currentValue;
 
+			console.log("[Edit Cell:]:", currentValue, this.tdElement);
+
 			this.tdElement.classList.add("editing");
 
 			this.insertEvent();
-			this.currentInput.focus();
-			this.currentInput.select();
 		} catch (error) {
-			this.showUserError(
-				"Ha ocurrido un problema al intentar editar la celda."
-			);
+			this.showUserError("Ha ocurrido un problema al intentar editar la celda.");
 
 			this.tdElement?.classList?.remove("editing");
 			console.error("Detalles del error:", error);
@@ -162,6 +165,8 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 
 		if (this.ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
 			this.ShipmentDetails[index].SKU[0].Quantity = [newValue];
+		} else {
+			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Quantity");
 		}
 	}
 
@@ -180,9 +185,51 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 
 		if (index === -1) {
 			this.clearEventInput();
-			throw new Error(
-				"No se encontró un objeto con el ErpOrderLineNum especificado."
-			);
+			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
+		}
+
+		this.updateShipmentDetails(newValue, index);
+
+		this.currentLabel.textContent = newValue;
+		this.clearEventInput();
+	};
+}
+
+export class ShipmentEditorItem extends ShipmentEditor {
+	constructor(ShipmentDetails, currentLineNumber, tdElement) {
+		super(ShipmentDetails, currentLineNumber, tdElement);
+	}
+
+	/**
+	 * Actuliza el Item en el objeto `Shipment`: `Item`
+
+	 * @param {String} newValue valor a actulizar en el Objeto `Shipment`
+	 * @param {Number|String} index
+	 */
+	updateShipmentDetails(newValue, index) {
+		if (this.ShipmentDetails[index]?.SKU?.[0]?.Item) {
+			this.ShipmentDetails[index].SKU[0].Item = [newValue];
+		} else {
+			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Item");
+		}
+	}
+
+	/**
+	 * Actualiza el Item en `ShipmentDetails` y actualiza la celda de la interfaz.
+	 * @param {string} newValue - Nuevo valor para el `Item`.
+	 * @throws Error si no se puede actualizar el número de línea.
+	 */
+	editContent = (updateField, newValue) => {
+		if (!this.ShipmentDetails || this.ShipmentDetails.length === 0) {
+			this.clearEventInput();
+			throw new Error("Error en datos de Shipment");
+		}
+
+		const index = this.getIndex(this.currentLineNumber);
+
+		if (index === -1) {
+			this.clearEventInput();
+			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
 		}
 
 		this.updateShipmentDetails(newValue, index);
