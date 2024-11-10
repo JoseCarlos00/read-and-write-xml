@@ -95,6 +95,8 @@ body {
 	flex-wrap: wrap;
 	margin-right: auto;
 	margin-left: auto;
+
+	display: none;
 }
 
 /* Card info detail*/
@@ -328,6 +330,10 @@ table {
 				border: 1px solid #2d2d2d;
 				border-bottom: 2px solid #4cc2ff;
 			}
+		}
+
+		input.edit-item {
+			width: 180px;
 		}
 
 		& td:not(.editing) input {
