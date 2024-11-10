@@ -330,6 +330,10 @@ table {
 			}
 		}
 
+		input.edit-item {
+			width: 180px;
+		}
+
 		& td:not(.editing) input {
 			display: none;
 		}
