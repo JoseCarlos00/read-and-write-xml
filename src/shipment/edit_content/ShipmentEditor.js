@@ -55,7 +55,7 @@ class ShipmentEditor {
 				return;
 			}
 
-			if (newValue === currentValue) {
+			if (newValue === currentValue || newValue?.trim() === "") {
 				this.clearEventInput(input);
 				return;
 			}
@@ -84,14 +84,36 @@ class ShipmentEditor {
 	}
 
 	/**
+	 *
+	 * @throws {Error} Si se llama a este método directamente desde la clase base.
+	 */
+	updateShipmentDetails() {
+		throw new Error("Este método debe ser implementado en la clase hija.");
+	}
+
+	/**
 	 * Edita el contenido de un campo específico en `ShipmentDetails`.
 	 * Este método debe ser implementado en las clases derivadas.
 	 * @param {string} updateField - Nombre del campo a actualizar.
 	 * @param {string|number} newValue - Nuevo valor para el campo.
-	 * @throws {Error} Si se llama a este método directamente desde la clase base.
 	 */
 	editContent = (updateField, newValue) => {
-		throw new Error("Este método debe ser implementado en la clase hija.");
+		if (!this.ShipmentDetails || this.ShipmentDetails.length === 0) {
+			this.clearEventInput();
+			throw new Error("Error en datos de Shipment");
+		}
+
+		const index = this.getIndex(this.currentLineNumber);
+
+		if (index === -1) {
+			this.clearEventInput();
+			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
+		}
+
+		this.updateShipmentDetails(newValue, index);
+
+		this.currentLabel.textContent = newValue;
+		this.clearEventInput();
 	};
 
 	/**
@@ -104,8 +126,11 @@ class ShipmentEditor {
 
 	/**
 	 * Prepara la celda `td` para la edición, asigna el input y agrega eventos.
+	 *
 	 * Compara el  valor actual con el valor original para determinar si se debe actualizar
 	 * y actializa la celda selecionada tambien en el Objeto `Shipment`
+	 *
+	 *
 	 * Utiliza `try-catch` para capturar errores y mostrar un mensaje único en caso de fallo.
 	 */
 	editCell() {
@@ -133,8 +158,6 @@ class ShipmentEditor {
 			// Configuración del input
 			this.currentInput.value = currentValue;
 			this.currentInput.dataset.currentValue = currentValue;
-
-			console.log("[Edit Cell:]:", currentValue, this.tdElement);
 
 			this.tdElement.classList.add("editing");
 
@@ -169,30 +192,6 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Quantity");
 		}
 	}
-
-	/**
-	 * Actualiza el Quantity en `ShipmentDetails` y actualiza la celda de la interfaz.
-	 * @param {string|number} newValue - Nuevo valor para la cantidad.
-	 * @throws Error si no se puede actualizar el número de línea.
-	 */
-	editContent = (updateField, newValue) => {
-		if (!this.ShipmentDetails || this.ShipmentDetails.length === 0) {
-			this.clearEventInput();
-			throw new Error("Error en datos de Shipment");
-		}
-
-		const index = this.getIndex(this.currentLineNumber);
-
-		if (index === -1) {
-			this.clearEventInput();
-			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
-		}
-
-		this.updateShipmentDetails(newValue, index);
-
-		this.currentLabel.textContent = newValue;
-		this.clearEventInput();
-	};
 }
 
 export class ShipmentEditorItem extends ShipmentEditor {
@@ -213,30 +212,6 @@ export class ShipmentEditorItem extends ShipmentEditor {
 			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Item");
 		}
 	}
-
-	/**
-	 * Actualiza el Item en `ShipmentDetails` y actualiza la celda de la interfaz.
-	 * @param {string} newValue - Nuevo valor para el `Item`.
-	 * @throws Error si no se puede actualizar el número de línea.
-	 */
-	editContent = (updateField, newValue) => {
-		if (!this.ShipmentDetails || this.ShipmentDetails.length === 0) {
-			this.clearEventInput();
-			throw new Error("Error en datos de Shipment");
-		}
-
-		const index = this.getIndex(this.currentLineNumber);
-
-		if (index === -1) {
-			this.clearEventInput();
-			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
-		}
-
-		this.updateShipmentDetails(newValue, index);
-
-		this.currentLabel.textContent = newValue;
-		this.clearEventInput();
-	};
 }
 
 /**
