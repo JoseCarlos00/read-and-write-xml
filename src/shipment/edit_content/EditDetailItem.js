@@ -1,4 +1,4 @@
-import { ShipmentEditorQuantity } from "./ShipmentEditor.js";
+import { ShipmentEditorQuantity, ShipmentEditorItem } from "./ShipmentEditor.js";
 import { ShipmentDeleter } from "./ShipmentDeleter.js";
 
 /**
@@ -102,12 +102,22 @@ export class HandleEventManagerEditIDetailItem {
 	 */
 	updateRowFields() {
 		const tdQuantity = this.currentRow?.querySelector(".td-quantity");
+		const tdItem = this.currentRow?.querySelector(".td-item");
 
 		if (tdQuantity) {
 			try {
 				new ShipmentEditorQuantity(this.ShipmentDetails, this.currentLineNumber, tdQuantity).editCell();
 			} catch (error) {
 				this.showUserError("Ha ocurrido un problema al intentar editar la celda");
+				console.error("Detalles del error al editar:", error, message);
+			}
+		}
+
+		if (tdItem) {
+			try {
+				new ShipmentEditorItem(this.ShipmentDetails, this.currentLineNumber, tdItem).editCell();
+			} catch (error) {
+				this.showUserError("Ha ocurrido un problema al intentar editar el item");
 				console.error("Detalles del error al editar:", error, message);
 			}
 		}
