@@ -28,9 +28,12 @@ export class TabManager {
 
 			if (ctrlKey && key === "Tab") {
 				e.preventDefault();
-				const currentTab = window.bridge.getActiveTab();
 
-				console.log("[Event]: currentTab:", currentTab);
+				if (this.tabsMap.size <= 1) {
+					return;
+				}
+
+				const currentTab = window.bridge.getActiveTab();
 
 				// Validación: Si no hay una pestaña seleccionada o mapeada
 				if (!this.tabsMap.has(currentTab) || !currentTab) {
