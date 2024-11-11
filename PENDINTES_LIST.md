@@ -9,8 +9,12 @@
 
 ##
 
-- [] Crear Alerta de confirmación para cerrar La ventana principal `mainWindows`. Revisando que no haya archivos abiertos o sin guarda
+- [✓] Crear Alerta de confirmación para cerrar La ventana principal `mainWindows`. Revisando que no haya archivos abiertos o sin guardar
 
 **Layout**
 
-- [] Ocultar el panel de detalles por default, Solo mostrar _Shipment id_ y _Erp Oder_
+- [.] Ocultar el panel de detalles por default, Solo mostrar _Shipment id_ y _Erp Oder_
+
+**Fixes**
+
+- [.] Mustra un mensaje de error cuando el usuario cancela guardar como

@@ -70,6 +70,13 @@ export class ManagerEditingShipment {
 			} else {
 				ToastAlert.showAlertFullTop({ message: `Archivo guardado`, type: "success" });
 			}
+
+			/**
+			 * * Emitir evento de `saveFile`
+			 * ? Solo Cuando se guarde el archivo correctamente
+			 * ! Se actulizara solo de la pestaña activa
+			 */
+			window.bridge.modified.emit("saveFile", this.FileName);
 		} catch (error) {
 			ToastAlert.showAlertFullTop({ message: "Error al guardar archivo", type: "error" });
 
