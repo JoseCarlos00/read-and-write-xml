@@ -13,6 +13,8 @@ export class ManagerEditingReceipt {
 		this.FilePath = FilePath;
 		this.contentContainer = contentContainer;
 
+		console.log("ManagerEditingReceipt:", { ReceiptOriginal, Receipt, FileName, FilePath, contentContainer });
+
 		try {
 			if (!this.ReceiptOriginal || !this.FileName || !this.Receipt || !this.contentContainer) {
 				throw new Error("[constructor] No se encontraron los elementos necesarios inicializar clase");
@@ -36,10 +38,12 @@ export class ManagerEditingReceipt {
 	 */
 	async saveFile(type) {
 		try {
+			console.log("[saveFile] get active:", window.bridge.getActiveTab());
+			console.log("[saveFile] Filename:", this.FileName);
+
 			if (window.bridge.getActiveTab() !== this.FileName) {
 				return;
 			}
-
 			console.log("Guardando archivo");
 
 			// Crea el contenido XML que deseas guardar
@@ -77,6 +81,7 @@ export class ManagerEditingReceipt {
 			 * ! Se actulizara solo de la pestaña activa
 			 */
 			window.bridge.modified.emit("saveFile", this.FileName);
+			console.log("filename:", this.FileName);
 		} catch (error) {
 			ToastAlert.showAlertFullTop({ message: "Error al guardar archivo", type: "error" });
 

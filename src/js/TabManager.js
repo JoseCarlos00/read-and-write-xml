@@ -28,12 +28,14 @@ export class TabManager {
 			console.log("Se ha modificado el archivo:", filename);
 			this.markTabAsModified(filename, true);
 			window.bridge.checkUnsavedTabs(this.hasUnsavedTabs());
+			console.log("unsavedTabs:", this.hasUnsavedTabs(), this.unsavedTabs);
 		});
 
 		window.bridge.modified.on("saveFile", (filename) => {
 			console.log("Se ha guardado el archivo", filename);
 			this.markTabAsModified(filename, false);
 			window.bridge.checkUnsavedTabs(this.hasUnsavedTabs());
+			console.log("unsavedTabs:", this.hasUnsavedTabs(), this.unsavedTabs);
 		});
 	}
 
@@ -53,14 +55,15 @@ export class TabManager {
 
 		if (isModified) {
 			tabButton.classList.add("modified");
-			this.unsavedTabs.add(filename);
+			this.unsavedTabs.add(currentTab);
+			console.log(":isModified,", currentTab);
 
 			if (titleLabel && !titleLabel.textContent.includes("*")) {
 				titleLabel.textContent += " *";
 			}
 		} else {
 			tabButton.classList.remove("modified");
-			this.unsavedTabs.delete(filename);
+			this.unsavedTabs.delete(currentTab);
 			if (titleLabel && titleLabel.textContent.includes(" *")) {
 				titleLabel.textContent = titleLabel.textContent.replace(" *", "");
 			}

@@ -7,7 +7,11 @@ export class ReceiptManager {
 		this.FileName = FileName;
 		this.contentContainer = contentContainer;
 		this.warehouse = Receipt?.Warehouse?.[0] ?? "";
-		this.containerId = Receipt?.ParentContainers?.[0]?.Parent?.[0]?.ContainerId ?? "";
+		this.ContainersIdParent = Receipt?.ParentContainers?.[0]?.Parent
+			? Array.from(Receipt.ParentContainers[0].Parent)
+					.map(({ ContainerId }) => ContainerId?.[0] ?? "")
+					.join(" | ")
+			: "No encontrado";
 		this.ReceiptOriginal = ReceiptOriginal;
 
 		this.ManagerEditingReceipt = new ManagerEditingReceipt({
@@ -35,8 +39,8 @@ export class ReceiptManager {
 		const div = document.createElement("div");
 		div.className = "receipt-panel";
 		div.innerHTML = /*html*/ `
+				<label >Containers ID: <span>${this.ContainersIdParent}</span></label>
         <form class="form-warehouse">
-          <label >Container ID: <span>${this.containerId}</span></label>
           <label for="Warehouse">Warehouse:</label>
 
           <select name="whs" id="Warehouse">
@@ -144,8 +148,7 @@ export class ReceiptManager {
 			throw new Error("[changeWarehouse]: No se proporciono el almacen");
 		}
 
-		const ReceiptContainers =
-			this.Receipt?.ParentContainers?.[0]?.Parent?.[0]?.ReceiptContainers?.[0]?.ReceiptContainer ?? [];
+		const ReceiptContainers = Array.from(this.Receipt?.ParentContainers?.[0]?.Parent) ?? [];
 
 		if (ReceiptContainers.length === 0) {
 			throw new Error("[changeWarehouse]: No se encontraron ReceiptContainer");
@@ -155,17 +158,24 @@ export class ReceiptManager {
 			throw new Error("[changeWarehouse]: No se encontró el warehouse");
 		}
 
-		this.Receipt.ParentContainers[0].Parent[0].ReceiptContainers[0].ReceiptContainer.forEach((receipt) => {
-			const { FromWhs } = receipt;
+		ReceiptContainers.forEach((receipt) => {
+			const receiptContainers = Array.from(receipt?.ReceiptContainers?.[0]?.ReceiptContainer ?? []);
 
-			if (FromWhs[0]) {
-				FromWhs[0] = warehouse;
+			if (receiptContainers.length > 0) {
+				receiptContainers.forEach(({ FromWhs }) => {
+					if (FromWhs[0]) {
+						FromWhs[0] = warehouse;
+					} else {
+						throw new Error("Error: al actualizar el warehouse");
+					}
+				});
 			} else {
 				throw new Error("Error: al actualizar el warehouse");
 			}
 		});
 
 		this.Receipt.Warehouse = [warehouse];
+		this.warehouse = warehouse;
 
 		/**
 		 * * Emitir evento de modificación
