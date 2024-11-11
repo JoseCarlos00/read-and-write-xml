@@ -1,6 +1,35 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
 import { TabManager } from "./src/js/TabManager.js";
 
+function handeleCreateTypeTabs({ fileContent }) {
+	if (!fileContent || !fileContent.dataResult) {
+		// return;
+		throw new Error("No se seleccionaron archivos o están vacíos. En:", fileContent?.filePath);
+	}
+
+	if (fileContent.dataResult.name === "Receipt") {
+		//
+		return;
+	}
+
+	if (fileContent.dataResult.name === "Shipment") {
+		createNewTab({
+			Shipment: fileContent.dataResult.data,
+			ShipmentOriginal: fileContent.ShipmentOriginal,
+			FileName: fileContent.fileName,
+			FilePath: fileContent.filePath,
+		});
+
+		return;
+	}
+
+	console.log("Tipo de Formato desconosido:", {
+		name: fileContent.dataResult.name,
+		data: fileContent.dataResult.data,
+		path: fileContent.filePath,
+	});
+}
+
 async function handleOpenFileMultiple() {
 	try {
 		const filesContent = await window.fileApi.selectFile();
@@ -11,17 +40,7 @@ async function handleOpenFileMultiple() {
 
 		// Iterar sobre cada archivo y crear una pestaña para cada uno
 		filesContent.forEach((fileContent) => {
-			if (!fileContent?.shipment) {
-				console.warn("No se pudo obtener el contenido del archivo.");
-				return;
-			}
-
-			createNewTab({
-				Shipment: fileContent.shipment,
-				ShipmentOriginal: fileContent.ShipmentOriginal,
-				FileName: fileContent.fileName,
-				FilePath: fileContent.filePath,
-			});
+			handeleCreateTypeTabs({ fileContent });
 		});
 	} catch (error) {
 		console.error("Detalles del error:", error);
@@ -46,17 +65,7 @@ async function handleOpenFileInWindows(event, filePath) {
 
 		const fileContent = await window.fileApi.readFile({ filePath });
 
-		if (!fileContent) {
-			// return;
-			throw new Error("No se seleccionaron archivos o están vacíos.");
-		}
-
-		createNewTab({
-			Shipment: fileContent.shipment,
-			ShipmentOriginal: fileContent.ShipmentOriginal,
-			FileName: fileContent.fileName,
-			FilePath: fileContent.filePath,
-		});
+		handeleCreateTypeTabs({ fileContent });
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
 		showUserError("No se pudo abrir el archivo.");
