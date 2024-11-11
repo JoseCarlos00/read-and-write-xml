@@ -41,6 +41,8 @@ async function handleOpenFileMultiple() {
 	try {
 		const filesContent = await window.fileApi.selectFile();
 
+		console.log("filesContent:", { filesContent });
+
 		if (!filesContent || filesContent.length === 0) {
 			throw new Error("No se seleccionaron archivos o están vacíos.");
 		}

@@ -165,26 +165,31 @@ async function handleParseResult({ result }) {
 }
 
 function parseFile({ filePath, fileContent }) {
-	if (!filePath || !fileContent) {
-		console.log("[parseFile]: No se encontro un archivo valido para parsear");
-		log.info("[parseFile]: No se encontro un archivo valido para parsear");
-		return null;
-	}
+	try {
+		if (!filePath || !fileContent) {
+			console.log("[parseFile]: No se encontro un archivo valido para parsear");
+			log.info("[parseFile]: No se encontro un archivo valido para parsear");
+			return null;
+		}
 
-	// Extraer el nombre del archivo
-	const fileName = path.basename(filePath);
+		// Extraer el nombre del archivo
+		const fileName = path.basename(filePath);
 
-	// Devuelve una promesa que se resuelve con el resultado del análisis XML
-	return new Promise((resolve, reject) => {
-		parser.parseString(fileContent, async function (err, result) {
-			if (err) {
-				reject(err);
-			} else {
-				const dataResult = await handleParseResult({ result });
-				resolve({ fileOriginal: result, dataResult, fileName, filePath });
-			}
+		// Devuelve una promesa que se resuelve con el resultado del análisis XML
+		return new Promise((resolve, reject) => {
+			parser.parseString(fileContent, async function (err, result) {
+				if (err) {
+					reject(err);
+				} else {
+					const dataResult = await handleParseResult({ result });
+					resolve({ fileOriginal: result, dataResult, fileName, filePath });
+				}
+			});
 		});
-	});
+	} catch (error) {
+		console.error("Error: ha ocurrido un error al parsear el archivo:", error);
+		log.error("Error: ha ocurrido un error al parsear el archivo: " + error);
+	}
 }
 
 async function selectFileMultiple() {
@@ -201,20 +206,30 @@ async function selectFileMultiple() {
 			buttonLabel: "Abrir",
 		});
 
+		console.log("selectFileMultiple:", filePaths);
+
 		if (canceled || filePaths.length === 0) {
 			return null;
 		}
 
-		// Leer el contenido de todos los archivos seleccionados
+		// Leer y procesar todos los archivos seleccionados
 		const filePromises = filePaths.map(async (filePath) => {
-			const fileContent = await fs.promises.readFile(filePath, "utf-8");
-			return parseFile({ filePath, fileContent });
+			try {
+				const fileContent = await fs.promises.readFile(filePath, "utf-8");
+				return await parseFile({ filePath, fileContent });
+			} catch (error) {
+				console.warn(`Error al procesar el archivo ${filePath}:`, error.message);
+				log.error(`Error al procesar el archivo ${filePath}: ` + error.message);
+				// Devolver null para identificar que este archivo no se pudo procesar
+				return null;
+			}
 		});
 
-		// Esperar a que se resuelvan todas las promesas
-		return await Promise.all(filePromises);
+		// Esperar a que se resuelvan todas las promesas y filtrar los resultados no válidos
+		const results = await Promise.all(filePromises);
+		return results.filter((result) => result !== null);
 	} catch (error) {
-		console.error("Error:", error);
+		console.error("Error en [selectFileMultiple]:", error);
 	}
 }
 
