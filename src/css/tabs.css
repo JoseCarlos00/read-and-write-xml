@@ -74,25 +74,58 @@
 			&:focus {
 				outline: none;
 			}
-		}
 
-		.btn-close {
-			position: absolute;
-			cursor: pointer;
-			right: 0;
-			top: 50%;
-			transform: translateY(-50%);
-			opacity: 0;
-			transition: opacity 0.22s ease-in-out;
-			width: 20px;
-			height: 20px;
+			.indicator-container {
+				position: absolute;
+				cursor: pointer;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				opacity: 0;
+				width: 20px;
+				height: 20px;
 
-			&:hover {
-				background-color: #443b3b;
-				border-radius: 4px;
+				&.btn-close {
+					transition: opacity 0.22s ease-in-out;
+					z-index: 100;
+
+					&:hover {
+						background-color: #443b3b;
+						border-radius: 4px;
+					}
+					&:active {
+						transform: translateY(-50%) scale(0.98);
+					}
+				}
+
+				&.modified-container {
+					width: 20px;
+					height: 12px;
+					z-index: 90;
+					pointer-events: none;
+
+					.icon-modified {
+						width: 12px;
+					}
+				}
 			}
-			&:active {
-				transform: translateY(-50%) scale(0.98);
+
+			&.modified {
+				.indicator-container {
+					opacity: 1;
+				}
+
+				.btn-close {
+					opacity: 0;
+
+					&:hover {
+						opacity: 1;
+					}
+				}
+
+				.modified-container:hover {
+					opacity: 0;
+				}
 			}
 		}
 	}
