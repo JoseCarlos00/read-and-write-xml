@@ -177,9 +177,8 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 	}
 
 	/**
-	 * Actuliza el quantity en el objeto `Shipment`: `RequestedQty`, `TotalQuantity` y  `Quantity`
-
-	 * @param {String} newValue valor a actulizar en el Objeto `Shipment`
+	 * Actualiza el quantity en el objeto `Shipment`: `RequestedQty`, `TotalQuantity` y `Quantity`
+	 * @param {String} newValue valor a actualizar en el Objeto `Shipment`
 	 * @param {Number|String} index
 	 */
 	updateShipmentDetails(newValue, index) {
@@ -188,8 +187,15 @@ export class ShipmentEditorQuantity extends ShipmentEditor {
 
 		if (this.ShipmentDetails[index]?.SKU?.[0]?.Quantity) {
 			this.ShipmentDetails[index].SKU[0].Quantity = [newValue];
+
+			/**
+			 * * Emitir evento de modificación
+			 * ? Solo si el campo Quantity ha sido modificado
+			 * ! Se actulizara solo de la pestaña activa
+			 */
+			window.bridge.modified.emit("modified");
 		} else {
-			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Quantity");
+			throw new Error("updateShipmentDetails: Error intentar actualizar el campo Quantity");
 		}
 	}
 }
@@ -200,16 +206,22 @@ export class ShipmentEditorItem extends ShipmentEditor {
 	}
 
 	/**
-	 * Actuliza el Item en el objeto `Shipment`: `Item`
-
-	 * @param {String} newValue valor a actulizar en el Objeto `Shipment`
+	 * Actualiza el Item en el objeto `Shipment`: `Item`
+	 * @param {String} newValue valor a actualizar en el Objeto `Shipment`
 	 * @param {Number|String} index
 	 */
 	updateShipmentDetails(newValue, index) {
 		if (this.ShipmentDetails[index]?.SKU?.[0]?.Item) {
 			this.ShipmentDetails[index].SKU[0].Item = [newValue];
+
+			/**
+			 * * Emitir evento de modificación
+			 * ? Solo si el campo Quantity ha sido modificado
+			 * ! Se actulizara solo de la pestaña activa
+			 */
+			window.bridge.modified.emit("modified");
 		} else {
-			throw new Error("updateShipmentDetails: Error intenctar actualizar el campo Item");
+			throw new Error("updateShipmentDetails: Error intentar actualizar el campo Item");
 		}
 	}
 }
