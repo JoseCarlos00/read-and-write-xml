@@ -10,6 +10,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
 let mainWindow = null;
+let hasUnsavedTabs = false;
 
 // Inicializar el logger
 // Configura el logger para guardar los logs en un archivo
@@ -68,6 +69,12 @@ function createMainWindow() {
 	mainWindow.webContents.on("context-menu", () => {
 		contextTemplate.popup(mainMenu.webContents);
 	});
+
+	// Este código maneja el evento close de la ventana
+	mainWindow.on("close", (event) => {
+		event.preventDefault();
+		closeMainWindows();
+	});
 }
 
 app.whenReady().then(() => {
@@ -80,6 +87,36 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
+});
+
+async function closeMainWindows() {
+	const quit = () => {
+		mainWindow.destroy();
+		app.quit();
+	};
+
+	// Si las pestañas sin guardar se manejan correctamente, puedes cerrar la ventana
+	if (hasUnsavedTabs) {
+		const choice = dialog.showMessageBoxSync(mainWindow, {
+			type: "warning",
+			buttons: ["Cancelar", "Salir sin guardar"],
+			defaultId: 0,
+			message: "Hay pestañas con cambios sin guardar. ¿Estás seguro de que quieres salir?",
+		});
+
+		if (choice === 1) {
+			quit();
+		}
+
+		return;
+	}
+
+	quit();
+}
+
+ipcMain.on("check-unsaved-tabs", (_, unsavedTabs) => {
+	console.log("ipcMain.on:'check-unsaved'", unsavedTabs);
+	hasUnsavedTabs = unsavedTabs;
 });
 
 //Global exception handler

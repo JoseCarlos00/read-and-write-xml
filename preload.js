@@ -69,4 +69,5 @@ contextBridge.exposeInMainWorld("bridge", {
 	setActiveTab: (tab) => (activeTabManager.activeTab = tab),
 	getActiveTab: () => activeTabManager.activeTab,
 	modified,
+	checkUnsavedTabs: (value) => ipcRenderer.send("check-unsaved-tabs", value),
 });

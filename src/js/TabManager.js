@@ -12,6 +12,7 @@ export class TabManager {
 		this.tabsContainer = document.getElementById(tabsContainerId);
 		this.contentContainer = document.getElementById(contentContainerId);
 		this.tabsMap = new Map(); // Mapa para almacenar las pestañas y su contenido correspondiente
+		this.unsavedTabs = new Set(); // Guarda nombres o IDs de pestañas modificadas
 		this.activeTab = null;
 
 		if (!this.tabsContainer || !this.contentContainer) {
@@ -23,16 +24,21 @@ export class TabManager {
 	}
 
 	listenForModifications() {
-		console.log(`Escuchando el evento 'modified'...`);
-
 		window.bridge.modified.on("modified", (filename) => {
 			console.log("Se ha modificado el archivo:", filename);
-			this.markTabAsModified(filename);
+			this.markTabAsModified(filename, true);
+			window.bridge.checkUnsavedTabs(this.hasUnsavedTabs());
+		});
+
+		window.bridge.modified.on("saveFile", (filename) => {
+			console.log("Se ha guardado el archivo", filename);
+			this.markTabAsModified(filename, false);
+			window.bridge.checkUnsavedTabs(this.hasUnsavedTabs());
 		});
 	}
 
-	markTabAsModified(filename) {
-		const currentTab = window.bridge.getActiveTab() ?? "";
+	markTabAsModified(filename, isModified) {
+		const currentTab = filename ? filename : window.bridge.getActiveTab();
 
 		if (!currentTab) {
 			console.error("Error: No hay una pestaña activa. No se puede marcar como modificado.");
@@ -43,12 +49,26 @@ export class TabManager {
 
 		if (!tabButton) return;
 
-		tabButton.classList.add("modified"); // Cambia el estilo de la pestaña
 		const titleLabel = tabButton.querySelector(".title-label");
 
-		if (titleLabel && !titleLabel.textContent.includes("*")) {
-			titleLabel.textContent += " *"; // Indica que ha sido modificada
+		if (isModified) {
+			tabButton.classList.add("modified");
+			this.unsavedTabs.add(filename);
+
+			if (titleLabel && !titleLabel.textContent.includes("*")) {
+				titleLabel.textContent += " *";
+			}
+		} else {
+			tabButton.classList.remove("modified");
+			this.unsavedTabs.delete(filename);
+			if (titleLabel && titleLabel.textContent.includes(" *")) {
+				titleLabel.textContent = titleLabel.textContent.replace(" *", "");
+			}
 		}
+	}
+
+	hasUnsavedTabs() {
+		return this.unsavedTabs.size > 0;
 	}
 
 	setEventListeners() {
