@@ -1,7 +1,13 @@
 const { contextBridge, ipcRenderer } = require("electron/renderer");
+const { EventEmitter } = require("node:events");
 const xml2js = require("xml2js");
 
 const builder = new xml2js.Builder();
+
+async function createXMLFile(data) {
+	const xml = builder.buildObject(data);
+	return xml;
+}
 
 class ActiveTabManager {
 	#activeTabManager;
@@ -33,13 +39,24 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	openFileWindows: (callback) => ipcRenderer.on("file-opened", callback),
 });
 
+const emitter = new EventEmitter();
+
+const modified = {
+	on: (event, callback) => {
+		if (event === "modified") {
+			emitter.on("modified", callback);
+		}
+	},
+	emit: (event, data) => {
+		if (event === "modified") {
+			emitter.emit("modified", data);
+		}
+	},
+};
+
 contextBridge.exposeInMainWorld("bridge", {
 	version: async () => await ipcRenderer.invoke("get-version"),
 	setActiveTab: (tab) => (activeTabManager.activeTab = tab),
 	getActiveTab: () => activeTabManager.activeTab,
+	modified,
 });
-
-async function createXMLFile(data) {
-	const xml = builder.buildObject(data);
-	return xml;
-}
