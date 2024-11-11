@@ -127,7 +127,7 @@ process.on("uncaughtException", function (err) {
 
 function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
-	const validatedExtensions = ["xml", "shxmlp", "shxml"];
+	const validatedExtensions = ["xml", "shxmlp", "shxml", "rcxml", "recxmlP"];
 	console.log({ isPackaged: app.isPackaged });
 
 	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
