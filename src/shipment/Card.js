@@ -8,9 +8,11 @@ export class Card {
 	 * @param {string} options.titleHeader - Título de la tarjeta.
 	 * @param {Array} options.bodyContent - Contenido del cuerpo de la tarjeta.
 	 */
-	constructor({ titleHeader = "No disponible", bodyContent = [] }) {
+	constructor({ titleHeader = "No disponible", bodyContent = [], containerPanelInfo }) {
 		this.titleHeader = titleHeader;
 		this.bodyContent = bodyContent;
+
+		this.containerPanelInfo = containerPanelInfo;
 
 		this.cardContainer = document.createElement("div");
 		this.cardContainer.classList.add("card-container");
@@ -108,15 +110,11 @@ export class Card {
 			card.appendChild(body);
 			card.appendChild(footer);
 
-			const cardContainer = document.querySelector("#container-info");
-
-			if (!cardContainer) {
-				throw new Error(
-					"No se encontró el contenedor de las Card #container-info"
-				);
+			if (!this.containerPanelInfo) {
+				throw new Error("No se encontró el contenedor de las Card #container-info");
 			}
 
-			cardContainer.appendChild(card);
+			this.containerPanelInfo.appendChild(card);
 		} catch (error) {
 			console.error(
 				`Ha ocurrido un error al crear la Card ${this.titleHeader} del panelInfoDetail\nDetalles del error: ${error.message}`
@@ -136,8 +134,8 @@ export class CardEditData extends Card {
 	 * @param {Array} options.bodyContent - Contenido del cuerpo de la tarjeta.
 	 * @param {string} options.updateField - Campo que se va a actualizar.
 	 */
-	constructor({ titleHeader, bodyContent, updateField }) {
-		super({ titleHeader, bodyContent });
+	constructor({ titleHeader, bodyContent, updateField, containerPanelInfo }) {
+		super({ titleHeader, bodyContent, containerPanelInfo });
 
 		this.emptyMessage = {
 			title: "No hay información disponible",

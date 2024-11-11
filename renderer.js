@@ -1,32 +1,31 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
+import { TabManager } from "./src/js/TabManager.js";
 
-const openFileButton = document.getElementById("open-file-btn");
-const xmlContentContainer = document.getElementById("xml-content");
-
-openFileButton.addEventListener("click", handleOpenFile);
-
-async function handleOpenFile() {
+async function handleOpenFileMultiple() {
 	try {
-		const fileContent = await window.fileApi.selectFile();
+		const filesContent = await window.fileApi.selectFile();
 
-		console.log({ fileContent });
-
-		if (!fileContent?.shipment || !fileContent) {
-			throw new Error("No se pudo obtener el contenido del archivo.");
+		if (!filesContent || filesContent.length === 0) {
+			throw new Error("No se seleccionaron archivos o están vacíos.");
 		}
 
-		xmlContentContainer.innerHTML = "";
+		// Iterar sobre cada archivo y crear una pestaña para cada uno
+		filesContent.forEach((fileContent) => {
+			if (!fileContent?.shipment) {
+				console.warn("No se pudo obtener el contenido del archivo.");
+				return;
+			}
 
-		const shipment = new ShipmentManager({
-			Shipment: fileContent.shipment,
-			ShipmentOriginal: fileContent.ShipmentOriginal,
-			FileName: fileContent.fileName,
+			createNewTab({
+				Shipment: fileContent.shipment,
+				ShipmentOriginal: fileContent.ShipmentOriginal,
+				FileName: fileContent.fileName,
+				FilePath: fileContent.filePath,
+			});
 		});
-
-		shipment.render();
 	} catch (error) {
 		console.error("Detalles del error:", error);
-		showUserError("No se pudo abrir el archivo.");
+		showUserError("No se pudieron abrir los archivos.");
 	}
 }
 
@@ -39,7 +38,7 @@ function showUserError(message) {
 }
 
 // Escuchar el evento desde el menú para abrir el archivo
-window.ipcRenderer.openFileEvent(handleOpenFile);
+window.ipcRenderer.openFileEvent(handleOpenFileMultiple);
 
 async function handleOpenFileInWindows(event, filePath) {
 	try {
@@ -47,27 +46,52 @@ async function handleOpenFileInWindows(event, filePath) {
 
 		const fileContent = await window.fileApi.readFile({ filePath });
 
-		console.log({ fileContent });
+		if (!fileContent) {
+			// return;
+			throw new Error("No se seleccionaron archivos o están vacíos.");
+		}
 
-		xmlContentContainer.innerHTML = "";
-
-		const shipment = new ShipmentManager({
+		createNewTab({
 			Shipment: fileContent.shipment,
 			ShipmentOriginal: fileContent.ShipmentOriginal,
 			FileName: fileContent.fileName,
+			FilePath: fileContent.filePath,
 		});
-
-		shipment.render();
 	} catch (error) {
 		console.error("Error al abrir el archivo:", error);
 		showUserError("No se pudo abrir el archivo.");
 	}
 }
 
-window.ipcRenderer.openFileWindows(handleOpenFileInWindows);
+const tabManager = new TabManager({
+	tabsContainerId: "tabs-container",
+	contentContainerId: "content-container",
+});
 
-async function setCurrentVersion() {
-	document.querySelector("#version").innerHTML = (await window.bridge.version()) ?? "No disponible";
+function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
+	try {
+		const contentContainer = tabManager.createNewTab(FileName);
+
+		if (contentContainer?.status === "existe") {
+			return;
+		}
+
+		if (!contentContainer) {
+			throw new Error("No se pudo crear un nuevo tab: No existe [contentContainer].");
+		}
+
+		const shipment = new ShipmentManager({
+			Shipment,
+			ShipmentOriginal,
+			FileName,
+			FilePath,
+			contentContainer,
+		});
+
+		shipment.render();
+	} catch (error) {
+		console.error("Error al crear el nuevo tab:", error);
+	}
 }
 
-window.addEventListener("load", setCurrentVersion);
+window.ipcRenderer.openFileWindows(handleOpenFileInWindows);

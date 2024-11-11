@@ -6,7 +6,8 @@ import { Card, CardEditData } from "./Card.js";
 export class GetPanelInfo {
 	constructor(Shipment) {
 		this.Shipment = Shipment;
-		this.cardContainer = document.querySelector("#container-info");
+		this.containerPanelInfo = document.createElement("section");
+		this.containerPanelInfo.classList.add("container-info");
 	}
 
 	/**
@@ -19,8 +20,7 @@ export class GetPanelInfo {
 		}
 
 		const customerValue = objCustomer?.Customer?.[0] ?? "";
-		const customerNameValue =
-			objCustomer?.CustomerAddress?.[0]?.Name?.[0] ?? "";
+		const customerNameValue = objCustomer?.CustomerAddress?.[0]?.Name?.[0] ?? "";
 		const UserDef8 = this.Shipment?.UserDef8?.[0] ?? "";
 
 		const cardCustomer = new Card({
@@ -39,6 +39,7 @@ export class GetPanelInfo {
 					content: UserDef8,
 				},
 			],
+			containerPanelInfo: this.containerPanelInfo,
 		});
 
 		cardCustomer.render();
@@ -55,10 +56,7 @@ export class GetPanelInfo {
 
 		const shipTo = objCustomer?.ShipTo?.[0] ?? "";
 		const shipToName = objCustomer?.ShipToAddress?.[0]?.Name?.[0] ?? "";
-		const address =
-			objCustomer?.ShipToAddress?.[0]?.Address1?.[0] +
-			", " +
-			objCustomer?.ShipToAddress?.[0]?.City?.[0];
+		const address = objCustomer?.ShipToAddress?.[0]?.Address1?.[0] + ", " + objCustomer?.ShipToAddress?.[0]?.City?.[0];
 
 		const cardShipTo = new Card({
 			titleHeader: "Ship To Address",
@@ -76,6 +74,7 @@ export class GetPanelInfo {
 					content: address,
 				},
 			],
+			containerPanelInfo: this.containerPanelInfo,
 		});
 
 		cardShipTo.render();
@@ -99,6 +98,7 @@ export class GetPanelInfo {
 					content: orderType,
 				},
 			],
+			containerPanelInfo: this.containerPanelInfo,
 		});
 
 		cardOrder.render();
@@ -108,13 +108,11 @@ export class GetPanelInfo {
 	 * Crea y renderiza un panel con los detalles del `Shipment`.
 	 */
 	async createPanelInfoDetail() {
-		if (!this.cardContainer) {
-			throw new Error(
-				"No se ha creado el contenedor de la tarjeta #container-info"
-			);
+		if (!this.containerPanelInfo) {
+			throw new Error("No se ha creado el contenedor de la tarjeta #container-info");
 		}
 
-		this.cardContainer.innerHTML = "";
+		this.containerPanelInfo.innerHTML = "";
 
 		if (!this.Shipment) {
 			throw new Error("No se encontro el objeto Shipment");
@@ -130,6 +128,7 @@ export class GetPanelInfo {
 					title: shipmentId,
 				},
 			],
+			containerPanelInfo: this.containerPanelInfo,
 			updateField: "shipmentId",
 		});
 
@@ -140,6 +139,7 @@ export class GetPanelInfo {
 					title: erpOrder,
 				},
 			],
+			containerPanelInfo: this.containerPanelInfo,
 			updateField: "erpOrder",
 		});
 
@@ -159,6 +159,7 @@ export class GetPanelInfo {
 		const cardComments = new Card({
 			titleHeader: "Comments",
 			bodyContent,
+			containerPanelInfo: this.containerPanelInfo,
 		});
 
 		// Renderizar  cards
@@ -173,8 +174,11 @@ export class GetPanelInfo {
 	/**
 	 * Método estático para inicializar el panel de información detallada del `Shipment`.
 	 * @param {Object} Shipment - Objeto de `Shipment`.
+	 *
+	 * @return {HTMLElement|null} El elemento  `<section class="container-info"></section>` del panel de información detallada del `Shipment`.
+
 	 */
-	static async setPanelInfoDetail(Shipment) {
+	static async getPanelInfoDetail(Shipment) {
 		try {
 			if (!Shipment) {
 				throw new Error("No se proporcionó un objeto de Shipment.");
@@ -182,12 +186,11 @@ export class GetPanelInfo {
 
 			const panelInfo = new GetPanelInfo(Shipment);
 			panelInfo.createPanelInfoDetail();
+
+			return panelInfo.containerPanelInfo;
 		} catch (error) {
 			showUserError("Ha ocurido un error al crear el panel de informacion");
-			console.error(
-				"Ha ocurrido un error general el panel de informacion\nDetalles del error:",
-				error.message
-			);
+			console.error("Ha ocurrido un error general el panel de informacion\nDetalles del error:", error.message);
 		}
 	}
 }

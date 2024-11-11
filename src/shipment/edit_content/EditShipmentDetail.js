@@ -28,9 +28,7 @@ export class HandleEventManagerEditShipmentDetail {
 		const currentCardContainer = target.closest(".card-container");
 
 		if (!currentCardContainer) {
-			return this.showUserError(
-				"Ha ocurrido un error al intentar editar el contenido"
-			);
+			return this.showUserError("Ha ocurrido un error al intentar editar el contenido");
 		}
 
 		this.currentCardContainer = currentCardContainer;
@@ -55,13 +53,10 @@ export class HandleEventManagerEditShipmentDetail {
 	 * Prepara el input para recibir el nuevo valor y lo enfoca para editar.
 	 */
 	editShipment() {
-		this.currentLabel =
-			this.currentCardContainer.querySelector(".text-for-editing");
+		this.currentLabel = this.currentCardContainer.querySelector(".text-for-editing");
 
 		if (!this.currentLabel) {
-			return this.showUserError(
-				"Ha ocurrido un problema al editar el contenido"
-			);
+			return this.showUserError("Ha ocurrido un problema al editar el contenido");
 		}
 
 		this.currentCardContainer.classList.add("editing");
@@ -114,6 +109,13 @@ export class HandleEventManagerEditShipmentDetail {
 
 		this.currentLabel.textContent = newValue;
 		this.closeInput();
+
+		/**
+		 * * Emitir evento de modificación
+		 * ? Solo Si se ha modificado el panel de detalles
+		 * ! Se actulizara solo de la pestaña activa
+		 */
+		window.bridge.modified.emit("modified");
 	};
 
 	/**
@@ -126,7 +128,7 @@ export class HandleEventManagerEditShipmentDetail {
 		if (event.type === "blur" || event.key === "Enter") {
 			const newValue = this.input.value.trim();
 
-			if (newValue === this.currentValue) {
+			if (newValue === this.currentValue || newValue === "") {
 				this.closeInput();
 				return;
 			}

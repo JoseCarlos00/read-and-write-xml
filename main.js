@@ -10,11 +10,11 @@ const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
 let mainWindow = null;
-let currentFilePath = null;
+let hasUnsavedTabs = false;
 
 // Inicializar el logger
 // Configura el logger para guardar los logs en un archivo
-log.transports.file.resolvePath = () => path.join(app.getPath("userData"), "logs", "app.log");
+log.transports.file.resolvePathFn = () => path.join(app.getPath("userData"), "logs", "app.log");
 log.transports.file.level = "info";
 log.info("La aplicacion se ha iniciado");
 
@@ -66,18 +66,14 @@ function createMainWindow() {
 
 	mainWindow.loadFile("index.html");
 
-	// Enviar la ruta del archivo al renderizador cuando la ventana esté completamente cargada
-	mainWindow.webContents.on("did-finish-load", () => {
-		if (currentFilePath) {
-			console.log("[did-finish-load] Ruta del archivo actual:", currentFilePath);
-			mainWindow.webContents.send("file-opened", currentFilePath);
-		} else {
-			console.log("No se encotro una ruta actual");
-		}
-	});
-
 	mainWindow.webContents.on("context-menu", () => {
 		contextTemplate.popup(mainMenu.webContents);
+	});
+
+	// Este código maneja el evento close de la ventana
+	mainWindow.on("close", (event) => {
+		event.preventDefault();
+		closeMainWindows();
 	});
 }
 
@@ -93,16 +89,45 @@ app.on("window-all-closed", () => {
 	if (!isMac) app.quit();
 });
 
+async function closeMainWindows() {
+	const quit = () => {
+		mainWindow.destroy();
+		app.quit();
+	};
+
+	// Si las pestañas sin guardar se manejan correctamente, puedes cerrar la ventana
+	if (hasUnsavedTabs) {
+		const choice = dialog.showMessageBoxSync(mainWindow, {
+			type: "warning",
+			buttons: ["Cancelar", "Salir sin guardar"],
+			defaultId: 0,
+			message: "Hay pestañas con cambios sin guardar. ¿Estás seguro de que quieres salir?",
+		});
+
+		if (choice === 1) {
+			quit();
+		}
+
+		return;
+	}
+
+	quit();
+}
+
+ipcMain.on("check-unsaved-tabs", (_, unsavedTabs) => {
+	console.log("ipcMain.on:'check-unsaved'", unsavedTabs);
+	hasUnsavedTabs = unsavedTabs;
+});
+
 //Global exception handler
 process.on("uncaughtException", function (err) {
-	console.log(err);
+	console.log("Error no controlado:", err);
 	log.error("Error no controlado:", err);
 });
 
 function handleFileOpenInWindows(argv) {
 	const argsArray = argv.slice(app.isPackaged ? 1 : 2); // Obtén argumentos a partir de la ruta de ejecución
 	const validatedExtensions = ["xml", "shxmlp", "shxml"];
-	console.log({ argsArray });
 	console.log({ isPackaged: app.isPackaged });
 
 	// Filtrar solo argumentos que tengan extensiones válidas, existan como archivos y no sean parámetros
@@ -113,9 +138,8 @@ function handleFileOpenInWindows(argv) {
 
 	// Verificar si se encontró una ruta de archivo válida
 	if (filePath) {
-		currentFilePath = filePath;
-		console.log("Archivo abierto:", currentFilePath);
-		mainWindow.webContents.send("file-opened", currentFilePath);
+		console.log("Archivo abierto:", filePath);
+		mainWindow.webContents.send("file-opened", filePath);
 	} else {
 		console.log("No se encontro un archivo valido en los argumentos:", argsArray);
 	}
@@ -125,12 +149,10 @@ const parser = new xml2js.Parser();
 
 function parseFile({ filePath, fileContent }) {
 	if (!filePath || !fileContent) {
-		console.log("No se encontro un archivo vaslido para parsear");
+		console.log("[parseFile]: No se encontro un archivo valido para parsear");
+		log.info("[parseFile]: No se encontro un archivo valido para parsear");
 		return null;
 	}
-
-	// Actualizar la ruta actual después de guardar como
-	currentFilePath = filePath;
 
 	// Extraer el nombre del archivo
 	const fileName = path.basename(filePath);
@@ -142,20 +164,18 @@ function parseFile({ filePath, fileContent }) {
 				reject(err);
 			} else {
 				const data = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
-				resolve({ ShipmentOriginal: result, shipment: data, fileName });
+				resolve({ ShipmentOriginal: result, shipment: data, fileName, filePath });
 			}
 		});
 	});
 }
 
-// Funcion para abrir un archivo y retornarlo
-async function selectFile() {
+async function selectFileMultiple() {
 	try {
 		const { canceled, filePaths } = await dialog.showOpenDialog({
-			properties: ["openFile"],
+			properties: ["openFile", "multiSelections"],
 			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP", "shxml"] }],
-
-			title: "Selecione un  archivo XML",
+			title: "Seleccione archivos XML",
 			buttonLabel: "Abrir",
 		});
 
@@ -163,19 +183,21 @@ async function selectFile() {
 			return null;
 		}
 
-		const filePath = filePaths[0];
-		const fileContent = await fs.promises.readFile(filePath, "utf-8");
+		// Leer el contenido de todos los archivos seleccionados
+		const filePromises = filePaths.map(async (filePath) => {
+			const fileContent = await fs.promises.readFile(filePath, "utf-8");
+			return parseFile({ filePath, fileContent });
+		});
 
-		if (!fileContent) return null;
-
-		return parseFile({ filePath, fileContent });
+		// Esperar a que se resuelvan todas las promesas
+		return await Promise.all(filePromises);
 	} catch (error) {
 		console.error("Error:", error);
 	}
 }
 
 // Función para guardar archivo como
-async function saveFileAs(event, { content, fileName = "archivo.shxml" }) {
+async function saveFileAs(event, { content, fileName = "archivo" }) {
 	try {
 		if (!content) {
 			throw new Error("No existe el  contenido para guardar");
@@ -184,16 +206,19 @@ async function saveFileAs(event, { content, fileName = "archivo.shxml" }) {
 		const result = await dialog.showSaveDialog({
 			title: "Guardar archivo como",
 			defaultPath: fileName,
+			filters: [
+				{ name: "Archivo XML", extensions: ["shxmlP"] },
+				{ name: "Archivo XML", extensions: ["shxml"] },
+				{ name: "Archivo XML", extensions: ["xml"] },
+			],
 		});
 
 		if (!result.canceled && result.filePath) {
-			console.log("in:", result);
+			console.log("saveFileAs:", result);
 			try {
 				fs.writeFileSync(result.filePath, content, "utf-8");
 
-				// Actualizar la ruta actual después de guardar como
-				currentFilePath = result.filePath;
-
+				mainWindow.webContents.send("file-opened", result.filePath);
 				return { success: true, filePath: result.filePath };
 			} catch (error) {
 				console.error("Error al guardar el archivo:", error);
@@ -209,20 +234,21 @@ async function saveFileAs(event, { content, fileName = "archivo.shxml" }) {
 }
 
 // Funcion para guardar remplazando el archivo actual
-async function saveFile(event, { content, fileName = "archivo.shxml" }) {
+async function saveFile(event, { content, fileName, filePath }) {
 	try {
 		if (!content) {
 			throw new Error("No hay contenido para guardar");
 		}
 
-		if (!currentFilePath) {
+		if (!filePath) {
 			// Si no hay ruta actual, llama a "Guardar como" en su lugar
-			return saveFileAs(event, { content });
+			console.log("saveFile: No hay ruta actual");
+			return saveFileAs(event, { content, fileName });
 		}
 
 		// Sobrescribir el archivo en la ruta actual
-		fs.writeFileSync(currentFilePath, content, "utf-8");
-		return { success: true, filePath: currentFilePath };
+		fs.writeFileSync(filePath, content, "utf-8");
+		return { success: true, filePath };
 	} catch (error) {
 		console.error("Error al guardar el archivo:", error);
 		return { success: false, error: error.message };
@@ -236,19 +262,18 @@ async function readFile(event, { filePath }) {
 		}
 
 		const fileContent = await fs.promises.readFile(filePath, "utf-8");
-
 		if (!fileContent) return null;
 
 		return parseFile({ filePath, fileContent });
 	} catch (error) {
 		console.error("Error al leer el archivo:", error);
-		throw new Error("No se pudo leer el archivo.");
 		log.error("[readFile] No hay ruta de archivo:" + error);
+		throw new Error("No se pudo leer el archivo.");
 	}
 }
 
 // Manejar el evento 'select-file' para abrir el diálogo y leer el archivo
-ipcMain.handle("dialog:select-file", selectFile);
+ipcMain.handle("dialog:select-file", selectFileMultiple);
 ipcMain.handle("dialog:save-file", saveFile);
 ipcMain.handle("dialog:save-file-as", saveFileAs);
 

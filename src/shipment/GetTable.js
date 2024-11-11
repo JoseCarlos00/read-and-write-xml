@@ -82,11 +82,15 @@ export class GetTable {
 			tdCheckbox.innerHTML = `<input-checkbox></input-checkbox>`;
 
 			// ITEM
-			tdItem.textContent = Item;
+			tdItem.innerHTML = /*html*/ `
+			<label>${Item}</label>
+			<input class="edit-item" type="text" value="" data-update-field="item" data-current-value="">
+			`;
+			tdItem.dataset["lineNumber"] = ErpOrderLineNum;
 			tdItem.classList.add("td-item");
 
 			//  QUANTITY
-			tdQuantity.innerHTML = `
+			tdQuantity.innerHTML = /*html*/ `
 				<label>${Quantity}</label>
 				<input class="edit-qty" type="number" min="1" value="" data-update-field="quantity" data-current-value="">
 				`;
@@ -133,15 +137,9 @@ export class GetTable {
 
 		const getTable = new GetTable(shipment);
 
-		const caption = document.createElement("caption");
-		caption.innerHTML = `Total lines: <strong id="totalLines">${
-			getTable.totalLines ?? ""
-		}</strong>, <small>Order By Item</small>`;
-
 		const table = document.createElement("table");
 		table.id = "shipmentDetailsTable";
 
-		table.appendChild(caption);
 		table.appendChild(getTable.getThead());
 		table.appendChild(await getTable.getTbody());
 

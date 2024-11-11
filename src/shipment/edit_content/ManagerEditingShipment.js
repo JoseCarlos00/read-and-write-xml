@@ -6,10 +6,20 @@ import ToastAlert from "../../utils/ToasAlert.js";
  * Clase principal para gestionar la edición y guardado de detalles de `Shipment`.
  */
 export class ManagerEditingShipment {
-	constructor({ ShipmentOriginal, FileName, Shipment }) {
+	constructor({ ShipmentOriginal, FileName, Shipment, contentContainer, FilePath }) {
 		this.ShipmentOriginal = ShipmentOriginal;
 		this.FileName = FileName;
 		this.Shipment = Shipment;
+		this.FilePath = FilePath;
+		this.contentContainer = contentContainer;
+
+		try {
+			if (!this.ShipmentOriginal || !this.FileName || !this.Shipment || !this.contentContainer) {
+				throw new Error("[constructor] No se encontraron los elementos necesarios inicializar clase");
+			}
+		} catch (error) {
+			console.error("[ManagerEditingShipment]: Error al inicializar ManagerEditingShipment:", error);
+		}
 	}
 
 	/**
@@ -26,6 +36,10 @@ export class ManagerEditingShipment {
 	 */
 	async saveFile(type) {
 		try {
+			if (window.bridge.getActiveTab() !== this.FileName) {
+				return;
+			}
+
 			console.log("Guardando archivo");
 
 			// Crea el contenido XML que deseas guardar
@@ -42,7 +56,7 @@ export class ManagerEditingShipment {
 			if (type === "save-as") {
 				result = await window.fileApi.saveFileAs(objConfiguration);
 			} else {
-				result = await window.fileApi.saveFile(objConfiguration);
+				result = await window.fileApi.saveFile({ ...objConfiguration, filePath: this.FilePath });
 			}
 
 			console.log({ result });
@@ -56,6 +70,13 @@ export class ManagerEditingShipment {
 			} else {
 				ToastAlert.showAlertFullTop({ message: `Archivo guardado`, type: "success" });
 			}
+
+			/**
+			 * * Emitir evento de `saveFile`
+			 * ? Solo Cuando se guarde el archivo correctamente
+			 * ! Se actulizara solo de la pestaña activa
+			 */
+			window.bridge.modified.emit("saveFile", this.FileName);
 		} catch (error) {
 			ToastAlert.showAlertFullTop({ message: "Error al guardar archivo", type: "error" });
 
@@ -68,21 +89,6 @@ export class ManagerEditingShipment {
 	 */
 	setEventForSave() {
 		try {
-			const saveBtn = document.querySelector("#save-file-btn");
-			const saveAsBtn = document.querySelector("#save-file-as-btn");
-
-			if (!saveBtn) {
-				return new Error("No se encontró el botón de #guardar");
-			}
-
-			if (!saveAsBtn) {
-				return new Error("No se encontró el botón de #guardar como");
-			}
-
-			// Configurar el evento del botón en el DOM
-			saveBtn.addEventListener("click", () => this.saveFile("save"));
-			saveAsBtn.addEventListener("click", () => this.saveFile("save-as"));
-
 			// Configurar el evento de guardar archivo en el menú
 			window.ipcRenderer.saveFileAsEvent(() => this.saveFile("save-as"));
 			window.ipcRenderer.saveFileEvent(() => this.saveFile("save"));
@@ -96,13 +102,13 @@ export class ManagerEditingShipment {
 	 */
 	setEventClickInTable() {
 		try {
-			const tbody = document.querySelector("table tbody");
+			const tbody = this.contentContainer?.querySelector("table tbody");
 
 			if (!tbody) {
 				throw new Error("No se encontró el elemento <tbody> en la tabla");
 			}
 
-			const eventManager = new HandleEventManagerEditIDetailItem(this.Shipment);
+			const eventManager = new HandleEventManagerEditIDetailItem(this.Shipment, this.contentContainer);
 
 			// Agregar evento de clic en las filas de la tabla
 			tbody.addEventListener("click", (e) => {
@@ -119,7 +125,9 @@ export class ManagerEditingShipment {
 	 */
 	setEvetEditPanelInfoDetail() {
 		try {
-			const buttonsEditContent = Array.from(document.querySelectorAll("#container-info .card-container button.icon"));
+			const buttonsEditContent = Array.from(
+				this.contentContainer.querySelectorAll(".container-info .card-container button.icon")
+			);
 
 			if (!buttonsEditContent || buttonsEditContent.length === 0) {
 				throw new Error("No se encontraron los botones de edición en el panel de detalles");

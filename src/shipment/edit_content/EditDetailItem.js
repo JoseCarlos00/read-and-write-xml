@@ -1,4 +1,4 @@
-import { ShipmentEditorQuantity } from "./ShipmentEditor.js";
+import { ShipmentEditorQuantity, ShipmentEditorItem } from "./ShipmentEditor.js";
 import { ShipmentDeleter } from "./ShipmentDeleter.js";
 
 /**
@@ -9,14 +9,15 @@ export class HandleEventManagerEditIDetailItem {
 	/**
 	 * Crea una instancia de HandleEventManagerEditIDetailItem.
 	 * @param {Object} Shipment - Objeto que contiene detalles del envío.
+	 * @param {HTMLElement} contentContainer - Elemento que el contenido de la `tab` actual.
 	 */
-	constructor(Shipment) {
+	constructor(Shipment, contentContainer) {
 		this.ShipmentDetails = Shipment?.Details?.[0]?.ShipmentDetail ?? [];
 		this.currentRow = null;
 		this.currentLineNumber = null;
 
 		// Se instancia la clase para el manejo de eliminar filas
-		this.shipmentDeleter = new ShipmentDeleter(this.ShipmentDetails);
+		this.shipmentDeleter = new ShipmentDeleter(this.ShipmentDetails, contentContainer);
 
 		this.nodeNamesAcepted = ["TD", "use", "svg"];
 	}
@@ -38,7 +39,7 @@ export class HandleEventManagerEditIDetailItem {
 			}
 
 			const currentElement = {
-				TD: () => (classList.contains("action") ? target.querySelector("svg") : null),
+				TD: () => (classList.contains("action") ? target?.querySelector("svg") : null),
 				use: () => target.closest("svg"),
 				svg: () => target,
 			};
@@ -100,13 +101,23 @@ export class HandleEventManagerEditIDetailItem {
 
 	 */
 	updateRowFields() {
-		const tdQuantity = this.currentRow.querySelector(".td-quantity");
+		const tdQuantity = this.currentRow?.querySelector(".td-quantity");
+		const tdItem = this.currentRow?.querySelector(".td-item");
 
 		if (tdQuantity) {
 			try {
 				new ShipmentEditorQuantity(this.ShipmentDetails, this.currentLineNumber, tdQuantity).editCell();
 			} catch (error) {
 				this.showUserError("Ha ocurrido un problema al intentar editar la celda");
+				console.error("Detalles del error al editar:", error, message);
+			}
+		}
+
+		if (tdItem) {
+			try {
+				new ShipmentEditorItem(this.ShipmentDetails, this.currentLineNumber, tdItem).editCell();
+			} catch (error) {
+				this.showUserError("Ha ocurrido un problema al intentar editar el item");
 				console.error("Detalles del error al editar:", error, message);
 			}
 		}

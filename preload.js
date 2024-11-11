@@ -1,11 +1,32 @@
 const { contextBridge, ipcRenderer } = require("electron/renderer");
+const { EventEmitter } = require("node:events");
 const xml2js = require("xml2js");
 
 const builder = new xml2js.Builder();
 
+async function createXMLFile(data) {
+	const xml = builder.buildObject(data);
+	return xml;
+}
+
+class ActiveTabManager {
+	#activeTabManager;
+
+	set activeTab(tab) {
+		this.activeTabManager = tab;
+	}
+
+	get activeTab() {
+		return this.activeTabManager;
+	}
+}
+
+const activeTabManager = new ActiveTabManager();
+
 contextBridge.exposeInMainWorld("fileApi", {
 	selectFile: () => ipcRenderer.invoke("dialog:select-file"),
-	saveFile: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file", { content, fileName }),
+	saveFile: ({ content, fileName, filePath }) =>
+		ipcRenderer.invoke("dialog:save-file", { content, fileName, filePath }),
 	saveFileAs: ({ content, fileName }) => ipcRenderer.invoke("dialog:save-file-as", { content, fileName }),
 	readFile: ({ filePath }) => ipcRenderer.invoke("win:read-file", { filePath }),
 	createXMLFile,
@@ -18,11 +39,35 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	openFileWindows: (callback) => ipcRenderer.on("file-opened", callback),
 });
 
+const emitter = new EventEmitter();
+
+const modified = {
+	on: (event, callback) => {
+		if (event === "modified") {
+			emitter.on("modified", callback);
+			return;
+		}
+
+		if (event === "saveFile") {
+			emitter.on("saveFile", callback);
+		}
+	},
+	emit: (event, data) => {
+		if (event === "modified") {
+			emitter.emit("modified", data);
+			return;
+		}
+
+		if (event === "saveFile") {
+			emitter.emit("saveFile", data);
+		}
+	},
+};
+
 contextBridge.exposeInMainWorld("bridge", {
 	version: async () => await ipcRenderer.invoke("get-version"),
+	setActiveTab: (tab) => (activeTabManager.activeTab = tab),
+	getActiveTab: () => activeTabManager.activeTab,
+	modified,
+	checkUnsavedTabs: (value) => ipcRenderer.send("check-unsaved-tabs", value),
 });
-
-async function createXMLFile(data) {
-	const xml = builder.buildObject(data);
-	return xml;
-}
