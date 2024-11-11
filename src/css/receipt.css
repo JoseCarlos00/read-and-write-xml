@@ -1,0 +1,10 @@
+.receipt-panel {
+	margin: 35px 0;
+
+	.form-warehouse {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		width: 120px;
+	}
+}

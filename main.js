@@ -181,7 +181,7 @@ function parseFile({ filePath, fileContent }) {
 				reject(err);
 			} else {
 				const dataResult = await handleParseResult({ result });
-				resolve({ ShipmentOriginal: result, dataResult, fileName, filePath });
+				resolve({ fileOriginal: result, dataResult, fileName, filePath });
 			}
 		});
 	});
@@ -232,6 +232,8 @@ async function saveFileAs(event, { content, fileName = "archivo" }) {
 				{ name: "Archivo XML", extensions: ["shxmlP"] },
 				{ name: "Archivo XML", extensions: ["shxml"] },
 				{ name: "Archivo XML", extensions: ["xml"] },
+				{ name: "Archivo XML", extensions: ["recxmlP"] },
+				{ name: "Archivo XML", extensions: ["rcxml"] },
 			],
 		});
 

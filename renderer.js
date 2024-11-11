@@ -1,4 +1,5 @@
 import { ShipmentManager } from "./src/shipment/ShipmentManager.js";
+import { ReceiptManager } from "./src/receipt/ReceipManager.js";
 import { TabManager } from "./src/js/TabManager.js";
 
 function handeleCreateTypeTabs({ fileContent }) {
@@ -8,14 +9,20 @@ function handeleCreateTypeTabs({ fileContent }) {
 	}
 
 	if (fileContent.dataResult.name === "Receipt") {
-		//
+		createNewReceiptTab({
+			Receipt: fileContent.dataResult.data,
+			ReceiptOriginal: fileContent.fileOriginal,
+			FileName: fileContent.fileName,
+			FilePath: fileContent.filePath,
+		});
+
 		return;
 	}
 
 	if (fileContent.dataResult.name === "Shipment") {
-		createNewTab({
+		createNewShiptmnetTab({
 			Shipment: fileContent.dataResult.data,
-			ShipmentOriginal: fileContent.ShipmentOriginal,
+			ShipmentOriginal: fileContent.fileOriginal,
 			FileName: fileContent.fileName,
 			FilePath: fileContent.filePath,
 		});
@@ -77,7 +84,7 @@ const tabManager = new TabManager({
 	contentContainerId: "content-container",
 });
 
-function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
+function createNewShiptmnetTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
 	try {
 		const contentContainer = tabManager.createNewTab(FileName);
 
@@ -98,6 +105,32 @@ function createNewTab({ Shipment, ShipmentOriginal, FileName, FilePath }) {
 		});
 
 		shipment.render();
+	} catch (error) {
+		console.error("Error al crear el nuevo tab:", error);
+	}
+}
+
+function createNewReceiptTab({ Receipt, ReceiptOriginal, FileName, FilePath }) {
+	try {
+		const contentContainer = tabManager.createNewTab(FileName);
+
+		if (contentContainer?.status === "existe") {
+			return;
+		}
+
+		if (!contentContainer) {
+			throw new Error("No se pudo crear un nuevo tab: No existe [contentContainer].");
+		}
+
+		const receiptManager = new ReceiptManager({
+			Receipt,
+			ReceiptOriginal,
+			FileName,
+			FilePath,
+			contentContainer,
+		});
+
+		receiptManager.render();
 	} catch (error) {
 		console.error("Error al crear el nuevo tab:", error);
 	}
