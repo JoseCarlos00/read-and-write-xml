@@ -7,6 +7,7 @@ module.exports = {
 		icon: "./icon",
 		executableName: "read-and-write-xml",
 		appCopyright: "Copyright © 2024",
+		includeSubNodeModuleses: false,
 	},
 	rebuildConfig: {},
 	makers: [
