@@ -151,14 +151,19 @@ export class TabManager {
 
 		// Remueve la clase active de todas las pestañas y oculta todo el contenido
 		this.tabsContainer.querySelectorAll(".tab").forEach((tab) => tab.classList.remove("active"));
-		this.contentContainer.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("d-block"));
+		this.contentContainer.querySelectorAll(".tab-content").forEach((content) => {
+			content.classList.remove("d-block");
+			contentDiv.classList.remove("active");
+		});
 
 		// Muestra el contenido correspondiente y marca la pestaña como activa
 		contentDiv.classList.add("d-block");
+		contentDiv.classList.add("active");
 
 		const currentTab = tabButton.closest(".tab");
 		if (currentTab) {
 			currentTab.classList.add("active");
+			currentTab.scrollIntoView({ behavior: "smooth", block: "center" });
 			this.setActiveTab(filename);
 		}
 	}
