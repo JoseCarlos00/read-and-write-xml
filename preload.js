@@ -45,11 +45,21 @@ const modified = {
 	on: (event, callback) => {
 		if (event === "modified") {
 			emitter.on("modified", callback);
+			return;
+		}
+
+		if (event === "saveFile") {
+			emitter.on("saveFile", callback);
 		}
 	},
 	emit: (event, data) => {
 		if (event === "modified") {
 			emitter.emit("modified", data);
+			return;
+		}
+
+		if (event === "saveFile") {
+			emitter.emit("saveFile", data);
 		}
 	},
 };
