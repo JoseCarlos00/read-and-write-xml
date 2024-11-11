@@ -216,7 +216,7 @@ export class ShipmentEditorItem extends ShipmentEditor {
 
 			/**
 			 * * Emitir evento de modificación
-			 * ? Solo si el campo Quantity ha sido modificado
+			 * ? Solo si el campo Item ha sido modificado
 			 * ! Se actulizara solo de la pestaña activa
 			 */
 			window.bridge.modified.emit("modified");

@@ -42,6 +42,13 @@ export class ShipmentDeleter {
 			if (update) {
 				this.updateLineNumber();
 			}
+
+			/**
+			 * * Emitir evento de modificación
+			 * ? Solo Si se ha eliminado una fila
+			 * ! Se actulizara solo de la pestaña activa
+			 */
+			window.bridge.modified.emit("modified");
 		} else {
 			throw new Error("No se encontró un objeto con el ErpOrderLineNum especificado.");
 		}
