@@ -19,6 +19,36 @@ export class TabManager {
 		}
 
 		this.setEventListeners();
+		this.listenForModifications();
+	}
+
+	listenForModifications() {
+		console.log(`Escuchando el evento 'modified'...`);
+
+		window.bridge.modified.on("modified", (filename) => {
+			console.log("Se ha modificado el archivo:", filename);
+			this.markTabAsModified(filename);
+		});
+	}
+
+	markTabAsModified(filename) {
+		const currentTab = window.bridge.getActiveTab() ?? "";
+
+		if (!currentTab) {
+			console.error("Error: No hay una pestaña activa. No se puede marcar como modificado.");
+			return;
+		}
+
+		const [tabButton] = this.tabsMap.get(currentTab) || [];
+
+		if (!tabButton) return;
+
+		tabButton.classList.add("modified"); // Cambia el estilo de la pestaña
+		const titleLabel = tabButton.querySelector(".title-label");
+
+		if (titleLabel && !titleLabel.textContent.includes("*")) {
+			titleLabel.textContent += " *"; // Indica que ha sido modificada
+		}
 	}
 
 	setEventListeners() {
@@ -138,9 +168,14 @@ export class TabManager {
 				<div class="tab-border-top-container"></div>
 				<button class="button-tab">
 					<label class="title-label">${filename} </label>
-					<span class="btn-close" title="Cerrar">
+					<span class="indicator-container btn-close" title="Cerrar">
 						<svg class="icon-close" viewBox="0 0 24 24">
 							<use href="./src/icon/icons.svg#close"></use>
+						</svg>
+					</span>
+					<span class="indicator-container modified-container">
+						<svg class="icon-modified" viewBox="0 0 24 24">
+							<use href="./src/icon/icons.svg#circle-white"></use>
 						</svg>
 					</span>
 				</button>
