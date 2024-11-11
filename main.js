@@ -147,6 +147,23 @@ function handleFileOpenInWindows(argv) {
 
 const parser = new xml2js.Parser();
 
+async function handleParseResult({ result }) {
+	const Shipment = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
+	const Receipt = result?.WMWROOT?.WMWDATA?.[0]?.Receipts?.[0]?.Receipt?.[0];
+
+	// Si el nodo `Shipment` está presente, devolvemos como tipo "Shipment"
+	if (Shipment) {
+		return { name: "Shipment", data: Shipment };
+	}
+	// Si el nodo `Receipt` está presente, devolvemos como tipo "Receipt"
+	else if (Receipt) {
+		return { name: "Receipt", data: Receipt };
+	}
+
+	// Si no es ninguno, devolvemos null o un mensaje
+	return { name: "Unknown", data: null };
+}
+
 function parseFile({ filePath, fileContent }) {
 	if (!filePath || !fileContent) {
 		console.log("[parseFile]: No se encontro un archivo valido para parsear");
@@ -159,12 +176,12 @@ function parseFile({ filePath, fileContent }) {
 
 	// Devuelve una promesa que se resuelve con el resultado del análisis XML
 	return new Promise((resolve, reject) => {
-		parser.parseString(fileContent, function (err, result) {
+		parser.parseString(fileContent, async function (err, result) {
 			if (err) {
 				reject(err);
 			} else {
-				const data = result?.WMWROOT?.WMWDATA?.[0]?.Shipments?.[0]?.Shipment?.[0];
-				resolve({ ShipmentOriginal: result, shipment: data, fileName, filePath });
+				const dataResult = await handleParseResult({ result });
+				resolve({ ShipmentOriginal: result, dataResult, fileName, filePath });
 			}
 		});
 	});
@@ -174,7 +191,12 @@ async function selectFileMultiple() {
 	try {
 		const { canceled, filePaths } = await dialog.showOpenDialog({
 			properties: ["openFile", "multiSelections"],
-			filters: [{ name: "Archivos XML", extensions: ["xml", "shxmlP", "shxml"] }],
+			filters: [
+				{
+					name: "Archivos XML",
+					extensions: ["xml", "shxmlP", "shxml", "rcxml", "recxmlP"],
+				},
+			],
 			title: "Seleccione archivos XML",
 			buttonLabel: "Abrir",
 		});
