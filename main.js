@@ -44,7 +44,6 @@ if (!gotSingleInstanceLock) {
 
 	app.on("ready", () => {
 		createMainWindow();
-
 		// Manejar los argumentos de la primera instancia
 		handleFileOpenInWindows(process.argv);
 	});
@@ -140,6 +139,12 @@ function handleFileOpenInWindows(argv) {
 	if (filePath) {
 		console.log("Archivo abierto:", filePath);
 		mainWindow.webContents.send("file-opened", filePath);
+
+		// Enviar la ruta del archivo al renderizador cuando la ventana esté completamente cargada
+		mainWindow.webContents.on("did-finish-load", () => {
+			console.log("[did-finish-load] Ruta del archivo actual:", filePath);
+			mainWindow.webContents.send("file-opened", filePath);
+		});
 	} else {
 		console.log("No se encontro un archivo valido en los argumentos:", argsArray);
 	}
